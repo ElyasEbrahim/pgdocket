@@ -94,6 +94,17 @@ This answers a question teams actually ask: *how much human review do I need for
 - **pg-jev** hasn't changed since v0.2.1 (3 Oct). It has about 1,200 stars, and its open issues ask for single-column use and a ClickHouse backend.
 - **Semantic-operator systems** (LOTUS, BARGAIN, semantic SQL engines) give guarantees for *one query's* cost/accuracy trade-off. pgdocket's ground is different: answers that persist, stay current, are versioned and are calibrated on the user's own labels. None of the systems above does that.
 
+## Update, 25 October 2026
+
+A second sweep for work since this review, and what it led to:
+- **Recall guarantees.** For LLM classifiers, the newest work controls false positives, not misses.
+  - **ConformalGuard** (COLM 2026, [arXiv:2610.14365](https://arxiv.org/abs/2610.14365)) limits how often legitimate inputs trigger an action, and says explicitly that recall is not guaranteed.
+  - It also observes that zero-shot LLM scores take only 10–11 distinct values, which fits our choice to set thresholds on raw scores.
+  - The recall-target method comes from the selection-query line of work (SUPG; BARGAIN, SIGMOD 2026). **Adopted** as `calibrate --recall-target` (#21, [recall.md](../phase1/recall.md)): on three real yes/no tasks it never failed more than 3.6 % of the time (5 % allowed).
+- **Silent model changes.** TypeSafe moved `jev-latest` to jev-1.14.0, so pg-jev users on the default alias got a new model.
+  - **"Who Drifted: the System or the Judge?"** (preprint, June 2026, [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)) watches for this kind of change with anytime-valid tests. It re-asks a fixed set of human-labelled rows and attributes a drop either to the product or to the model.
+  - pgdocket pins model versions, and `compare` measured 1.14 against 1.13 (see §2). A continuous drift check on labelled rows is the natural next step. **Candidate.**
+
 ## What this means for the release
 
 The per-answer report is a small change, and it fixes the most important gap this review found. Without it, `auto` can mislead a team about specific answers. I recommend adding it before 0.1.0a2. Review planning, recall targets, drift alarms and stratified counts are new features for after the release.

@@ -4,7 +4,7 @@
 
 - Text sent: `title, body` · labels: `kind` (yes = `feature`)
 - Backend `https://api.typesafe.ai/v1/systemone` · model `jev-1.13.0` · 1 row(s) per request
-- 500 labeled rows sampled from 3,014 in scope (table: 3,884 rows) · 2026-10-19T14:05:57+00:00 · docket 0.0.1 · re-analysed 2026-10-22T12:08:33+00:00 with docket 0.1.0a2 (no API calls)
+- 500 labeled rows sampled from 3,014 in scope (table: 3,884 rows) · 2026-10-19T14:05:57+00:00 · docket 0.0.1 · re-analysed 2026-10-25T11:51:02+00:00 with docket 0.1.0a2 (no API calls)
 
 ## Recommendations
 
@@ -72,6 +72,14 @@ What each precision target allows (each with the same 95 % guarantee):
 | 80.0 % | 20.0 % | 81.5 % | 0.612 |
 | 75.0 % | 20.0 % | 81.5 % | 0.612 |
 | 70.0 % | 25.2 % | 91.7 % | 0.270 |
+
+What each recall target allows: rows scored below the threshold can be answered *no* without review, keeping at least that share of the real yeses (95 % confidence; fixed-sequence testing with one-sided Clopper–Pearson bounds on the labelled yeses):
+
+| keep at least | rows answered *no* automatically | threshold | labelled yeses (needed) |
+| ---: | ---: | ---: | ---: |
+| 95.0 % of yeses | 7.8 % | 0.020 | 108 (59) |
+| 90.0 % of yeses | 66.2 % | 0.100 | 108 (29) |
+| 80.0 % of yeses | 77.6 % | 0.480 | 108 (14) |
 
 ## Consistency
 

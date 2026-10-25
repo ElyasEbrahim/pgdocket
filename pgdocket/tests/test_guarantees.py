@@ -150,3 +150,52 @@ def test_calibrate_reports_an_answer_that_is_confidently_wrong():
     assert cal["threshold"] is not None and cal["observed_precision"] >= 0.8
     assert [r["answer"] for r in cal["per_answer"] if r["below_target"]] == ["c"]
     assert cal["per_answer_coverage"] < cal["coverage"]                    # its own guarantee would accept less
+
+
+def test_recall_threshold_holds_its_guarantee():
+    """Rows below the threshold are answered "no": the true recall stays >= target in >= 95 % of trials (#21)."""
+    from pgdocket.metrics import recall_threshold
+    rng = np.random.default_rng(41)
+    trials, fails, found, dismissed = 400, 0, 0, []
+    for _ in range(trials):
+        y = rng.random(5000) < 0.25
+        s = np.round(np.clip(np.where(y, rng.beta(5, 2, 5000), rng.beta(2, 5, 5000)), 0, 1), 2)   # Jev-like 0.01 grid
+        lab = rng.choice(5000, 300, replace=False)
+        c = recall_threshold(s[lab], y[lab], target=0.9)["chosen"]
+        if c is None:
+            continue
+        found += 1
+        fails += (s[y] >= c["threshold"]).mean() < 0.9
+        dismissed.append((s < c["threshold"]).mean())
+    assert found > trials * 0.9 and np.mean(dismissed) > 0.3      # it does let a large share be answered "no"
+    assert fails / found <= 0.07                                   # stated: at most 5 %
+
+
+def test_recall_target_needs_enough_labelled_yeses():
+    from pgdocket.metrics import recall_threshold
+    s, y = np.linspace(0, 1, 200), np.r_[np.zeros(171, bool), np.ones(29, bool)]   # 29 yeses, all scored highest
+    r = recall_threshold(s, y, target=0.9)
+    assert r["positives_needed"] == 29 and r["chosen"] is not None and r["chosen"]["recall"] == 1.0
+    assert recall_threshold(s[1:], y[1:] & (np.arange(199) > 0), target=0.9)["chosen"] is not None
+    assert recall_threshold(s, np.r_[np.zeros(172, bool), np.ones(28, bool)], target=0.9)["chosen"] is None
+
+
+def test_three_bands_for_a_yes_no_decision():
+    from pgdocket import calibration
+    rng = np.random.default_rng(42)
+    spec = {"kind": "noul", "question": "q"}
+    y = rng.random(400) < 0.3
+    p = np.round(np.clip(np.where(y, rng.beta(6, 2, 400), rng.beta(2, 6, 400)), 0.01, 0.99), 2)
+    answers = [{"noul": float(x)} for x in p]
+    cal = calibration.fit(spec, answers, list(y), precision_target=0.9, recall_target=0.9)
+    t, r = cal["threshold"], cal["recall_threshold"]
+    assert t is not None and r is not None and r < t
+    for a, x in zip(answers, p):
+        band = "yes" if x >= t else "no" if x < r else "review"
+        assert calibration.auto(a, spec, cal) == (band != "review")
+        if band != "review":
+            assert calibration.noul_answer(a, spec, cal) == band
+    assert cal["positives"] == int(y.sum()) and 0 < cal["dismissed"] < 1
+    with pytest.raises(ValueError, match="yes/no decisions"):
+        calibration.fit({"kind": "choice", "question": "q", "options": [{"name": "a"}, {"name": "b"}]},
+                        [{"choice": "a", "probabilities": {"a": 0.9, "b": 0.1}}] * 40, ["a"] * 40, recall_target=0.9)

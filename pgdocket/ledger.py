@@ -114,19 +114,20 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
         return len(rows)
 
 
-def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False):
+def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None):
     """Fit a calibrator on labeled rows that have a current answer, and store it on the active version.
 
     Uses labels drawn at random or a whole column. Hand-picked labels ('manual', e.g. the disagreements exported by
     `compare`) are skipped unless `include_manual`: rows chosen for being hard would bias the calibrator, and the
     threshold guarantee assumes the labelled rows are like the rest.
     `per_answer`: one threshold and guarantee per answer instead of one for all accepted rows together (#19).
+    `recall_target` (yes/no decisions): also a threshold below which rows are answered "no" without review (#21).
     """
     with connect(dsn) as conn:
-        return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer)
+        return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer, recall_target)
 
 
-def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False):
+def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None):
     sampling = ["random", "all", "manual"] if include_manual else ["random", "all"]
     rows = conn.execute(
         "SELECT l.label, j.answer FROM docket.label l "
@@ -136,7 +137,8 @@ def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, 
     spec = d["spec"]
     # choice labels naming another version's option stay in: they count as wrong for this one
     labels = [r[0] for r in rows] if spec["kind"] == "choice" else [r[0] == "yes" for r in rows]  # yes/no normalised
-    cal = calibration.fit(spec, [r[1] for r in rows], labels, precision_target, alpha, per_answer) | {"sampling": sampling}
+    cal = calibration.fit(spec, [r[1] for r in rows], labels, precision_target, alpha, per_answer,
+                          recall_target) | {"sampling": sampling}
     conn.execute("UPDATE docket.version SET calibration = %s WHERE decision_id = %s AND version = %s",
                  (Jsonb(cal), d["id"], d["version"]))
     return cal
@@ -149,7 +151,7 @@ def status(dsn):
         return [dict(zip(cols, r)) for r in cur.fetchall()]
 
 
-def load_spec(kind, question, options=None, options_file=None, backend="jev", model="jev-1.13.0", batch_size=1):
+def load_spec(kind, question, options=None, options_file=None, backend="jev", model="jev-1.14.0", batch_size=1):
     opts = []
     if options_file:
         with open(options_file) as f:
@@ -228,7 +230,8 @@ def promote(dsn, name, version, force=False):
         if prev:
             try:
                 cal = _calibrate(conn, _decision(conn, name), prev["precision_target"], prev.get("alpha", 0.05),
-                                 "manual" in prev.get("sampling", []), prev.get("mode") == "per answer")
+                                 "manual" in prev.get("sampling", []), prev.get("mode") == "per answer",
+                                 prev.get("recall_target"))
             except ValueError as e:
                 why = str(e)
     return {"previous": d["version"], "missing": missing, "comparison": comparison, "calibration": cal,

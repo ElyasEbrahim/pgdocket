@@ -86,6 +86,15 @@ def test_noul_analysis_threshold_has_recall():
     a = analyse_noul(cfg, sample, answers)
     assert a["auroc"] > 0.9
     assert a["threshold"]["chosen"] and 0 < a["threshold"]["chosen"]["recall"] <= 1
+    rl = {r["target"]: r for r in a["recall_ladder"]}
+    assert set(rl) == {0.95, 0.9, 0.8} and rl[0.8]["chosen"]["dismissed"] >= rl[0.95]["chosen"]["dismissed"]
+    a.pop("_p")
+    md = render({"config": {**cfg.__dict__}, "analysis": a, "backend": {"url": "fake", "model": "m", "batch_size": 1},
+                 "created_at": "now", "docket_version": "0",
+                 "sample": {"labeled_rows": 500, "rows_in_scope": 500, "table_rows": 500, "label_counts": {}},
+                 "cost": {"requests": 500, "input_tokens": 50000, "usd": 0.002, "tokens_per_row": 100,
+                          "projected_usd_table": 0.002, "projected_usd_per_million_rows": 4.2, "seconds": 3}})
+    assert "What each recall target allows" in md and "- This check: 500 requests" in md
 
 
 def test_recommendation_when_calibration_does_not_help_yet():

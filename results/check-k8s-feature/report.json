@@ -260,6 +260,44 @@
         "coverage": 0.252,
         "recall": 0.9166666666666666
       }
+    ],
+    "recall_ladder": [
+      {
+        "target": 0.95,
+        "alpha": 0.05,
+        "positives": 108,
+        "positives_needed": 59,
+        "chosen": {
+          "threshold": 0.02,
+          "recall": 1.0,
+          "lower_bound": 0.9726429113002488,
+          "dismissed": 0.078
+        }
+      },
+      {
+        "target": 0.9,
+        "alpha": 0.05,
+        "positives": 108,
+        "positives_needed": 29,
+        "chosen": {
+          "threshold": 0.1,
+          "recall": 0.9537037037037037,
+          "lower_bound": 0.9051249283416107,
+          "dismissed": 0.662
+        }
+      },
+      {
+        "target": 0.8,
+        "alpha": 0.05,
+        "positives": 108,
+        "positives_needed": 14,
+        "chosen": {
+          "threshold": 0.48,
+          "recall": 0.8703703703703703,
+          "lower_bound": 0.8047938831450201,
+          "dismissed": 0.776
+        }
+      }
     ]
   },
   "stability": {
@@ -282,7 +320,7 @@
     "seconds": 17.25839114189148
   },
   "reanalysed": {
-    "at": "2026-10-22T12:08:33+00:00",
+    "at": "2026-10-25T11:51:02+00:00",
     "docket_version": "0.1.0a2"
   }
 }

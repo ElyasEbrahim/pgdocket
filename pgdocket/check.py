@@ -35,7 +35,7 @@ class CheckConfig:
     sample: int = 300
     seed: str = "1"
     backend: str = "jev"
-    model: str = "jev-1.13.0"
+    model: str = "jev-1.14.0"
     batch_size: int = 1
     repeat: int = 0
     batch_test: int = 0
@@ -223,6 +223,7 @@ def analyse_noul(cfg, sample, answers):
         "ece_calibrated": M.ece(p_cal, y, 15),
         "reliability_raw": M.reliability_bins(p, y, 10), "reliability_calibrated": M.reliability_bins(p_cal, y, 10),
         "threshold": thr, "threshold_on": "raw score", "ladder": _ladder(p, y, cfg.alpha, positives=y), "_p": p,
+        "recall_ladder": [M.recall_threshold(p, y.astype(bool), t, cfg.alpha) for t in (0.95, 0.9, 0.8)],
     }
 
 
@@ -326,10 +327,11 @@ def reanalyze(out, precision_target=None):
     result["analysis"], result["config"] = analysis, {k: v for k, v in asdict(cfg).items() if k != "dsn"}
     result["reanalysed"] = {"at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                             "docket_version": __import__("pgdocket").__version__}
+    md = render(result)                               # before opening any file: a failure leaves the reports intact
     with open(os.path.join(out, "report.json"), "w") as f:
         json.dump(result, f, indent=2, default=float)
     with open(os.path.join(out, "report.md"), "w") as f:
-        f.write(render(result))
+        f.write(md)
     return result
 
 
@@ -468,6 +470,16 @@ def render(r):
               "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
         L += [f"| {p['answer']}{' ⚠' if p['below_target'] else ''} | {p['answered']} | {p['auto']} | {_pct(p['precision'])} | "
               f"{_pct(p['lower'])} | {_pct(p['upper'])} | {p['own_auto']} |" for p in a["per_answer"]]
+    if a.get("recall_ladder"):
+        L += ["", "What each recall target allows: rows scored below the threshold can be answered *no* without review, "
+                  "keeping at least that share of the real yeses (95 % confidence; fixed-sequence testing with one-sided "
+                  "Clopper–Pearson bounds on the labelled yeses):", "",
+              "| keep at least | rows answered *no* automatically | threshold | labelled yeses (needed) |",
+              "| ---: | ---: | ---: | ---: |"]
+        for rl in a["recall_ladder"]:
+            ch = rl["chosen"]
+            L.append(f"| {_pct(rl['target'])} of yeses | {_pct(ch['dismissed']) if ch else '–'} | {_num(ch['threshold']) if ch else '–'} | "
+                     f"{rl['positives']} ({rl['positives_needed']}) |")
     s, b = r.get("stability"), r.get("batching")
     if s or b:
         L += ["", "## Consistency", "", "| test | rows | answers that changed |", "| --- | ---: | ---: |"]

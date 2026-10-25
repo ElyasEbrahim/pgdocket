@@ -1,4 +1,6 @@
 """Calibration and classification metrics, recalibrators and bootstrap CIs (numpy only)."""
+import math
+
 import numpy as np
 
 EPS = 1e-12
@@ -227,6 +229,29 @@ def crossfit_temperature(P, y_idx, k=5, seed=0):
     return out, float(np.median(temps))
 
 
+
+def recall_threshold(score, positive, target=0.9, alpha=0.05):
+    """Highest threshold on `score` that keeps recall >= target with probability >= 1 - alpha (#21).
+
+    Rows scored below it can be answered "no" without review: at most (1 - target) of the true positives are among
+    them. Candidates are the distinct scores, which don't depend on the labels. They are tested from the lowest
+    (every positive kept) upward and testing stops at the first failure: recall can only fall as the threshold
+    rises, so this fixed-sequence procedure needs no correction. Each test is a one-sided Clopper-Pearson bound on
+    recall over the labelled positives, a random sample of all positives when the labels were drawn at random. Even
+    with every positive kept, n positives can only prove targets up to alpha^(1/n): `positives_needed` says how many.
+    """
+    score, positive = np.asarray(score, float), np.asarray(positive, bool)
+    n = int(positive.sum())
+    need = math.ceil(math.log(alpha) / math.log(target)) if 0 < target < 1 else 1
+    out = {"target": target, "alpha": alpha, "positives": n, "positives_needed": need, "chosen": None}
+    pos = score[positive]
+    for t in np.unique(score):
+        k = int((pos >= t).sum())
+        if not n or clopper_pearson_lower(k, n, alpha) < target:
+            break
+        out["chosen"] = {"threshold": float(t), "recall": k / n, "lower_bound": clopper_pearson_lower(k, n, alpha),
+                         "dismissed": float((score < t).mean())}
+    return out
 
 def per_answer(score, correct, answer, threshold, target=0.9, alpha=0.05):
     """Precision per answer among the rows `auto` would accept (#19).

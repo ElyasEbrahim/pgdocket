@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -477,3 +477,40 @@ def test_calibrate_before_the_worker_ran_says_what_to_do(env):
         cli.main(["calibrate", "--dsn", env["owner"], "fresh"])
     Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
     cli.main(["calibrate", "--dsn", env["owner"], "fresh"])                      # now it works
+
+
+def test_recall_target_gives_the_view_three_bands(env):
+    """Yes/no with a recall target: auto-yes, auto-no and a review band, in SQL exactly as in Python (#21)."""
+    rows = ([(i, "yes", "yes" if i <= 57 else "no") for i in range(1, 61)]           # model says yes: 57 of 60 right
+            + [(i, "no", "yes" if i == 61 else "no") for i in range(61, 201)])      # model says no: misses 1 yes
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.flags (id int PRIMARY KEY, want text, truth text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.flags VALUES (%s, %s, %s)", rows)
+    spec = {"kind": "noul", "question": "Is it urgent?", "backend": env["url"], "model": "fake", "batch_size": 1}
+    ledger.create(env["owner"], "flags", "shop.flags", "id", ["want"], spec)
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "flags", column="truth", positive="yes")
+
+    def view(cal):
+        with psycopg.connect(env["owner"]) as c:
+            stored = c.execute("SELECT v.spec FROM docket.version v JOIN docket.decision d ON d.id = v.decision_id "
+                               "WHERE d.name = 'flags' AND v.status = 'active'").fetchone()[0]
+            got = c.execute("SELECT v.answer, v.auto, j.answer FROM docket.v_flags v JOIN docket.current cu ON cu.decision_id = "
+                            "(SELECT id FROM docket.decision WHERE name = 'flags') AND cu.row_key = v.key::text "
+                            "JOIN docket.judgment j ON j.id = cu.judgment_id").fetchall()
+        assert len(got) == 200
+        for answer, auto, raw in got:
+            assert auto == calibration.auto(raw, stored, cal) and answer == calibration.noul_answer(raw, stored, cal)
+        return got
+
+    cal = ledger.calibrate(env["owner"], "flags", precision_target=0.99, recall_target=0.9)   # 99 %: no auto-yes
+    assert cal["threshold"] is None and cal["recall_threshold"] == 0.8 and cal["positives"] == 58
+    got = view(cal)
+    assert {(a, auto) for a, auto, _ in got} == {("no", True), ("yes", False)}               # auto-no + review band
+    cal = ledger.calibrate(env["owner"], "flags", precision_target=0.8, recall_target=0.9)
+    got = view(cal)
+    assert {(a, auto) for a, auto, _ in got} == {("no", True), ("yes", True)}                # both sides automatic
+    ver, _ = ledger.revise(env["owner"], "flags", question="Is it urgent? Answer for the on-call team.", backfill=True)
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    assert ledger.promote(env["owner"], "flags", ver)["calibration"]["recall_target"] == 0.9

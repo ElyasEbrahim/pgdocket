@@ -1,0 +1,203 @@
+{
+  "Kubernetes: is it a feature request?": {
+    "rows": 500,
+    "yeses": 108,
+    "prevalence": 0.216,
+    "targets": {
+      "0.8": {
+        "ideal_dismissed": 0.802,
+        "by_labels": {
+          "100": {
+            "found": 0.981,
+            "failure_rate": 0.028,
+            "mean_dismissed": 0.5733455657492355
+          },
+          "200": {
+            "found": 1.0,
+            "failure_rate": 0.036,
+            "mean_dismissed": 0.7372560000000001
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.029,
+            "mean_dismissed": 0.769548
+          }
+        }
+      },
+      "0.9": {
+        "ideal_dismissed": 0.754,
+        "by_labels": {
+          "100": {
+            "found": 0.043,
+            "failure_rate": 0.001,
+            "mean_dismissed": 0.40437209302325583
+          },
+          "200": {
+            "found": 0.995,
+            "failure_rate": 0.017,
+            "mean_dismissed": 0.4012562814070352
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.024,
+            "mean_dismissed": 0.6275640000000001
+          }
+        }
+      },
+      "0.95": {
+        "ideal_dismissed": 0.662,
+        "by_labels": {
+          "100": {
+            "found": 0.0,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.0
+          },
+          "200": {
+            "found": 0.004,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.21199999999999997
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.009,
+            "mean_dismissed": 0.21348
+          }
+        }
+      }
+    }
+  },
+  "CFPB: is it about debt collection?": {
+    "rows": 2000,
+    "yeses": 239,
+    "prevalence": 0.1195,
+    "targets": {
+      "0.8": {
+        "ideal_dismissed": 0.7485,
+        "by_labels": {
+          "100": {
+            "found": 0.327,
+            "failure_rate": 0.01,
+            "mean_dismissed": 0.3408042813455658
+          },
+          "200": {
+            "found": 0.991,
+            "failure_rate": 0.026,
+            "mean_dismissed": 0.38468365287588296
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.022,
+            "mean_dismissed": 0.508572
+          }
+        }
+      },
+      "0.9": {
+        "ideal_dismissed": 0.5285,
+        "by_labels": {
+          "100": {
+            "found": 0.0,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.0
+          },
+          "200": {
+            "found": 0.153,
+            "failure_rate": 0.003,
+            "mean_dismissed": 0.20731699346405227
+          },
+          "400": {
+            "found": 0.999,
+            "failure_rate": 0.025,
+            "mean_dismissed": 0.2395835835835836
+          }
+        }
+      },
+      "0.95": {
+        "ideal_dismissed": 0.3,
+        "by_labels": {
+          "100": {
+            "found": 0.0,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.0
+          },
+          "200": {
+            "found": 0.0,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.0
+          },
+          "400": {
+            "found": 0.055,
+            "failure_rate": 0.002,
+            "mean_dismissed": 0.1580454545454545
+          }
+        }
+      }
+    }
+  },
+  "CFPB: is it about an incorrect credit report?": {
+    "rows": 2000,
+    "yeses": 562,
+    "prevalence": 0.281,
+    "targets": {
+      "0.8": {
+        "ideal_dismissed": 0.4755,
+        "by_labels": {
+          "100": {
+            "found": 1.0,
+            "failure_rate": 0.023,
+            "mean_dismissed": 0.32719600000000004
+          },
+          "200": {
+            "found": 1.0,
+            "failure_rate": 0.028,
+            "mean_dismissed": 0.3875275
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.032,
+            "mean_dismissed": 0.4194385
+          }
+        }
+      },
+      "0.9": {
+        "ideal_dismissed": 0.376,
+        "by_labels": {
+          "100": {
+            "found": 0.438,
+            "failure_rate": 0.016,
+            "mean_dismissed": 0.2111232876712329
+          },
+          "200": {
+            "found": 1.0,
+            "failure_rate": 0.028,
+            "mean_dismissed": 0.25484999999999997
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.03,
+            "mean_dismissed": 0.30382449999999994
+          }
+        }
+      },
+      "0.95": {
+        "ideal_dismissed": 0.303,
+        "by_labels": {
+          "100": {
+            "found": 0.0,
+            "failure_rate": 0.0,
+            "mean_dismissed": 0.0
+          },
+          "200": {
+            "found": 0.353,
+            "failure_rate": 0.014,
+            "mean_dismissed": 0.16661048158640224
+          },
+          "400": {
+            "found": 1.0,
+            "failure_rate": 0.018,
+            "mean_dismissed": 0.192029
+          }
+        }
+      }
+    }
+  }
+}

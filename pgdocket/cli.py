@@ -59,7 +59,7 @@ def main(argv=None):
     c.add_argument("--sample", type=int, default=300)
     c.add_argument("--seed", default="1")
     c.add_argument("--backend", default="jev", help="jev | sim | any /v1/systemone URL")
-    c.add_argument("--model", default="jev-1.13.0")
+    c.add_argument("--model", default="jev-1.14.0")
     c.add_argument("--batch-size", type=int, default=1)
     c.add_argument("--repeat", type=int, default=0, help="re-judge this many rows to measure stability")
     c.add_argument("--batch-test", type=int, default=0, help="re-judge this many rows 20 per request")
@@ -84,7 +84,7 @@ def main(argv=None):
     cr.add_argument("--options")
     cr.add_argument("--options-file")
     cr.add_argument("--backend", default="jev")
-    cr.add_argument("--model", default="jev-1.13.0")
+    cr.add_argument("--model", default="jev-1.14.0")
     cr.add_argument("--batch-size", type=int, default=1)
     cr.add_argument("--no-backfill", action="store_true", help="only judge rows inserted or changed from now on")
     w = sub.add_parser("worker", help="judge queued rows")
@@ -109,6 +109,8 @@ def main(argv=None):
     dsn_arg(ca)
     ca.add_argument("name")
     ca.add_argument("--precision-target", type=float, default=0.9)
+    ca.add_argument("--recall-target", type=float,
+                    help="yes/no: also answer 'no' without review below a threshold that keeps this share of true yeses")
     ca.add_argument("--per-answer", action="store_true",
                     help="choice: one threshold and guarantee per answer (answers with too few labels get no auto)")
     ca.add_argument("--include-manual", action="store_true",
@@ -233,15 +235,17 @@ def _ledger_command(a):
     elif a.cmd == "calibrate":
         try:
             cal = ledger.calibrate(a.dsn, a.name, a.precision_target, include_manual=a.include_manual,
-                                   per_answer=a.per_answer)
+                                   per_answer=a.per_answer, recall_target=a.recall_target)
         except ValueError as e:                       # too few labelled rows with an answer: say why, no traceback
+            if "labeled rows" not in str(e):
+                sys.exit(f"{a.name}: {e}")
             queued = next((r["queued"] for r in ledger.status(a.dsn) if r["name"] == a.name), 0)
             hint = (f" {queued:,} rows are still queued: wait for the worker to answer them (`pgdocket status` shows the "
                     "queue), then run calibrate again." if queued else " Label more rows with `pgdocket label`.")
             sys.exit(f"{a.name}: can't calibrate yet: {e}.{hint}")
         print(f"{a.name}: {cal['n_labels']} labels · calibration error {cal['ece_raw']:.3f} → {cal['ece_calibrated']:.3f} · "
               + _threshold_summary(cal))
-        for line in _per_answer_notes(cal, a.name):
+        for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name)]):
             print(line)
     elif a.cmd == "estimate":
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
@@ -293,7 +297,7 @@ def _ledger_command(a):
         if cal:
             print(f"recalibrated v{a.version} on {cal['n_labels']} labels: calibration error {cal['ece_raw']:.3f} → "
                   f"{cal['ece_calibrated']:.3f} · " + _threshold_summary(cal))
-            for line in _per_answer_notes(cal, a.name):
+            for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name)]):
                 print(line)
         else:
             print(f"v{a.version} is not calibrated ({r['calibration_missing']}): `auto` is empty until you label rows "
@@ -365,6 +369,18 @@ def _threshold_summary(cal):
         return f"no threshold reaches {tgt} precision with {cal['n_labels']} labels: `auto` is false everywhere"
     return (f"auto when the model's score ≥ {cal['threshold']:.3f}: {100 * cal['coverage']:.1f} % of labelled rows, "
             f"precision ≥ {tgt} (95 % confidence)")
+
+
+def _recall_summary(cal):
+    """Yes/no decisions with a recall target: the auto-no band, or why there is none."""
+    if cal.get("recall_target") is None:
+        return None
+    tgt = f"{100 * cal['recall_target']:.0f} %"
+    if cal["recall_threshold"] is None:
+        return (f"  no 'no' answer can be automatic yet: keeping ≥ {tgt} of true yeses needs at least "
+                f"{cal['positives_needed']} labelled yeses (have {cal['positives']})")
+    return (f"  auto 'no' when P(yes) < {cal['recall_threshold']:.3f}: {100 * cal['dismissed']:.1f} % of labelled rows, "
+            f"keeping ≥ {tgt} of true yeses (95 % confidence; {cal['positives']} labelled yeses)")
 
 
 def _per_answer_notes(cal, name):

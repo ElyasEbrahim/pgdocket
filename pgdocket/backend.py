@@ -36,7 +36,7 @@ def build_question(kind, question, options, i):
 
 
 class Backend:
-    def __init__(self, url, api_key=None, model="jev-1.13.0", concurrency=16, timeout=60.0):
+    def __init__(self, url, api_key=None, model="jev-1.14.0", concurrency=16, timeout=60.0):
         self.url = KNOWN.get(url, url)
         parts = urlsplit(self.url)
         self.scheme, self.host, self.port = parts.scheme, parts.hostname, parts.port

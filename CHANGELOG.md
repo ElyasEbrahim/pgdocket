@@ -2,6 +2,26 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-10-25
+
+### Added (recall targets, #21)
+- **`calibrate --recall-target 0.9` for yes/no decisions.** Rows scored below a threshold are answered *no* automatically, while at least 90 % of the real yeses stay above it (95 % confidence).
+  - Method: fixed-sequence testing upward with one-sided Clopper–Pearson bounds on the labelled yeses, following SUPG and BARGAIN.
+  - With the precision threshold, the view has three bands: auto-yes, review, auto-no (migration `006`).
+  - `promote` keeps the target. `check` reports what 80, 90 and 95 % recall would allow.
+  - When there are too few labelled yeses, it says how many it needs (29 for 90 %).
+- **Evidence:**
+  - CI simulation: 3.0 % failures (5 % allowed).
+  - `jevbench recallvalidate` on three real yes/no tasks: at most 3.6 % failures in 27 settings.
+  - Kubernetes feature requests: 62.8 % of issues answered *no* automatically with 400 labels, keeping ≥ 90 % of feature requests.
+  - Write-up: `docs/phase1/recall.md`.
+
+### Changed
+- **New decisions and checks default to jev-1.14.0** (pinned). TypeSafe moved `jev-latest` to it, and `compare` found it matched 1.13 with better raw calibration. Existing decisions keep their model.
+
+### Fixed
+- `pgdocket report` wrote `report.md` before rendering it, so a rendering error left an empty report. It now renders first.
+
 ## 2026-10-24
 
 ### Fixed (found by a fresh-clone test: clone from GitHub, follow the README and quickstart literally)

@@ -43,6 +43,9 @@ def auto(answer, spec, cal):
     """Python twin of the view's `auto` column."""
     if answer is None or not cal:
         return None
+    if spec["kind"] == "noul" and cal.get("recall_threshold") is not None:     # auto-yes, auto-no, review band (#21)
+        s = raw_score(answer, spec)
+        return (cal.get("threshold") is not None and s >= cal["threshold"]) or s < cal["recall_threshold"]
     if "thresholds" in cal:                                     # one guarantee per answer (#19)
         value, score = read_answer(spec, answer)
         t = cal["thresholds"].get(value)
@@ -54,7 +57,22 @@ def auto(answer, spec, cal):
     return calibrated(answer, spec, cal) >= cal["threshold"]
 
 
-def fit(spec, answers, labels, precision_target=0.9, alpha=0.05, per_answer=False):
+def noul_answer(answer, spec, cal):
+    """Python twin of the view's `answer` for yes/no decisions."""
+    s = raw_score(answer, spec)
+    t, r = (cal or {}).get("threshold"), (cal or {}).get("recall_threshold")
+    if r is not None:
+        if t is not None and s >= t:
+            return "yes"
+        return "no" if s < r else ("yes" if calibrated(answer, spec, cal) >= 0.5 else "no")
+    if t is None:
+        return "yes" if calibrated(answer, spec, cal) >= 0.5 else "no"
+    if cal.get("threshold_on") == "raw score":
+        return "yes" if s >= t else "no"
+    return "yes" if calibrated(answer, spec, cal) >= t else "no"
+
+
+def fit(spec, answers, labels, precision_target=0.9, alpha=0.05, per_answer=False, recall_target=None):
     """answers: raw backend answers; labels: option names (choice) or booleans (noul), same order.
 
     Choice decisions also get `per_answer`: precision per answer among the accepted rows, with bounds and a flag for
@@ -63,7 +81,12 @@ def fit(spec, answers, labels, precision_target=0.9, alpha=0.05, per_answer=Fals
 
     A choice label that is not one of this spec's options (an option another version has) can't be answered
     correctly: it is left out of the temperature fit but counts as wrong in the error and the threshold.
+
+    Yes/no decisions can also take `recall_target`: rows scored below `recall_threshold` are answered "no" without
+    review, while at least that share of the true yeses stays above it (#21).
     """
+    if recall_target is not None and spec["kind"] != "noul":
+        raise ValueError("recall targets apply to yes/no decisions")
     n = len(labels)
     if n < 30:
         raise ValueError(f"only {n} labeled rows with answers; need at least 30 (100–200 recommended)")
@@ -104,6 +127,13 @@ def fit(spec, answers, labels, precision_target=0.9, alpha=0.05, per_answer=Fals
     cal.update(common, threshold=chosen["threshold"] if chosen else None, threshold_on="raw score",
                coverage=chosen["coverage"] if chosen else 0.0,
                observed_precision=chosen["precision"] if chosen else None)
+    if recall_target is not None:
+        rt = M.recall_threshold(score, ok.astype(bool), recall_target, alpha)
+        c = rt["chosen"]
+        cal.update(recall_target=recall_target, recall_threshold=c["threshold"] if c else None,
+                   recall_observed=c["recall"] if c else None, recall_lower=c["lower_bound"] if c else None,
+                   dismissed=c["dismissed"] if c else 0.0, positives=rt["positives"],
+                   positives_needed=rt["positives_needed"])
     if spec["kind"] == "choice":
         pred = np.array([names[i] for i in P.argmax(axis=1)])
         overall = M.per_answer(score, ok, pred, cal["threshold"], precision_target, alpha)

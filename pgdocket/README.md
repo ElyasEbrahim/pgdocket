@@ -120,6 +120,10 @@ WHERE status = 'judged' AND auto;            -- the answers you can act on witho
 - **The guarantee covers the accepted rows together, so `calibrate` also checks each answer.** It names any answer whose accepted rows are demonstrably below the target. On Kubernetes routing, *testing* answers were right 7 times in 13 under an overall 90 % guarantee.
   - `--per-answer` gives each answer its own threshold and guarantee. Answers with too few labelled rows get no `auto`: at 90 %, an answer needs about 60 labelled rows before it can be tested.
   - The cost is automation: there, 48 % of issues were auto-routable instead of 90 %, each answer at ≥ 90 %. `promote` keeps the mode.
+- **Yes/no decisions can also take a recall target.** `calibrate --recall-target 0.9` adds a threshold below which rows are answered *no* automatically, keeping at least 90 % of the real yeses above it (95 % confidence).
+  - The view then has three bands: auto-yes, a review band, and auto-no.
+  - Proving 90 % needs at least 29 labelled yeses. On Kubernetes feature requests, 62.8 % of issues could be answered *no* automatically with 400 labels. See [docs/phase1/recall.md](../docs/phase1/recall.md).
+- **New decisions use jev-1.14.0 by default,** pinned. `jev-latest` moved to it, and `compare` found it matched 1.13. Existing decisions keep the model they were created with.
 - **`calibrate` uses labels drawn at random or a whole column.** Hand-picked labels, such as the disagreements `compare` exports, would bias it toward hard rows. They need `--include-manual`.
 
 Measured: 100,000 rows read in milliseconds; live median of 0.7 s from insert to answer; calibration on 200 labels. See [docs/phase1/ledger.md](../docs/phase1/ledger.md).

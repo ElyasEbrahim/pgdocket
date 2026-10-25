@@ -15,6 +15,7 @@
   ppivalidate do PPI intervals hold on real model errors? (stored answers, no API calls)
   comparevalidate was `pgdocket compare` right? its verdict against all human labels (no API calls)
   frontier    ideas from recent research, tested on stored answers (no API calls)
+  recallvalidate do recall targets hold on real model errors? (no API calls)
 """
 import argparse
 import json
@@ -94,6 +95,7 @@ def main(argv=None):
     cv.add_argument("--version", type=int, default=2, help="the k8s_route version compared with the active one")
     cv.add_argument("--out", default="results/compare-k8s-descriptions")
     sub.add_parser("frontier")
+    sub.add_parser("recallvalidate")
     sub.add_parser("cachecheck")
     sub.add_parser("experiments")
 
@@ -163,6 +165,9 @@ def main(argv=None):
     elif args.cmd == "ppivalidate":
         from . import ppivalidate
         print("report:", ppivalidate.run() + "/report.md")
+    elif args.cmd == "recallvalidate":
+        from . import recallvalidate
+        print("report:", recallvalidate.run() + "/report.md")
     elif args.cmd == "frontier":
         from . import frontier
         print("report:", frontier.run() + "/report.md")

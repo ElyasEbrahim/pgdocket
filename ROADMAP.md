@@ -50,7 +50,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] **`pgdocket plan`** (#20): how much review keeps the whole column's error ≤ ε (probably approximately correct labels), with the review queue
 - [x] Calibrators (temperature with clamped zeros, Platt) fitted from labels, stored on the version, applied in SQL by `docket.calibrated()` (#13)
 - [x] Precision threshold with a guarantee (fixed-sequence testing, Clopper–Pearson) in `check` and `calibrate`
-- [ ] Recall targets (BARGAIN's adaptive labelling is the reference, SIGMOD 2026)
+- [x] Recall targets for yes/no decisions: auto-yes, review band, auto-no (#21). Adaptive labelling as in BARGAIN (SIGMOD 2026) is a later step
 - [x] `docket.estimate()` / `pgdocket estimate`: PPI++ in SQL, with a reliability flag and refusal when labels in scope can't support an interval (#14)
 - [ ] Review-budget planner: labels needed for a target CI width or guarantee
 - [x] **Coverage-test suite** (simulation) in CI for the threshold guarantee and the count intervals
