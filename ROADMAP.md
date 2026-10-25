@@ -67,7 +67,8 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [ ] Backend comparison report (accuracy, ECE, cost, latency) on the same gold set
 - [ ] Option-order debiasing for `choice` (on only if Phase 0 showed it helps)
 - [ ] Instruction-injection flag decision and consistency re-checks → review queue
-- [ ] Drift alarms from predictions plus a few labels (prediction-powered risk monitoring, ICML 2026)
+- [x] `pgdocket drift`: the rows (free: answer shares and scores, recent against earlier) and the model (a fixed panel of labelled rows asked again), one false-alarm budget across repeated checks (#22)
+- [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)
 
 **Exit:** backend comparison report on two public datasets.
 

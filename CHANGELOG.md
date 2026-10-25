@@ -4,6 +4,18 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-10-25
 
+### Added (drift checks, #22)
+- **`pgdocket drift NAME`:** have the rows or the model changed since calibration? It exits with status 1 on an alarm, for cron and CI.
+  - **The rows (free):** recent rows (`--days`, dated by when they were judged or by `--by COLUMN`) against earlier ones. It runs a z-test per answer (Bonferroni over the answers) and a two-sample KS test on scores. An alarm also needs a 5-point move or a KS distance of 0.10.
+  - **The model (`--anchors N`):** a fixed panel of labelled rows is asked again as probes. Exact sign tests on accuracy and on score direction compare each row's stored answer with its re-ask on the same input.
+  - **One false-alarm budget:** the k-th check since the last calibration spends 0.05 · 6 / (π² k²). Checks are stored in `docket.drift_check` (migration `007`, with `docket.drift_enqueue`).
+- **Evidence:**
+  - `jevbench driftvalidate` on stored Jev answers, no API calls. False alarms were 0.8–2.6 % for the rows check and 0.0–0.7 % on real re-asks of the same model.
+  - Real date splits were caught: CFPB *credit reporting* went 51.6 % → 62.8 % in the latest year (true label shift 13.5 %).
+  - The jev-1.13 → 1.14 switch caused no alarm, as `compare` had found. Removing the option descriptions was caught from the scores (100 % of 200-anchor panels).
+  - CI simulations check the budget over 20 weekly and 12 monthly checks.
+  - Write-up: `docs/phase1/drift.md`.
+
 ### Added (recall targets, #21)
 - **`calibrate --recall-target 0.9` for yes/no decisions.** Rows scored below a threshold are answered *no* automatically, while at least 90 % of the real yeses stay above it (95 % confidence).
   - Method: fixed-sequence testing upward with one-sided Clopper–Pearson bounds on the labelled yeses, following SUPG and BARGAIN.
@@ -21,6 +33,7 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ### Fixed
 - `pgdocket report` wrote `report.md` before rendering it, so a rendering error left an empty report. It now renders first.
+- The quickstart listed five migrations; there are seven.
 
 ## 2026-10-24
 

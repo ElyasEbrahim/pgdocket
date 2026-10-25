@@ -15,6 +15,11 @@ Semantic query research (LOTUS, BARGAIN, SUPG-IT, Cortex AISQL cascades) treats 
 - Aggregates (`estimate_count`, `estimate_share`) use prediction-powered inference, importance-weighted when sampling was stratified, and refuse to answer when gold coverage in the requested scope is too thin.
 - Every guarantee is backed by a simulation coverage test in CI.
 - *Implemented (2026-10-20):* `docket.estimate()` uses PPI++ with a normal-approximation interval. Simulations and 500 real Kubernetes judgments show it holds once the labels contain at least 10 rows with **and** 10 without the answer; below that, estimates are flagged `reliable = false`. With no labelled example on one side, no interval is given. Labels record their sampling (`random` / `all` / `manual`), and only `random` feeds estimates by default. Stratified sampling, to make rare answers estimable with fewer labels, is the next step.
+- *Added (2026-10-25, #22):* **drift checks.** Two assumptions behind every guarantee are now checked: that new rows look like the labelled ones, and that the model answers as it did.
+  - **The rows.** The check is free: recent rows against earlier ones, on the stored answers and scores, with a z-test per answer and a KS test on scores.
+  - **The model.** Labels are the oracle here too. A fixed panel of rows with `random` or `all` labels is asked again, and exact sign tests on accuracy and on score direction compare each row's stored answer with its re-ask. `manual` labels are excluded, because hand-picked rows would break exchangeability.
+  - **Repeated checks.** The k-th check since the last calibration spends α · 6 / (π² k²), so false alarms over the whole series stay ≤ α.
+  - **Evidence.** On stored Jev answers, false alarms were ≤ 2.6 %, and real label shifts of 13–17 % were caught.
 - *Added (2026-10-25, #21):* **recall targets for yes/no decisions.** The recall threshold is the highest score below which rows can be answered *no*, while at least the target share of real yeses stays above it. It uses fixed-sequence testing upward over the distinct scores, with a one-sided Clopper–Pearson bound on recall among the random-sample yeses, following the SUPG and BARGAIN line of work. Together with the precision threshold, the view gets three bands: auto-yes, review, and auto-no. On three real yes/no tasks, failures were at most 3.6 % (5 % allowed).
 - *Added (2026-10-22, #20):* **review planning.** `pgdocket plan` keeps the model's most confident answers and sends the rest to people. It chooses the cut so that the whole column is at most ε wrong with 95 % confidence, using a one-sided Clopper–Pearson bound on the share kept and wrong (probably approximately correct labels, Candès et al. 2025). It uses random labels only. The importance-weighted version waits for labels that record inclusion probabilities.
 - *Added (2026-10-22, #19):* **precision per answer.**
@@ -31,5 +36,5 @@ Semantic query research (LOTUS, BARGAIN, SUPG-IT, Cortex AISQL cascades) treats 
 ## Consequences
 
 - pgdocket's numbers are only as good as the sampling assumptions. The docs must state them: gold drawn from the same population, labels correct, distribution stable since labeling.
-- Drift monitoring (Phase 3) has to tell the user when gold labels are stale.
+- Drift monitoring has to tell the user when gold labels are stale. `pgdocket drift` (#22) does this for the rows and for the model; its alarm says to label a fresh random sample.
 - The review queue becomes a core feature rather than an add-on.

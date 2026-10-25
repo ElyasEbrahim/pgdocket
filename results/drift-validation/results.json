@@ -1,0 +1,628 @@
+{
+  "alpha": 0.03039635509270134,
+  "data": {
+    "Kubernetes: which SIG? (10 options)": {
+      "rows": 500,
+      "days": 90,
+      "no_shift": {
+        "50": 0.023,
+        "100": 0.016
+      },
+      "injected": {
+        "50": {
+          "0.0": {
+            "target": "api-machinery",
+            "detected": 0.012,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "api-machinery",
+            "detected": 0.016,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "api-machinery",
+            "detected": 0.006,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "api-machinery",
+            "detected": 0.066,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "api-machinery",
+            "detected": 0.376,
+            "trials": 500
+          }
+        },
+        "100": {
+          "0.0": {
+            "target": "api-machinery",
+            "detected": 0.018,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "api-machinery",
+            "detected": 0.016,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "api-machinery",
+            "detected": 0.028,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "api-machinery",
+            "detected": 0.186,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "api-machinery",
+            "detected": 0.7877551020408163,
+            "trials": 490
+          }
+        }
+      },
+      "by_date": {
+        "rows_ref": 440,
+        "rows_new": 60,
+        "alpha": 0.03039635509270134,
+        "mix": {
+          "tv": 0.15454545454545454,
+          "p": 0.08486795256824148,
+          "alarm": false,
+          "moved": [
+            {
+              "answer": "scheduling: kube-scheduler, pod placement, preemption, scheduling plugins",
+              "before": 0.1,
+              "after": 0.2,
+              "p": 0.08486795256824148
+            },
+            {
+              "answer": "api-machinery: API server, etcd storage layer, CRDs, admission webhooks, client libraries, garbage collection",
+              "before": 0.24772727272727274,
+              "after": 0.18333333333333332,
+              "p": 1.0
+            },
+            {
+              "answer": "node: kubelet, container runtime (CRI), pod lifecycle and resources on a node",
+              "before": 0.3181818181818182,
+              "after": 0.36666666666666664,
+              "p": 1.0
+            }
+          ]
+        },
+        "scores": {
+          "ks": 0.1803030303030303,
+          "p": 0.056771316300624396,
+          "alarm": false,
+          "mean_before": 0.9327954545454546,
+          "mean_after": 0.9485
+        },
+        "true_tv": 0.14166666666666666,
+        "cut": "2026-04-01T16:04:33+00:00"
+      }
+    },
+    "Kubernetes: is it a feature request? (yes/no)": {
+      "rows": 500,
+      "days": 90,
+      "no_shift": {
+        "50": 0.017,
+        "100": 0.008
+      },
+      "injected": {
+        "50": {
+          "0.0": {
+            "target": "feature",
+            "detected": 0.004,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "feature",
+            "detected": 0.004,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "feature",
+            "detected": 0.038,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "feature",
+            "detected": 0.196,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "feature",
+            "detected": 0.528,
+            "trials": 500
+          }
+        },
+        "100": {
+          "0.0": {
+            "target": "feature",
+            "detected": 0.0,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "feature",
+            "detected": 0.01,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "feature",
+            "detected": 0.106,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "feature",
+            "detected": 0.5100806451612904,
+            "trials": 496
+          },
+          "0.2": {
+            "target": "feature",
+            "detected": 0.9310344827586207,
+            "trials": 493
+          }
+        }
+      },
+      "by_date": {
+        "rows_ref": 442,
+        "rows_new": 58,
+        "alpha": 0.03039635509270134,
+        "mix": {
+          "tv": 0.15361210797316277,
+          "p": 0.00812893712434261,
+          "alarm": true,
+          "moved": [
+            {
+              "answer": "yes",
+              "before": 0.2398190045248869,
+              "after": 0.08620689655172414,
+              "p": 0.00812893712434261
+            }
+          ]
+        },
+        "scores": {
+          "ks": 0.2017475425183336,
+          "p": 0.026254908353716508,
+          "alarm": false,
+          "mean_before": 0.24864253393665153,
+          "mean_after": 0.12586206896551724
+        },
+        "true_tv": 0.17210173193946013,
+        "cut": "2026-04-01T18:56:45+00:00"
+      }
+    },
+    "CFPB: which product? (9 options)": {
+      "rows": 500,
+      "days": 365,
+      "no_shift": {
+        "50": 0.02,
+        "100": 0.018
+      },
+      "injected": {
+        "50": {
+          "0.0": {
+            "target": "debt collection",
+            "detected": 0.008,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "debt collection",
+            "detected": 0.006,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "debt collection",
+            "detected": 0.042,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "debt collection",
+            "detected": 0.13,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "debt collection",
+            "detected": 0.306,
+            "trials": 500
+          }
+        },
+        "100": {
+          "0.0": {
+            "target": "debt collection",
+            "detected": 0.016,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "debt collection",
+            "detected": 0.02404809619238477,
+            "trials": 499
+          },
+          "0.1": {
+            "target": "debt collection",
+            "detected": 0.06652806652806653,
+            "trials": 481
+          },
+          "0.15": {
+            "target": "debt collection",
+            "detected": 0.20190023752969122,
+            "trials": 421
+          },
+          "0.2": {
+            "target": "debt collection",
+            "detected": 0.5467980295566502,
+            "trials": 203
+          }
+        }
+      },
+      "by_date": {
+        "rows_ref": 269,
+        "rows_new": 231,
+        "alpha": 0.03039635509270134,
+        "mix": {
+          "tv": 0.1819308324884533,
+          "p": 0.005132544695764855,
+          "alarm": true,
+          "moved": [
+            {
+              "answer": "credit reporting",
+              "before": 0.44609665427509293,
+              "after": 0.5844155844155844,
+              "p": 0.014268926946638668
+            },
+            {
+              "answer": "debt collection",
+              "before": 0.15613382899628253,
+              "after": 0.06060606060606061,
+              "p": 0.005132544695764855
+            }
+          ]
+        },
+        "scores": {
+          "ks": 0.04111749464909317,
+          "p": 0.9825743387803326,
+          "alarm": false,
+          "mean_before": 0.9237918215613382,
+          "mean_after": 0.9208225108225109
+        },
+        "true_tv": 0.15698675549976668,
+        "cut": "2023-02-05"
+      }
+    },
+    "CFPB, 2,000 complaints: which product? (9 options)": {
+      "rows": 2000,
+      "days": 365,
+      "no_shift": {
+        "100": 0.022,
+        "200": 0.026,
+        "400": 0.008
+      },
+      "injected": {
+        "100": {
+          "0.0": {
+            "target": "debt collection",
+            "detected": 0.016,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "debt collection",
+            "detected": 0.038,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "debt collection",
+            "detected": 0.108,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "debt collection",
+            "detected": 0.292,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "debt collection",
+            "detected": 0.632,
+            "trials": 500
+          }
+        },
+        "200": {
+          "0.0": {
+            "target": "debt collection",
+            "detected": 0.026,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "debt collection",
+            "detected": 0.032,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "debt collection",
+            "detected": 0.206,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "debt collection",
+            "detected": 0.606,
+            "trials": 500
+          },
+          "0.2": {
+            "target": "debt collection",
+            "detected": 0.888,
+            "trials": 500
+          }
+        },
+        "400": {
+          "0.0": {
+            "target": "debt collection",
+            "detected": 0.004,
+            "trials": 500
+          },
+          "0.05": {
+            "target": "debt collection",
+            "detected": 0.046,
+            "trials": 500
+          },
+          "0.1": {
+            "target": "debt collection",
+            "detected": 0.364,
+            "trials": 500
+          },
+          "0.15": {
+            "target": "debt collection",
+            "detected": 0.8377777777777777,
+            "trials": 450
+          },
+          "0.2": {
+            "target": "debt collection",
+            "detected": 1.0,
+            "trials": 92
+          }
+        }
+      },
+      "by_date": {
+        "rows_ref": 1073,
+        "rows_new": 927,
+        "alpha": 0.03039635509270134,
+        "mix": {
+          "tv": 0.12935734529306675,
+          "p": 4.631803099885077e-06,
+          "alarm": true,
+          "moved": [
+            {
+              "answer": "credit reporting",
+              "before": 0.516309412861137,
+              "after": 0.627831715210356,
+              "p": 4.631803099885077e-06
+            },
+            {
+              "answer": "debt collection",
+              "before": 0.11835973904939422,
+              "after": 0.05825242718446602,
+              "p": 2.6812170048677054e-05
+            }
+          ]
+        },
+        "scores": {
+          "ks": 0.08102377570070907,
+          "p": 0.002711948737332539,
+          "alarm": false,
+          "mean_before": 0.842482890413925,
+          "mean_after": 0.8665605352336745
+        },
+        "true_tv": 0.13499337972053072,
+        "cut": "2023-02-05"
+      }
+    }
+  },
+  "model": {
+    "the same model asked again (first re-ask)": {
+      "all_300": {
+        "anchors": 300,
+        "alpha": 0.03039635509270134,
+        "accuracy": {
+          "before": 0.9133333333333333,
+          "after": 0.91,
+          "worse": 2,
+          "better": 1,
+          "p": 0.5,
+          "alarm": false
+        },
+        "scores": {
+          "up": 33,
+          "down": 33,
+          "mean_change": 0.00024242424242424342,
+          "p": 1.0,
+          "alarm": false
+        }
+      },
+      "subsets": {
+        "50": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.003,
+          "any_alarm": 0.003
+        },
+        "100": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.001,
+          "any_alarm": 0.001
+        },
+        "200": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.0,
+          "any_alarm": 0.0
+        }
+      }
+    },
+    "the same model asked again (second re-ask)": {
+      "all_300": {
+        "anchors": 300,
+        "alpha": 0.03039635509270134,
+        "accuracy": {
+          "before": 0.9133333333333333,
+          "after": 0.9166666666666666,
+          "worse": 1,
+          "better": 2,
+          "p": 0.875,
+          "alarm": false
+        },
+        "scores": {
+          "up": 35,
+          "down": 39,
+          "mean_change": -0.0010488215488215487,
+          "p": 0.72754708348947,
+          "alarm": false
+        }
+      },
+      "subsets": {
+        "50": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.007,
+          "any_alarm": 0.007
+        },
+        "100": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.002,
+          "any_alarm": 0.002
+        },
+        "200": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.0,
+          "any_alarm": 0.0
+        }
+      }
+    },
+    "jev-1.14 in place of jev-1.13": {
+      "all_300": {
+        "anchors": 300,
+        "alpha": 0.03039635509270134,
+        "accuracy": {
+          "before": 0.9133333333333333,
+          "after": 0.9166666666666666,
+          "worse": 1,
+          "better": 2,
+          "p": 0.875,
+          "alarm": false
+        },
+        "scores": {
+          "up": 43,
+          "down": 50,
+          "mean_change": -0.0012077441077441087,
+          "p": 0.5340598617346067,
+          "alarm": false
+        }
+      },
+      "subsets": {
+        "50": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.001,
+          "any_alarm": 0.001
+        },
+        "100": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.003,
+          "any_alarm": 0.003
+        },
+        "200": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.002,
+          "any_alarm": 0.002
+        }
+      }
+    },
+    "options without their descriptions": {
+      "all_300": {
+        "anchors": 300,
+        "alpha": 0.03039635509270134,
+        "accuracy": {
+          "before": 0.9133333333333333,
+          "after": 0.8933333333333333,
+          "worse": 8,
+          "better": 2,
+          "p": 0.0546875,
+          "alarm": false
+        },
+        "scores": {
+          "up": 44,
+          "down": 103,
+          "mean_change": -0.022536363636363632,
+          "p": 1.255080378394871e-06,
+          "alarm": true
+        }
+      },
+      "subsets": {
+        "50": {
+          "accuracy_alarm": 0.0,
+          "score_alarm": 0.255,
+          "any_alarm": 0.255
+        },
+        "100": {
+          "accuracy_alarm": 0.004,
+          "score_alarm": 0.647,
+          "any_alarm": 0.649
+        },
+        "200": {
+          "accuracy_alarm": 0.019,
+          "score_alarm": 1.0,
+          "any_alarm": 1.0
+        }
+      }
+    }
+  },
+  "model_injected": {
+    "0.02": {
+      "50": {
+        "accuracy_alarm": 0.0,
+        "score_alarm": 0.002,
+        "any_alarm": 0.002
+      },
+      "100": {
+        "accuracy_alarm": 0.0,
+        "score_alarm": 0.0,
+        "any_alarm": 0.0
+      },
+      "200": {
+        "accuracy_alarm": 0.0,
+        "score_alarm": 0.0,
+        "any_alarm": 0.0
+      }
+    },
+    "0.05": {
+      "50": {
+        "accuracy_alarm": 0.0,
+        "score_alarm": 0.002,
+        "any_alarm": 0.002
+      },
+      "100": {
+        "accuracy_alarm": 0.09,
+        "score_alarm": 0.002,
+        "any_alarm": 0.092
+      },
+      "200": {
+        "accuracy_alarm": 1.0,
+        "score_alarm": 0.0,
+        "any_alarm": 1.0
+      }
+    },
+    "0.1": {
+      "50": {
+        "accuracy_alarm": 0.03,
+        "score_alarm": 0.004,
+        "any_alarm": 0.034
+      },
+      "100": {
+        "accuracy_alarm": 1.0,
+        "score_alarm": 0.002,
+        "any_alarm": 1.0
+      },
+      "200": {
+        "accuracy_alarm": 1.0,
+        "score_alarm": 0.0,
+        "any_alarm": 1.0
+      }
+    }
+  }
+}

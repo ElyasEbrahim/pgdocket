@@ -91,7 +91,7 @@ def fit(spec, answers, labels, precision_target=0.9, alpha=0.05, per_answer=Fals
     if n < 30:
         raise ValueError(f"only {n} labeled rows with answers; need at least 30 (100–200 recommended)")
     common = {"n_labels": n, "precision_target": precision_target, "alpha": alpha,
-              "fitted_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+              "fitted_at": datetime.now(timezone.utc).isoformat()}
     if spec["kind"] == "choice":
         names, display = option_names(spec), option_display(spec)
         P = np.array([choice_vector(a, display) for a in answers])

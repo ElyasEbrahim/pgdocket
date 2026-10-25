@@ -10,6 +10,7 @@
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
   pgdocket estimate   how many rows truly have each answer, with a confidence interval
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
+  pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket status     decisions, queue depth, errors, labels, tokens
   pgdocket revise     add a shadow version (new question, options or model) without changing answers
   pgdocket compare    judge a sample under both versions; report what changed beyond run-to-run noise
@@ -127,6 +128,20 @@ def main(argv=None):
     pl.add_argument("name")
     pl.add_argument("--max-error", type=float, default=0.05, help="share of judged rows allowed to stay wrong")
     pl.add_argument("--export", metavar="CSV", help="write the review queue: rows below the cut, least confident first")
+    dt = sub.add_parser("drift", help="have the rows or the model shifted? (exit status 1 on an alarm)")
+    dsn_arg(dt)
+    dt.add_argument("name")
+    dt.add_argument("--days", type=float, default=7, help="recent rows (the last DAYS days) against all earlier ones")
+    dt.add_argument("--by", metavar="COLUMN",
+                    help="a timestamp column of the source table that dates each row (default: when it was judged)")
+    dt.add_argument("--anchors", type=int, default=0, metavar="N",
+                    help="also re-ask the active version on N labelled rows to check the model (N API calls)")
+    dt.add_argument("--model", action="store_true", help="check the model on anchors already asked again")
+    dt.add_argument("--seed", default="1", help="picks the anchors; the same seed gives the same panel each time")
+    dt.add_argument("--run", action="store_true", help="with --anchors: run the worker until they are answered")
+    dt.add_argument("--wait", type=float, default=0, metavar="SECONDS",
+                    help="with --anchors: wait up to this long for a running worker to answer them")
+    dt.add_argument("--max-usd", type=float, default=1.0, help="with --run: stop after spending this much")
     st = sub.add_parser("status", help="decisions, queue, errors, labels, tokens")
     dsn_arg(st)
     rv = sub.add_parser("revise", help="add a shadow version; the view keeps showing the active one")
@@ -186,8 +201,8 @@ def main(argv=None):
         reanalyze(a.folder, a.precision_target)
         print(f"report: {a.folder}/report.md")
         return
-    if a.cmd in ("install", "create", "worker", "label", "calibrate", "estimate", "plan", "status", "drop", "revise", "compare",
-                 "backfill", "promote", "retire", "versions"):
+    if a.cmd in ("install", "create", "worker", "label", "calibrate", "estimate", "plan", "drift", "status", "drop", "revise",
+                 "compare", "backfill", "promote", "retire", "versions"):
         if not a.dsn:
             sys.exit("no database: pass --dsn or set DATABASE_URL")
         return _ledger_command(a)
@@ -268,6 +283,8 @@ def _ledger_command(a):
             print("⚠ fewer than 10 labelled rows with or without that answer: label more rows before relying on it")
     elif a.cmd == "plan":
         _plan(a, ledger)
+    elif a.cmd == "drift":
+        _drift(a, ledger)
     elif a.cmd == "drop":
         if not a.yes:
             sys.exit(f"this deletes decision {a.name} and its whole ledger; re-run with --yes")
@@ -357,6 +374,41 @@ def _plan(a, ledger):
             k = plan.export_queue(conn, a.name, data["rows"], chosen["cut"] if chosen["cut"] is not None else float("inf"),
                                   a.export)
             print(f"wrote {k:,} rows to {a.export} (least confident first; rows with a random label are already known)")
+
+
+def _drift(a, ledger):
+    import time
+    from . import drift
+    since = None
+    if a.anchors:
+        n, since = ledger.drift_enqueue(a.dsn, a.name, a.anchors, a.seed)
+        print(f"{n} labelled rows queued to be asked again" if n else
+              f"{a.name}: no labelled rows to ask again; import labels with `pgdocket label {a.name} … --sample 200`")
+        if a.run:
+            from .worker import Worker
+            totals = Worker(a.dsn, api_key=os.environ.get("TYPESAFE_API_KEY") or None, max_usd=a.max_usd).run(once=True)
+            print(f"worker: {totals['probed']} asked again, ${totals['usd']:.4f}")
+        elif a.wait:
+            deadline = time.monotonic() + a.wait
+            with ledger.connect(a.dsn, autocommit=True) as conn:
+                d = drift._decision(conn, a.name)
+                while (left := drift.pending(conn, d)) and time.monotonic() < deadline:
+                    time.sleep(1)
+            print(f"waited: {left} still queued" if left else "waited: all answered")
+        elif n:
+            print(f"when the worker has answered them: pgdocket drift {a.name} --model")
+    alarm = False
+    with ledger.connect(a.dsn) as conn:
+        _, r = drift.data_check(conn, a.name, a.days, a.by)
+        alarm |= bool(r.get("alarm"))
+        lines = drift.verdict_data(r)
+        if a.model or (a.anchors and (a.run or a.wait)):
+            _, r = drift.model_check(conn, a.name, since)
+            alarm |= bool(r.get("alarm"))
+            lines += drift.verdict_model(r)
+    print("\n".join(lines))
+    if alarm:
+        sys.exit(1)
 
 
 def _threshold_summary(cal):

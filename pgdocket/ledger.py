@@ -201,6 +201,13 @@ def compare_enqueue(dsn, name, version, n, seed="1"):
         return conn.execute("SELECT docket.compare_enqueue(%s, %s, %s, %s)", (name, version, n, str(seed))).fetchone()[0]
 
 
+def drift_enqueue(dsn, name, n, seed="1"):
+    """Queue re-asks of the active version on up to n labelled rows. Returns (rows queued, database time before)."""
+    with connect(dsn) as conn:
+        since = conn.execute("SELECT clock_timestamp()").fetchone()[0]
+        return conn.execute("SELECT docket.drift_enqueue(%s, %s, %s)", (name, n, str(seed))).fetchone()[0], since
+
+
 def unjudged(conn, did, active, version):
     """Rows the active version answers that `version` doesn't yet: promoting now would show them as pending."""
     return conn.execute(

@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -514,3 +514,59 @@ def test_recall_target_gives_the_view_three_bands(env):
     ver, _ = ledger.revise(env["owner"], "flags", question="Is it urgent? Answer for the on-call team.", backfill=True)
     Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
     assert ledger.promote(env["owner"], "flags", ver)["calibration"]["recall_target"] == 0.9
+
+
+def _drift(env, *args):
+    """Run `pgdocket drift`; returns its exit status."""
+    from pgdocket import cli
+    try:
+        cli.main(["drift", "--dsn", env["owner"], "stream", *args])
+        return 0
+    except SystemExit as e:
+        return e.code
+
+
+def test_drift_sees_recent_rows_that_look_different(env, capsys):
+    """Free data check (#22): rows dated by a source column; the last week is mostly sales, earlier weeks were not."""
+    teams = ["billing", "technical", "sales"]
+    rows = ([(i, teams[i % 3], teams[i % 3], 60, i) for i in range(1, 241)]                 # 60 to 50 days ago
+            + [(i, "sales" if i % 5 else "billing", "sales" if i % 5 else "billing", 3, i - 240) for i in range(241, 301)])
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.stream (id int PRIMARY KEY, body text, team text, created_at timestamptz)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.stream VALUES (%s, %s, %s, now() - make_interval(days => %s) "
+                            "+ make_interval(hours => %s))", rows)
+    ledger.create(env["owner"], "stream", "shop.stream", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "stream", column="team", sample=150)
+
+    code = _drift(env, "--by", "created_at", "--days", "7")
+    out = capsys.readouterr().out
+    assert code == 1 and "answers: sales 33.3 % → 80.0 %" in out and "⚠ shifted" in out
+    code = _drift(env)                                        # by judged_at: every row was judged just now
+    assert code == 0 and "needs at least 30 on each side; to date rows by a column" in capsys.readouterr().out
+
+
+def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
+    """Model check (#22): the same anchors asked again; the model starts answering sales tickets as technical."""
+    code = _drift(env, "--anchors", "60", "--run")
+    out = capsys.readouterr().out
+    assert code == 0 and "60 labelled rows queued" in out and "no change in the model detected" in out
+    FakeSystemOne.answer_override = {"s": "t"}
+    try:
+        code = _drift(env, "--anchors", "60", "--run")
+    finally:
+        FakeSystemOne.answer_override = {}
+    out = capsys.readouterr().out
+    assert code == 1 and "⚠ dropped" in out and "compare a new version" in out
+    with psycopg.connect(env["owner"]) as c:
+        runs = c.execute("SELECT alarm, (result->>'run')::int, (result->'accuracy'->>'worse')::int FROM docket.drift_check "
+                         "WHERE kind = 'model' AND decision_id = (SELECT id FROM docket.decision WHERE name = 'stream') "
+                         "ORDER BY id").fetchall()
+        current = c.execute("SELECT count(*) FROM docket.v_stream WHERE answer = 'technical'").fetchone()[0]
+    assert [(a, k) for a, k, _ in runs] == [(False, 1), (True, 2)] and runs[1][2] > 10
+    assert current == 80                                      # re-asks are probes: the view's answers didn't change
+    ledger.calibrate(env["owner"], "stream")                  # recalibrating starts a new series of checks
+    code = _drift(env, "--model")                             # the anchors asked last time, reported again
+    assert code == 1 and "check 1, false-alarm budget 0.0304" in capsys.readouterr().out
+

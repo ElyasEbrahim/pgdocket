@@ -16,6 +16,7 @@
   comparevalidate was `pgdocket compare` right? its verdict against all human labels (no API calls)
   frontier    ideas from recent research, tested on stored answers (no API calls)
   recallvalidate do recall targets hold on real model errors? (no API calls)
+  driftvalidate does the drift check alarm when it should, and only then? (no API calls)
 """
 import argparse
 import json
@@ -96,6 +97,7 @@ def main(argv=None):
     cv.add_argument("--out", default="results/compare-k8s-descriptions")
     sub.add_parser("frontier")
     sub.add_parser("recallvalidate")
+    sub.add_parser("driftvalidate")
     sub.add_parser("cachecheck")
     sub.add_parser("experiments")
 
@@ -168,6 +170,9 @@ def main(argv=None):
     elif args.cmd == "recallvalidate":
         from . import recallvalidate
         print("report:", recallvalidate.run() + "/report.md")
+    elif args.cmd == "driftvalidate":
+        from . import driftvalidate
+        print("report:", driftvalidate.run() + "/report.md")
     elif args.cmd == "frontier":
         from . import frontier
         print("report:", frontier.run() + "/report.md")

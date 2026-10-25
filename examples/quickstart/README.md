@@ -14,7 +14,7 @@ docker compose up -d --wait db
 
 ```bash
 docker compose run --rm pgdocket install
-# applied: 001, 002, 003, 004, 005
+# applied: 001, 002, 003, 004, 005, 006, 007
 ```
 
 **2. Declare the decision.** Existing rows are queued; new and edited rows will be too:

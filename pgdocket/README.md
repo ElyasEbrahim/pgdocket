@@ -1,12 +1,13 @@
 # pgdocket
 
-Five pieces work today:
+Six pieces work today:
 
 - **[`pgdocket check`](#pgdocket-check)**: how trustworthy is an AI decision on your table? Read-only.
 - **[The ledger](#the-ledger)**: decisions stored in Postgres and kept current as rows change.
 - **[Counts with error bars](#counts-with-error-bars)**: how many rows truly have each answer, with a confidence interval.
 - **[Planning human review](#planning-human-review)**: how many rows must people check so the column is at most ε wrong?
 - **[Comparing versions](#comparing-versions)**: is a revised question, option set or model better than the current one?
+- **[Drift checks](#drift-checks)**: have the rows or the model changed since calibration?
 
 # `pgdocket check`
 
@@ -75,7 +76,7 @@ Thresholds are tested from strictest to loosest. Each candidate accepts a fixed 
 
 The threshold applies to the **model's own score**: the top probability for a choice, the yes-probability for a yes/no question. That score doesn't depend on the labels, so the test holds exactly. `pgdocket calibrate` stores the same kind of threshold, and the ledger's `auto` column applies it. Reports made before 2026-10-22 used cross-fitted calibrated scores; `pgdocket report <folder>` re-analyses them for free.
 
-It assumes the labeled sample is representative of the rows the threshold will be applied to. If the data drifts, run the check again.
+It assumes the labeled sample is representative of the rows the threshold will be applied to. If the data drifts, run the check again; on a ledger, `pgdocket drift` watches for it.
 
 ## Example reports
 
@@ -198,3 +199,21 @@ The report gives:
 - **A shadow version judges new rows too.** It keeps up with new and changed rows until it is promoted or retired, and that costs tokens.
 
 On Kubernetes routing, dropping option descriptions saved 14 % of tokens. Labelling the 13 disagreements showed the descriptions were worth keeping, and with all labels they let 95 % of issues be auto-routed instead of 90 %. See [docs/phase1/versions.md](../docs/phase1/versions.md).
+
+# Drift checks
+
+Every guarantee assumes that new rows look like the labelled ones and that the model answers as it did when it was calibrated. `pgdocket drift` checks both:
+
+```bash
+pgdocket drift triage --by created_at                   # the rows: last 7 days against earlier ones (free)
+pgdocket drift triage --anchors 100 --wait 600          # the model: 100 labelled rows asked again (100 API calls)
+pgdocket drift triage --model                           # re-report on anchors already asked again
+```
+
+- **The rows (free).** It tests whether any answer's share changed (a z-test per answer, Bonferroni over the answers) and whether the scores moved (two-sample Kolmogorov–Smirnov). An alarm also needs an answer to move 5 points, or a KS distance of 0.10. `--days` sets the recent window, and `--by` dates rows by a column of the table instead of when they were judged.
+- **The model.** Anchors are rows with `random` or `all` labels; the same `--seed` gives the same panel. Each one's stored answer is compared with its re-ask on the same input: an exact sign test on accuracy, and another on whether scores went up or down. Re-asks are probes and never change the view.
+- **Repeated checks share one budget.** The k-th check since the version was last calibrated spends 0.05 · 6 / (π² k²), so the chance of any false alarm over the whole series stays at most 5 %. Run it on a schedule, weekly or monthly.
+- **Exit status 1 on an alarm**, for cron and CI. Every check is stored in `docket.drift_check`.
+
+On stored Jev answers, false alarms were 0–2.6 %, a 400-row window caught a 15-point shift in one answer 84 % of the time, and the check flagged real shifts of 13–17 % in CFPB and Kubernetes labels. The accuracy test needs about 7 more anchors answered worse than better, so 200 anchors catch a 3.5-point drop. See [docs/phase1/drift.md](../docs/phase1/drift.md).
+

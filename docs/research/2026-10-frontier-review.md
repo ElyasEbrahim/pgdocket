@@ -20,7 +20,7 @@ Each candidate had to fix a real gap and keep its guarantee. Where possible, I t
 | **Check a new model before switching** (jev-1.14.0, 14 Oct 2026) | TypeSafe docs | **Keep jev-1.13.0 for now**; switching is safe once there are enough labels to recalibrate | 1.14 changed 1.0 % of answers, the same as asking 1.13 again; accuracy 91.3 % → 91.7 % (all 300 labels) |
 | **Review planning** with an error guarantee for the whole column | probably approximately correct labels (Candès, Ilyas & Zrnic, 2025) | **Adopted** (#20): `pgdocket plan` | ≤ 5 % errors on Kubernetes routing: review 36 % of issues with 200 labels (19 % if every label were known); the guarantee failed in 2.2 % of trials |
 | Adaptive labelling for thresholds; **recall targets** | BARGAIN (Zeighami, Shankar & Parameswaran, SIGMOD 2026) | **Later**, with recall targets for yes/no decisions | not tested |
-| **Drift alarms** from predictions plus a few labels | prediction-powered risk monitoring (Zhang et al., ICML 2026); Podkopaev & Ramdas | **Later** (Phase 3) | not tested |
+| **Drift alarms** from predictions plus a few labels | prediction-powered risk monitoring (Zhang et al., ICML 2026); Podkopaev & Ramdas | **Adopted in a simpler form** (#22, 25 Oct): `pgdocket drift` | see the update below |
 | Stratified counts for rare answers | stratified PPI (Fisch et al., NeurIPS 2024) | **Later**: the next thing to try for counts | not tested |
 | Re-running `calibrate` as labels arrive | anytime-valid risk control (Xu et al., NeurIPS 2024) | **No change needed** at these sizes | Stopping at the first threshold found: 0.6–4.2 % failures (≤ 5 % allowed) |
 | Labelling where the model is unsure, for counts | active statistical inference (Zrnic & Candès 2024; Li et al., NeurIPS 2025; Gligorić et al., NAACL 2025) | **Not adopted** | 7–19 % narrower intervals for the two largest answers, but coverage fell to 45–63 % for *scheduling* |
@@ -103,7 +103,12 @@ A second sweep for work since this review, and what it led to:
   - The recall-target method comes from the selection-query line of work (SUPG; BARGAIN, SIGMOD 2026). **Adopted** as `calibrate --recall-target` (#21, [recall.md](../phase1/recall.md)): on three real yes/no tasks it never failed more than 3.6 % of the time (5 % allowed).
 - **Silent model changes.** TypeSafe moved `jev-latest` to jev-1.14.0, so pg-jev users on the default alias got a new model.
   - **"Who Drifted: the System or the Judge?"** (preprint, June 2026, [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)) watches for this kind of change with anytime-valid tests. It re-asks a fixed set of human-labelled rows and attributes a drop either to the product or to the model.
-  - pgdocket pins model versions, and `compare` measured 1.14 against 1.13 (see §2). A continuous drift check on labelled rows is the natural next step. **Candidate.**
+  - pgdocket pins model versions, and `compare` measured 1.14 against 1.13 (see §2). A continuous drift check on labelled rows was the natural next step.
+  - **Adopted** as `pgdocket drift` (#22, [drift.md](../phase1/drift.md)).
+    - **The model.** A fixed panel of labelled rows is asked again, and exact sign tests run on accuracy and on score direction. This is the canary approach of the "Who Drifted" preprint and of behavioural-shift audits ([arXiv:2410.19406](https://arxiv.org/abs/2410.19406)), with human labels to show *accuracy*, not only change.
+    - **The rows.** The free check uses two-sample tests on the model's own outputs, which Rabanser et al. ("Failing Loudly", NeurIPS 2019, [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)) found to be the most reliable simple shift detectors. A test per answer caught more than one chi-square over all answers (72 % against 49 % for a 20-point shift in one Kubernetes SIG, at the same false-alarm rate).
+    - **Repeated checks** share one budget (α · 6 / (π² k²)) rather than an e-process. That is simpler, but power falls as checks repeat; the anytime-valid version is the next step.
+    - **On stored answers:** false alarms were ≤ 2.6 %, CFPB's real rise in *credit reporting* complaints was caught, the 1.13 → 1.14 switch caused no alarm, and removing the option descriptions was caught from the scores.
 
 ## What this means for the release
 
@@ -123,6 +128,9 @@ The per-answer report is a small change, and it fixes the most important gap thi
 - Mozer. *PPI is the Difference Estimator.* 2026. [arXiv:2603.19160](https://arxiv.org/abs/2603.19160)
 - Zhang, Cai, Yu & Simeone. *Prediction-Powered Risk Monitoring of Deployed Models for Detecting Harmful Distribution Shifts.* ICML 2026. [arXiv:2602.02229](https://arxiv.org/abs/2602.02229)
 - Podkopaev & Ramdas. *Tracking the Risk of a Deployed Model and Detecting Harmful Distribution Shifts.* [arXiv:2110.06177](https://arxiv.org/abs/2110.06177)
+- Rabanser, Günnemann & Lipton. *Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.* NeurIPS 2019. [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)
+- *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
+- *An Auditing Test to Detect Behavioral Shift in Language Models.* [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)
 - Patel et al. *Semantic Operators and Their Optimization* (LOTUS). VLDB 2025. [paper](https://www.vldb.org/pvldb/vol18/p4171-patel.pdf)
 - Liskowski & Schmaus. *Streaming Model Cascades for Semantic SQL.* 2026. [arXiv:2604.00660](https://arxiv.org/abs/2604.00660)
 - *Beyond Linear LLM Invocation: An Efficient and Effective Semantic Filter Paradigm.* 2026. [arXiv:2603.04799](https://arxiv.org/abs/2603.04799)

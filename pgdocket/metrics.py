@@ -230,6 +230,43 @@ def crossfit_temperature(P, y_idx, k=5, seed=0):
 
 
 
+# ---------------------------------------------------------------- two-sample tests (drift, #22)
+def proportion_tests(counts_a, counts_b, min_expected=5):
+    """Has any category's share changed between two samples? A two-sided two-proportion z-test per category, for the
+    categories expected at least `min_expected` times on each side. Returns ([(category, share_a, share_b, p)], k):
+    k is the number of distinct tests, for a Bonferroni correction (with two categories both rows are one test)."""
+    na, nb = sum(counts_a.values()), sum(counts_b.values())
+    cats = sorted(set(counts_a) | set(counts_b))
+    out = []
+    for c in cats:
+        a, b = counts_a.get(c, 0), counts_b.get(c, 0)
+        pool = (a + b) / (na + nb)
+        if min(na, nb) * min(pool, 1 - pool) < min_expected:
+            continue
+        z = (b / nb - a / na) / math.sqrt(pool * (1 - pool) * (1 / na + 1 / nb))
+        out.append((c, a / na, b / nb, math.erfc(abs(z) / math.sqrt(2))))
+    return out, (1 if len(cats) == 2 else len(out))
+
+
+def ks_2samp(a, b):
+    """Two-sample Kolmogorov-Smirnov test: (D, asymptotic p). Ties make it conservative."""
+    a, b = np.sort(np.asarray(a, float)), np.sort(np.asarray(b, float))
+    both = np.concatenate([a, b])
+    d = float(np.max(np.abs(np.searchsorted(a, both, side="right") / len(a) - np.searchsorted(b, both, side="right") / len(b))))
+    en = math.sqrt(len(a) * len(b) / (len(a) + len(b)))
+    lam = (en + 0.12 + 0.11 / en) * d
+    if lam < 0.2:
+        return d, 1.0
+    p = sum(2 * (-1) ** (j - 1) * math.exp(-2 * j * j * lam * lam) for j in range(1, 101))
+    return d, min(max(p, 0.0), 1.0)
+
+
+def spent_alpha(alpha, run):
+    """Error budget for the run-th of an open-ended series of checks: alpha * 6 / (pi^2 run^2). The budgets sum to
+    alpha, so the chance of any false alarm over every run stays at most alpha (a union bound)."""
+    return alpha * 6 / (math.pi ** 2 * run ** 2)
+
+
 def recall_threshold(score, positive, target=0.9, alpha=0.05):
     """Highest threshold on `score` that keeps recall >= target with probability >= 1 - alpha (#21).
 
