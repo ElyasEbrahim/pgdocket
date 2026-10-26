@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -570,3 +570,56 @@ def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
     code = _drift(env, "--model")                             # the anchors asked last time, reported again
     assert code == 1 and "check 1, false-alarm budget 0.0304" in capsys.readouterr().out
 
+
+
+def test_audit_draws_blind_batches_and_catches_accepted_answers_going_wrong(env, capsys):
+    """Audit (#23): random draws from rows marked auto since the last batch, labelled blind, kept apart from the
+    calibration labels, and an alarm once the accepted answers are demonstrably below the target."""
+    from pgdocket import cli
+    teams = "ARRAY['billing', 'technical', 'sales']"
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.inbox (id int PRIMARY KEY, body text, team text)")
+        c.execute(f"INSERT INTO shop.inbox SELECT i, ({teams})[i % 3 + 1], ({teams})[i % 3 + 1] FROM generate_series(1, 300) i")
+    ledger.create(env["owner"], "inbox", "shop.inbox", "id", ["body"], _spec(env["url"]))
+    run = lambda: Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    run()
+    ledger.import_labels(env["owner"], "inbox", column="team", sample=100)
+    assert ledger.calibrate(env["owner"], "inbox")["threshold"] is not None              # every answer is accepted
+
+    def audit(*args):
+        try:
+            cli.main(["audit", "--dsn", env["owner"], "inbox", *args])
+            return 0
+        except SystemExit as e:
+            return e.code
+
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"audit-{uuid.uuid4().hex[:6]}.csv")
+    assert audit("--draw", "20", "--out", path) == 0
+    assert "batch 1: 20 rows drawn at random from 200 accepted rows" in capsys.readouterr().out
+    with open(path, newline="") as f:
+        drawn = list(csv.DictReader(f))
+    assert len(drawn) == 20 and list(drawn[0]) == ["key", "body", "label"]              # blind: no AI answer
+    with open(path, "w", newline="") as f:                                              # people agree with the model
+        w = csv.writer(f)
+        w.writerow(["key", "body", "label"])
+        w.writerows([r["key"], r["body"], r["body"]] for r in drawn)
+    ledger.import_labels(env["owner"], "inbox", csv_path=path)
+    assert audit() == 0 and "precision of the audited rows: 100.0 % (20 of 20)" in capsys.readouterr().out
+
+    with psycopg.connect(env["owner"], autocommit=True) as c:                           # new mail: mostly sales
+        c.execute(f"INSERT INTO shop.inbox SELECT i, b, b FROM (SELECT i, CASE WHEN i % 3 = 0 THEN 'billing' ELSE 'sales' END b "
+                  "FROM generate_series(301, 420) i) s")
+    FakeSystemOne.answer_override = {"s": "b"}                                          # ...and sales now goes to billing
+    try:
+        run()
+    finally:
+        FakeSystemOne.answer_override = {}
+    code = audit("--draw", "40", "--from-column", "team")
+    out = capsys.readouterr().out
+    assert "batch 2: 40 rows drawn at random from 120 accepted rows" in out             # only rows judged since batch 1
+    assert code == 1 and "⚠ the auto-accepted answers are below the 90.0 % target" in out
+    with psycopg.connect(env["owner"]) as c:
+        assert c.execute("SELECT count(*) FROM docket.label l JOIN docket.decision d ON d.id = l.decision_id "
+                         "WHERE d.name = 'inbox' AND l.sampling = 'audit'").fetchone()[0] == 60
+    assert ledger.calibrate(env["owner"], "inbox")["n_labels"] == 100                  # audit labels stay apart...
+    assert audit() == 0 and "0 rows drawn, 0 labelled" in capsys.readouterr().out       # ...and a new calibration starts afresh

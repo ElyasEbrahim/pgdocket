@@ -15,6 +15,11 @@ Semantic query research (LOTUS, BARGAIN, SUPG-IT, Cortex AISQL cascades) treats 
 - Aggregates (`estimate_count`, `estimate_share`) use prediction-powered inference, importance-weighted when sampling was stratified, and refuse to answer when gold coverage in the requested scope is too thin.
 - Every guarantee is backed by a simulation coverage test in CI.
 - *Implemented (2026-10-20):* `docket.estimate()` uses PPI++ with a normal-approximation interval. Simulations and 500 real Kubernetes judgments show it holds once the labels contain at least 10 rows with **and** 10 without the answer; below that, estimates are flagged `reliable = false`. With no labelled example on one side, no interval is given. Labels record their sampling (`random` / `all` / `manual`), and only `random` feeds estimates by default. Stratified sampling, to make rare answers estimable with fewer labels, is the next step.
+- *Added (2026-10-26, #23):* **audits of accepted rows.**
+  - **What.** `pgdocket audit` draws rows at random from those marked `auto` since the previous batch, and people label them blind.
+  - **The test.** An e-process tests "precision ≥ target", anytime-valid by Ville's inequality, so the audit can be read after every batch.
+  - **Labels.** Audit labels (`sampling = 'audit'`) come only from accepted rows, so no estimator other than the audit uses them.
+  - **Not adopted.** Labels stratified by the model's answer would keep per-answer guarantees exact, but on real tasks they certified fewer answers than random labels at 150–500 labels.
 - *Added (2026-10-25, #22):* **drift checks.** Two assumptions behind every guarantee are now checked: that new rows look like the labelled ones, and that the model answers as it did.
   - **The rows.** The check is free: recent rows against earlier ones, on the stored answers and scores, with a z-test per answer and a KS test on scores.
   - **The model.** Labels are the oracle here too. A fixed panel of rows with `random` or `all` labels is asked again, and exact sign tests on accuracy and on score direction compare each row's stored answer with its re-ask. `manual` labels are excluded, because hand-picked rows would break exchangeability.

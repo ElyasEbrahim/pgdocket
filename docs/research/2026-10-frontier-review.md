@@ -110,6 +110,20 @@ A second sweep for work since this review, and what it led to:
     - **Repeated checks** share one budget (α · 6 / (π² k²)) rather than an e-process. That is simpler, but power falls as checks repeat; the anytime-valid version is the next step.
     - **On stored answers:** false alarms were ≤ 2.6 %, CFPB's real rise in *credit reporting* complaints was caught, the 1.13 → 1.14 switch caused no alarm, and removing the option descriptions was caught from the scores.
 
+## Update, 26 October 2026
+
+A third sweep, for work on spending fewer human labels and on monitoring after deployment:
+- **Labels stratified by the model's answer** ("Reducing Human Effort to Validate LLM Relevance Judgements via Stratified Sampling", up to 85 % fewer labels for an estimate; stratified PPI, Fisch et al.). No paper I found gives a finite-sample precision guarantee under such sampling.
+  - **Why it looked promising.** Within one answer the labels stay a uniform sample, so per-answer guarantees stay exact, and rare answers could get enough labels.
+  - **Result.** Tested (`jevbench stratvalidate`, [results/stratified-labels](../../results/stratified-labels/report.md)) and **not adopted**. It certified fewer answers than random labels: Kubernetes, 300 labels, 0.0 % of issues auto vs 30.1 %; CFPB, 2,000 complaints, 500 labels, 2.5 % vs 44.8 %.
+  - **Why it failed.** Each answer needs ≥ 58 labelled rows above its threshold before it can be tested at 90 %. The small answers are mostly the inaccurate ones: even with every label known, per-answer mode could accept only 48–54 % of rows. Random labels also serve every other feature.
+- **Monitoring the guarantee itself.** Harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022) and prediction-powered risk monitoring (Zhang et al., ICML 2026) test whether a deployed model's error has risen, with labels that arrive over time. Recent anytime-valid detectors work the same way: predictive rank martingales ([arXiv:2609.00536](https://arxiv.org/abs/2609.00536)) and E-SHIFT ([arXiv:2510.03839](https://arxiv.org/abs/2510.03839)).
+  - **Adopted** as `pgdocket audit` (#23, [audit.md](../phase1/audit.md)). People label a few accepted rows per batch, blind, and an e-process tests "precision ≥ target". It is valid however often it is read.
+  - **On real streams** it raised no false alarm. A fall to 70 % injected into the CFPB stream was caught in 93 % of audits.
+  - **One lesson.** Bets sized from the all-time mean caught only 14 % of those falls, because months of good rows kept the mean high. Sizing them from the last 40 audited rows fixed it, and any bet chosen from past rows keeps the guarantee.
+- **Blind labelling.** Pre-annotations anchor labellers (Berzak et al., EMNLP 2016). LLM suggestions shift the labels people give (Schroeder, Roy & Kabbara, 2025, [arXiv:2507.15821](https://arxiv.org/abs/2507.15821)). The audit file therefore leaves the AI's answer out.
+- **Not yet.** Small-area smoothing for per-group accuracy (prediction-powered smoothing, Kawano et al., [arXiv:2609.20758](https://arxiv.org/abs/2609.20758)) could help when a team wants accuracy per segment. Audits that also use the model's scores on every accepted row (prediction-powered risk monitoring) could need fewer labels.
+
 ## What this means for the release
 
 The per-answer report is a small change, and it fixes the most important gap this review found. Without it, `auto` can mislead a team about specific answers. I recommend adding it before 0.1.0a2. Review planning, recall targets, drift alarms and stratified counts are new features for after the release.
@@ -120,14 +134,18 @@ The per-answer report is a small change, and it fixes the most important gap thi
 - Candès, Ilyas & Zrnic. *Probably Approximately Correct Labels.* 2025. [arXiv:2506.10908](https://arxiv.org/abs/2506.10908)
 - Zeighami, Shankar & Parameswaran. *Cut Costs, Not Accuracy: LLM-Powered Data Processing with Guarantees* (BARGAIN). SIGMOD 2026. [arXiv:2509.02896](https://arxiv.org/abs/2509.02896) · [code](https://github.com/ucbepic/BARGAIN)
 - Xu, Karampatziakis & Mineiro. *Active, Anytime-Valid Risk Controlling Prediction Sets.* NeurIPS 2024. [arXiv:2406.10490](https://arxiv.org/abs/2406.10490)
-- Waudby-Smith & Ramdas. *Estimating Means of Bounded Random Variables by Betting.* JRSS-B, 2024.
+- Waudby-Smith & Ramdas. *Estimating Means of Bounded Random Variables by Betting.* JRSS-B, 2024. [arXiv:2010.09686](https://arxiv.org/abs/2010.09686)
 - Zrnic & Candès. *Active Statistical Inference.* ICML 2024.
 - Li, Zrnic & Candès. *Robust Sampling for Active Statistical Inference.* NeurIPS 2025. [arXiv:2511.08991](https://arxiv.org/abs/2511.08991)
 - Gligorić, Zrnic, Lee, Candès & Jurafsky. *Can Unconfident LLM Annotations Be Used for Confident Conclusions?* NAACL 2025. [ACL Anthology](https://aclanthology.org/2025.naacl-long.179)
 - Fisch et al. *Stratified Prediction-Powered Inference for Hybrid Language Model Evaluation.* NeurIPS 2024. [paper](https://proceedings.neurips.cc/paper_files/paper/2024/file/c9fcd02e6445c7dfbad6986abee53d0d-Paper-Conference.pdf)
 - Mozer. *PPI is the Difference Estimator.* 2026. [arXiv:2603.19160](https://arxiv.org/abs/2603.19160)
 - Zhang, Cai, Yu & Simeone. *Prediction-Powered Risk Monitoring of Deployed Models for Detecting Harmful Distribution Shifts.* ICML 2026. [arXiv:2602.02229](https://arxiv.org/abs/2602.02229)
-- Podkopaev & Ramdas. *Tracking the Risk of a Deployed Model and Detecting Harmful Distribution Shifts.* [arXiv:2110.06177](https://arxiv.org/abs/2110.06177)
+- Podkopaev & Ramdas. *Tracking the Risk of a Deployed Model and Detecting Harmful Distribution Shifts.* ICLR 2022. [arXiv:2110.06177](https://arxiv.org/abs/2110.06177)
+- Berzak, Huang, Barbu, Korhonen & Katz. *Anchoring and Agreement in Syntactic Annotations.* EMNLP 2016.
+- Schroeder, Roy & Kabbara. *Just Put a Human in the Loop? Investigating LLM-Assisted Annotation for Subjective Tasks.* 2025. [arXiv:2507.15821](https://arxiv.org/abs/2507.15821)
+- Kawano, Li & Parker. *Prediction-Powered Smoothing and Validation for Disaggregated AI Evaluation.* 2026. [arXiv:2609.20758](https://arxiv.org/abs/2609.20758)
+- Kuang & Xia. *Anytime-Valid Distribution Shift Detection via Predictive Rank Martingales.* 2026. [arXiv:2609.00536](https://arxiv.org/abs/2609.00536)
 - Rabanser, Günnemann & Lipton. *Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.* NeurIPS 2019. [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)
 - *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
 - *An Auditing Test to Detect Behavioral Shift in Language Models.* [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)

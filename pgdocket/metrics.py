@@ -267,6 +267,34 @@ def spent_alpha(alpha, run):
     return alpha * 6 / (math.pi ** 2 * run ** 2)
 
 
+# ---------------------------------------------------------------- anytime-valid tests by betting (audit, #23)
+def eprocess_below(x, target, cap=0.5, window=40, stop=None):
+    """Evidence that the mean of x (values in [0, 1], in the order observed) has fallen below `target`.
+
+    Wealth W_t = prod (1 + lambda_i (target - x_i)). While each x_i has conditional mean >= target, W is a
+    nonnegative supermartingale for any lambda_i in [0, 1 / (1 - target)] chosen from x_1..x_{i-1}, so by Ville's
+    inequality P(W ever reaches 1 / alpha) <= alpha: the test may be read after every observation, for ever. The
+    bets follow aGRAPA (Waudby-Smith & Ramdas, 2024), capped at `cap` / (1 - target) so that one observation can at
+    most halve the wealth. They are sized from the last `window` observations plus one pseudo-observation at the
+    target (no bet without evidence): a mean over all of them would keep a long good stretch from betting after a
+    change. Returns the wealth after each observation (up to the first that reaches `stop`, if given)."""
+    x = np.asarray(x, float)
+    w, out = 1.0, []
+    for i, xi in enumerate(x):
+        recent = x[max(0, i - window):i]
+        n = len(recent) + 1
+        mu = (target + recent.sum()) / n
+        var = (target * (1 - target) + ((recent - mu) ** 2).sum()) / n
+        gap = target - mu
+        lam = min(gap / (var + gap * gap), cap / (1 - target)) if gap > 0 else 0.0
+        w *= 1 + lam * (target - xi)
+        out.append(w)
+        if stop is not None and w >= stop:
+            break
+    return np.array(out)
+
+
+
 def recall_threshold(score, positive, target=0.9, alpha=0.05):
     """Highest threshold on `score` that keeps recall >= target with probability >= 1 - alpha (#21).
 

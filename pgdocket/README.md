@@ -1,6 +1,6 @@
 # pgdocket
 
-Six pieces work today:
+Seven pieces work today:
 
 - **[`pgdocket check`](#pgdocket-check)**: how trustworthy is an AI decision on your table? Read-only.
 - **[The ledger](#the-ledger)**: decisions stored in Postgres and kept current as rows change.
@@ -8,6 +8,7 @@ Six pieces work today:
 - **[Planning human review](#planning-human-review)**: how many rows must people check so the column is at most ε wrong?
 - **[Comparing versions](#comparing-versions)**: is a revised question, option set or model better than the current one?
 - **[Drift checks](#drift-checks)**: have the rows or the model changed since calibration?
+- **[Audits](#audits)**: are the answers marked `auto` still right?
 
 # `pgdocket check`
 
@@ -216,4 +217,20 @@ pgdocket drift triage --model                           # re-report on anchors a
 - **Exit status 1 on an alarm**, for cron and CI. Every check is stored in `docket.drift_check`.
 
 On stored Jev answers, false alarms were 0–2.6 %, a 400-row window caught a 15-point shift in one answer 84 % of the time, and the check flagged real shifts of 13–17 % in CFPB and Kubernetes labels. The accuracy test needs about 7 more anchors answered worse than better, so 200 anchors catch a 3.5-point drop. See [docs/phase1/drift.md](../docs/phase1/drift.md).
+
+# Audits
+
+The drift check tells you whether the rows or the model changed. Only labels on new accepted rows show whether the answers marked `auto` are still right. `pgdocket audit` is a spot check of those rows, with a test you may read after every batch:
+
+```bash
+pgdocket audit triage --draw 20 --out audit.csv          # 20 rows marked auto since the last batch, to label blind
+pgdocket label triage --csv audit.csv                    # import them; they are kept apart as 'audit' labels
+pgdocket audit triage                                    # the report; exit status 1 on an alarm
+```
+
+- **Blind.** The CSV has no AI answer or confidence, because pre-annotations pull labellers towards the model. `--from-column` takes labels that are already in the table.
+- **Anytime-valid.** An e-process bets against "precision ≥ target". While precision stays at or above it, the chance of *ever* alarming is at most 5 %, however many batches you read. Recalibrating starts a new series.
+- **Kept apart.** Audit labels come only from accepted rows, so calibration, counts, plans and drift anchors don't use them.
+
+In simulation, false alarms were 3.0 % at exactly a 90 % target, read after every row. A 10-point fall showed after a median of 101 audited rows, and a 20-point fall after 34. On real Kubernetes and CFPB streams, no audit raised a false alarm. A fall injected into the CFPB stream, to 70 %, was caught in 93 % of audits. See [docs/phase1/audit.md](../docs/phase1/audit.md).
 

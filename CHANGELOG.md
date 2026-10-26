@@ -2,6 +2,24 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-10-26
+
+### Added (audits, #23)
+- **`pgdocket audit NAME`:** are the answers marked `auto` still right? It exits with status 1 on an alarm.
+  - **Draws:** `--draw N` picks rows at random from those marked `auto` since the previous batch (yes/no: auto-yes) and records them in `docket.audit` (migration `008`).
+  - **Labelling:** `--out` writes them to label blind, with no AI answer or confidence; `--from-column` takes existing labels. Labels on drawn rows are stored as `audit` and kept out of calibration, counts, plans and drift anchors.
+  - **The test:** an e-process (aGRAPA bets from the last 40 audited rows) against "precision ≥ target". By Ville's inequality the chance of ever alarming is ≤ 5 % while precision holds, however often it is read. Recalibrating starts a new series.
+- **Evidence (`jevbench auditvalidate`, no API calls):**
+  - Simulation: 3.0 % false alarms at exactly a 90 % target, read after every row. A 10-point fall shows after a median of 101 audited rows, a 20-point fall after 34.
+  - Real streams (Kubernetes by month, CFPB by year): no false alarms.
+  - A fall to 70 % injected into the CFPB stream was caught in 93 % of audits, 72 audited rows after the change (median).
+  - Write-up: `docs/phase1/audit.md`.
+
+### Tested and not adopted
+- **Labels stratified by answer, for per-answer guarantees** (`jevbench stratvalidate`). It certified fewer answers than random labels: Kubernetes, 300 labels, 0.0 % auto vs 30.1 %; CFPB, 2,000 complaints, 500 labels, 2.5 % vs 44.8 %.
+  - Why: each answer needs ≥ 58 labelled rows above its threshold before it can be tested at 90 %, and the small answers are mostly the inaccurate ones.
+  - Random labels also serve every other feature.
+
 ## 2026-10-25
 
 ### Added (drift checks, #22)
@@ -33,7 +51,7 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ### Fixed
 - `pgdocket report` wrote `report.md` before rendering it, so a rendering error left an empty report. It now renders first.
-- The quickstart listed five migrations; there are seven.
+- The quickstart listed five migrations; there are seven (eight since #23).
 
 ## 2026-10-24
 

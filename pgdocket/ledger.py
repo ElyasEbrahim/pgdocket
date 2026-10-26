@@ -65,7 +65,8 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
 
     Labels record how they were chosen: `--sample N` from a column is a uniform random sample ('random');
     a whole column is 'all'; a CSV is 'manual' unless the caller says it was drawn at random (`random=True`,
-    e.g. a file from `pgdocket check --export-sample`). Only 'random' labels feed `estimate` by default.
+    e.g. a file from `pgdocket check --export-sample`). Rows an audit drew get 'audit' (#23): they are used only by
+    `pgdocket audit`. Only 'random' labels feed `estimate` by default.
     Sampling records how a row was chosen, so re-labelling a row that was drawn at random keeps it 'random'.
     Labels may name an option of any version not yet retired (e.g. one only a shadow version has).
     For yes/no decisions, labels are stored as 'yes' / 'no' (`positive` is the value that means yes).
@@ -96,6 +97,8 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
                                    "pos": None if positive is None else str(positive),
                                    "sampling": "random" if sample else "all"})
             return cur.rowcount
+        audited = {r[0] for r in conn.execute(                      # rows an audit drew (#23): their labels stay apart
+            "SELECT row_key FROM docket.audit WHERE decision_id = %s", (d["id"],))}
         rows = []
         with open(csv_path, newline="") as f:
             for r in csv.DictReader(f):
@@ -106,7 +109,8 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
                     label = "yes" if label == str(positive) else "no"
                 elif label not in names:
                     continue
-                rows.append((d["id"], r["key"], label, "csv:" + os.path.basename(csv_path), "random" if random else "manual"))
+                kind = "audit" if r["key"] in audited else "random" if random else "manual"
+                rows.append((d["id"], r["key"], label, "csv:" + os.path.basename(csv_path), kind))
         with conn.cursor() as cur:
             cur.executemany("INSERT INTO docket.label (decision_id, row_key, label, source, sampling) VALUES (%s, %s, %s, %s, %s) "
                             "ON CONFLICT (decision_id, row_key) DO UPDATE SET label = EXCLUDED.label, "

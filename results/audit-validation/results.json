@@ -1,0 +1,155 @@
+{
+  "simulation": {
+    "false_alarms": {
+      "0.9": 0.0305,
+      "0.95": 0.0145
+    },
+    "detect": {
+      "0.9/0.05": {
+        "median": 317.5,
+        "p90": 839.1
+      },
+      "0.9/0.1": {
+        "median": 101.0,
+        "p90": 228.10000000000002
+      },
+      "0.9/0.15": {
+        "median": 51.0,
+        "p90": 111.10000000000002
+      },
+      "0.9/0.2": {
+        "median": 34.0,
+        "p90": 67.10000000000002
+      },
+      "0.95/0.05": {
+        "median": 236.0,
+        "p90": 482.4000000000001
+      },
+      "0.95/0.1": {
+        "median": 77.0,
+        "p90": 154.0
+      },
+      "0.95/0.15": {
+        "median": 44.0,
+        "p90": 80.10000000000002
+      },
+      "0.95/0.2": {
+        "median": 30.0,
+        "p90": 56.0
+      }
+    }
+  },
+  "k8s": {
+    "target": 0.9,
+    "periods": {
+      "2026-03-01": {
+        "accepted": 7,
+        "precision": 0.7142857142857143
+      },
+      "2026-04-01": {
+        "accepted": 88,
+        "precision": 0.9318181818181818
+      },
+      "2026-05-01": {
+        "accepted": 94,
+        "precision": 0.9787234042553191
+      },
+      "2026-06-01": {
+        "accepted": 92,
+        "precision": 0.9021739130434783
+      }
+    },
+    "audit": {
+      "alarm_rate": 0.0,
+      "audited": 67
+    }
+  },
+  "cfpb": {
+    "target": 0.85,
+    "threshold": 0.99,
+    "periods": {
+      "01": {
+        "accepted": 40,
+        "precision": 0.975
+      },
+      "02": {
+        "accepted": 40,
+        "precision": 0.95
+      },
+      "03": {
+        "accepted": 40,
+        "precision": 0.95
+      },
+      "04": {
+        "accepted": 40,
+        "precision": 0.975
+      },
+      "05": {
+        "accepted": 40,
+        "precision": 0.975
+      },
+      "06": {
+        "accepted": 40,
+        "precision": 0.95
+      },
+      "07": {
+        "accepted": 40,
+        "precision": 0.925
+      },
+      "08": {
+        "accepted": 40,
+        "precision": 0.925
+      },
+      "09": {
+        "accepted": 40,
+        "precision": 0.95
+      },
+      "10": {
+        "accepted": 40,
+        "precision": 0.95
+      },
+      "11": {
+        "accepted": 40,
+        "precision": 0.975
+      },
+      "12": {
+        "accepted": 40,
+        "precision": 1.0
+      },
+      "13": {
+        "accepted": 6,
+        "precision": 1.0
+      }
+    },
+    "audit": {
+      "alarm_rate": 0.0,
+      "audited": 246
+    },
+    "injected": {
+      "0.8": {
+        "alarm_rate": 0.098,
+        "audited": 246,
+        "false_before_change": 0.0,
+        "caught": 0.098,
+        "after_change": 146,
+        "median_labels_after_change": 111.0
+      },
+      "0.75": {
+        "alarm_rate": 0.534,
+        "audited": 246,
+        "false_before_change": 0.0,
+        "caught": 0.534,
+        "after_change": 146,
+        "median_labels_after_change": 97.0
+      },
+      "0.7": {
+        "alarm_rate": 0.926,
+        "audited": 246,
+        "false_before_change": 0.0,
+        "caught": 0.926,
+        "after_change": 146,
+        "median_labels_after_change": 72.0
+      }
+    }
+  }
+}

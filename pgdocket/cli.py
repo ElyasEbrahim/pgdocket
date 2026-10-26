@@ -11,6 +11,7 @@
   pgdocket estimate   how many rows truly have each answer, with a confidence interval
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
+  pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
   pgdocket status     decisions, queue depth, errors, labels, tokens
   pgdocket revise     add a shadow version (new question, options or model) without changing answers
   pgdocket compare    judge a sample under both versions; report what changed beyond run-to-run noise
@@ -142,6 +143,15 @@ def main(argv=None):
     dt.add_argument("--wait", type=float, default=0, metavar="SECONDS",
                     help="with --anchors: wait up to this long for a running worker to answer them")
     dt.add_argument("--max-usd", type=float, default=1.0, help="with --run: stop after spending this much")
+    au = sub.add_parser("audit", help="are the answers marked auto still right? (exit status 1 on an alarm)")
+    dsn_arg(au)
+    au.add_argument("name")
+    au.add_argument("--draw", type=int, metavar="N",
+                    help="draw N rows at random from those marked auto since the last batch, to label")
+    au.add_argument("--out", metavar="CSV", help="with --draw: write them to a CSV to label, without the AI's answers")
+    au.add_argument("--from-column", metavar="COLUMN", help="with --draw: take their labels from this column of the table")
+    au.add_argument("--positive", help="yes/no decisions with --from-column: the label value that means yes")
+    au.add_argument("--seed", default="1")
     st = sub.add_parser("status", help="decisions, queue, errors, labels, tokens")
     dsn_arg(st)
     rv = sub.add_parser("revise", help="add a shadow version; the view keeps showing the active one")
@@ -201,8 +211,8 @@ def main(argv=None):
         reanalyze(a.folder, a.precision_target)
         print(f"report: {a.folder}/report.md")
         return
-    if a.cmd in ("install", "create", "worker", "label", "calibrate", "estimate", "plan", "drift", "status", "drop", "revise",
-                 "compare", "backfill", "promote", "retire", "versions"):
+    if a.cmd in ("install", "create", "worker", "label", "calibrate", "estimate", "plan", "drift", "audit", "status", "drop",
+                 "revise", "compare", "backfill", "promote", "retire", "versions"):
         if not a.dsn:
             sys.exit("no database: pass --dsn or set DATABASE_URL")
         return _ledger_command(a)
@@ -285,6 +295,8 @@ def _ledger_command(a):
         _plan(a, ledger)
     elif a.cmd == "drift":
         _drift(a, ledger)
+    elif a.cmd == "audit":
+        _audit(a, ledger)
     elif a.cmd == "drop":
         if not a.yes:
             sys.exit(f"this deletes decision {a.name} and its whole ledger; re-run with --yes")
@@ -408,6 +420,33 @@ def _drift(a, ledger):
             lines += drift.verdict_model(r)
     print("\n".join(lines))
     if alarm:
+        sys.exit(1)
+
+
+def _audit(a, ledger):
+    from . import audit
+    if (a.out or a.from_column) and not a.draw:
+        sys.exit("--out and --from-column go with --draw N")
+    if a.out and a.from_column:
+        sys.exit("choose one: --out (people label a CSV) or --from-column (the labels are already in the table)")
+    with ledger.connect(a.dsn) as conn:
+        if a.draw:
+            batch, keys, pool = audit.draw(conn, a.name, a.draw, a.seed)
+            if keys:
+                print(f"batch {batch}: {len(keys)} rows drawn at random from {pool:,} accepted rows not audited or labelled yet")
+            if a.out and keys:
+                audit.export(conn, a.name, keys, a.out)
+                print(f"wrote {len(keys)} rows to {a.out}, without the AI's answers: fill in the label column, then "
+                      f"`pgdocket label {a.name} --csv {a.out}` and `pgdocket audit {a.name}`")
+            elif a.from_column and keys:
+                n = audit.label_from_column(conn, a.name, keys, a.from_column, a.positive)
+                print(f"{n} audit labels taken from column {a.from_column}")
+            elif not keys:
+                print("nothing to draw: no row has been marked auto since the last batch, or all were labelled")
+        d, rows = audit.fetch(conn, a.name)
+    r = audit.analyse(rows, d["calibration"]["precision_target"])
+    print("\n".join(audit.render(a.name, d, r)))
+    if r["alarm"]:
         sys.exit(1)
 
 

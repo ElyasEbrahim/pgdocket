@@ -68,7 +68,9 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [ ] Option-order debiasing for `choice` (on only if Phase 0 showed it helps)
 - [ ] Instruction-injection flag decision and consistency re-checks → review queue
 - [x] `pgdocket drift`: the rows (free: answer shares and scores, recent against earlier) and the model (a fixed panel of labelled rows asked again), one false-alarm budget across repeated checks (#22)
+- [x] `pgdocket audit`: blind spot checks of the rows marked `auto`, with an anytime-valid alarm (an e-process; Podkopaev & Ramdas) (#23)
 - [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)
+- [ ] Audits with fewer labels: use the model's own scores on every accepted row (prediction-powered risk monitoring)
 
 **Exit:** backend comparison report on two public datasets.
 

@@ -1,0 +1,145 @@
+{
+  "Kubernetes: which SIG? (500 issues)": {
+    "rows": 500,
+    "answers": 10,
+    "accuracy": 0.888,
+    "ideal_auto": 0.482,
+    "budgets": {
+      "150": {
+        "random": {
+          "auto": 0.0016150000000000001,
+          "certified": 0.005,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        }
+      },
+      "300": {
+        "random": {
+          "auto": 0.300615,
+          "certified": 1.2425,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.026500000000000003,
+          "certified": 0.0825,
+          "failures": 0.0
+        }
+      }
+    }
+  },
+  "CFPB: which product? (500 complaints)": {
+    "rows": 500,
+    "answers": 9,
+    "accuracy": 0.794,
+    "ideal_auto": 0.51,
+    "budgets": {
+      "150": {
+        "random": {
+          "auto": 0.20403999999999997,
+          "certified": 0.4475,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        }
+      },
+      "300": {
+        "random": {
+          "auto": 0.41742000000000007,
+          "certified": 0.9175,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.07832,
+          "certified": 0.16,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.203175,
+          "certified": 0.445,
+          "failures": 0.0
+        }
+      }
+    }
+  },
+  "CFPB: which product? (2,000 complaints)": {
+    "rows": 2000,
+    "answers": 9,
+    "accuracy": 0.7705,
+    "ideal_auto": 0.543,
+    "budgets": {
+      "150": {
+        "random": {
+          "auto": 0.19295,
+          "certified": 0.42,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        }
+      },
+      "300": {
+        "random": {
+          "auto": 0.39935249999999994,
+          "certified": 0.905,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.0,
+          "certified": 0.0,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.20280625,
+          "certified": 0.4475,
+          "failures": 0.0
+        }
+      },
+      "500": {
+        "random": {
+          "auto": 0.44768625,
+          "certified": 0.9225,
+          "failures": 0.0
+        },
+        "equal": {
+          "auto": 0.02477125,
+          "certified": 0.045,
+          "failures": 0.0
+        },
+        "sqrt": {
+          "auto": 0.37782375,
+          "certified": 0.865,
+          "failures": 0.0
+        }
+      }
+    }
+  }
+}

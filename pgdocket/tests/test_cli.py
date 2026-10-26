@@ -3,7 +3,7 @@ import pytest
 
 from pgdocket import cli
 
-COMMANDS = ["check", "report", "install", "create", "worker", "label", "calibrate", "estimate", "plan", "drift", "status", "drop",
+COMMANDS = ["check", "report", "install", "create", "worker", "label", "calibrate", "estimate", "plan", "drift", "audit", "status", "drop",
             "revise", "compare", "backfill", "promote", "retire", "versions"]
 
 

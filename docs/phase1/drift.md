@@ -92,7 +92,7 @@ Yes/no decisions are easier: on Kubernetes feature requests, a 100-row window ca
 - **Small windows catch only large shifts.** With 100 recent rows, a 10-point shift in one answer usually goes unnoticed. Choose `--days` so that the recent window holds a few hundred rows.
 - **The budget shrinks with every check.** The 10th check gets 0.0003, so it needs a much larger shift than the first. Check weekly or monthly, not hourly. An anytime-valid version (e-processes, as in "Who Drifted" and prediction-powered risk monitoring) would not shrink this way. It is the natural next step if checks need to run continuously.
 - **Run it on a schedule, not when something looks odd.** The budgets assume each check's timing does not depend on the data it tests.
-- **The rows check sees only the model's outputs.** A change in the inputs that leaves answers and scores alone is invisible to it, and a shift in answers is not proof that accuracy fell. Only labels can show that: after an alarm, label a fresh random sample of recent rows.
+- **The rows check sees only the model's outputs.** A change in the inputs that leaves answers and scores alone is invisible to it, and a shift in answers is not proof that accuracy fell. Only labels can show that: after an alarm, label a fresh random sample of recent rows, or keep a running [audit](audit.md) of the accepted rows.
 - **Anchors are a fixed panel.** They show whether the model changed on those rows, not on every kind of row. Labels drawn at random keep the panel representative. Use more anchors when answers are rare.
 - **Exchangeability assumes the stored answers were not cherry-picked.** That is why anchors use `random` and `all` labels only, never `manual` ones such as the disagreements `compare` exports.
 
