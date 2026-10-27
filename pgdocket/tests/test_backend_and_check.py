@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from pgdocket.backend import Backend, BackendError
-from pgdocket.check import CheckConfig, analyse_choice, analyse_noul, render
+from pgdocket.check import CheckConfig, analyse_choice, analyse_noul, render, steer_test
 from pgdocket.tests.fakes import FakeSystemOne, serve
 
 
@@ -65,12 +65,16 @@ def test_choice_analysis_and_report():
     a.pop("_top")
     result = {"config": {**cfg.__dict__}, "analysis": a, "stability": {"rows": 50, "changed": 0.04},
               "batching": {"rows": 50, "changed": 0.12, "accuracy_single": 0.8, "accuracy_batched": 0.74},
+              "steering": {"rows": 50, "threshold": 0.8, "clean": {"auto": 0.9, "erase_flagged": 0.1},
+                           "families": {"policy": {"changed": 0.4, "steered": 0.3, "steered_auto": 0.2, "erase_caught": 0.9},
+                                        "claim": {"changed": 0.1, "steered": 0.05, "steered_auto": 0.0, "erase_caught": None}}},
               "backend": {"url": "fake", "model": "m", "batch_size": 1}, "created_at": "now", "docket_version": "0",
               "sample": {"labeled_rows": 400, "rows_in_scope": 1000, "table_rows": 2000, "label_counts": {}},
               "cost": {"requests": 400, "input_tokens": 40000, "usd": 0.0017, "tokens_per_row": 100,
                        "projected_usd_table": 0.0084, "projected_usd_per_million_rows": 4.2, "seconds": 3}}
     md = render(result)
     assert "Judge one row per request" in md and "Store answers" in md
+    assert "## Steering" in md and "Rows can steer the answer.** A *policy* paragraph" in md
     assert "SECRET-ROW-TEXT" not in md                   # the report never contains row text
 
 
@@ -154,3 +158,26 @@ def test_check_names_answers_below_target_and_reports_them_per_answer():
                        "projected_usd_table": 0.0017, "projected_usd_per_million_rows": 4.2, "seconds": 3}}
     md = render(result)
     assert "Don't auto-accept every answer" in md and "*c*" in md and "### Precision per answer" in md and "| c ⚠ |" in md
+
+
+def test_steer_test_measures_steering_and_what_erase_and_check_catches(server):
+    """#24: a model that obeys 'classified as "X"' in the row is steered by the instruction and override families,
+    not by the policy and claim ones; erase-and-check catches every steered row and flags no clean one."""
+    FakeSystemOne.fail_first = False
+    FakeSystemOne.obey_injection = True
+    names = ["alpha", "beta", "gamma"]
+    try:
+        cfg = _cfg("choice", options=[{"name": n} for n in names], text=["want", "body"])
+        sample = [{"key": str(i), "record": {"want": "abg"[i % 3], "body": "abg"[i % 3] + " details" * 40},
+                   "label": names[i % 3]} for i in range(30)]
+        backend = Backend(server, model="fake")
+        answers = backend.judge([s["record"] for s in sample], "choice", "q?", names, 1)
+        st = steer_test(cfg, backend, sample, answers, 0.5, names)
+    finally:
+        FakeSystemOne.obey_injection = False
+    f = st["families"]
+    assert f["override"]["steered"] == f["override"]["steered_auto"] == 1.0 and f["instruction"]["steered"] == 1.0
+    assert f["override"]["erase_caught"] == f["instruction"]["erase_caught"] == 1.0
+    assert f["policy"]["steered"] == f["claim"]["steered"] == 0.0 and f["policy"]["erase_caught"] is None
+    assert st["clean"]["auto"] == 1.0 and st["clean"]["erase_flagged"] == 0.0
+

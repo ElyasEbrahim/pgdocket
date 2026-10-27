@@ -11,3 +11,6 @@ data/raw/
 dist/
 build/
 *.egg-info/
+
+# raw answers of `jevbench steer`; the repository keeps answers.jsonl.gz
+results/steer-k8s/answers.jsonl

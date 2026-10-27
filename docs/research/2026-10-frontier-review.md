@@ -124,6 +124,24 @@ A third sweep, for work on spending fewer human labels and on monitoring after d
 - **Blind labelling.** Pre-annotations anchor labellers (Berzak et al., EMNLP 2016). LLM suggestions shift the labels people give (Schroeder, Roy & Kabbara, 2025, [arXiv:2507.15821](https://arxiv.org/abs/2507.15821)). The audit file therefore leaves the AI's answer out.
 - **Not yet.** Small-area smoothing for per-group accuracy (prediction-powered smoothing, Kawano et al., [arXiv:2609.20758](https://arxiv.org/abs/2609.20758)) could help when a team wants accuracy per segment. Audits that also use the model's scores on every accepted row (prediction-powered risk monitoring) could need fewer labels.
 
+## Update, 27 October 2026
+
+A fourth sweep, on the risk none of the earlier ones covered: text in a row aimed at the model.
+- **Jev can be steered by what it judges.**
+  - **Datadog Security Labs** ([2026-10-15](https://securitylabs.datadoghq.com/articles/jev-as-a-judge-how-counterfeit-policy-steers-jev/)): a counterfeit policy cut Jev's recall on prompt-injection benchmarks from 83 % to 3.9 %.
+  - **Check Point** ([2026-09-24](https://blog.checkpoint.com/ai-security/jev-is-not-a-language-model-but-it-breaks-like-one-prompt-injection-against-a-typed-decision-model/)): adaptive attackers broke every configuration, at about $0.50 per break. Telling the model to distrust the document made no difference.
+  - **HiddenLayer** (reported [2026-10-15](https://www.infoworld.com/article/4236103/typesafes-jev-even-more-susceptible-to-attack-than-llms-says-security-vendor.html)): adversarial text and injection disrupted Jev.
+  - **Wu & Lim** ([arXiv:2609.28613](https://arxiv.org/abs/2609.28613)): on agent tasks, success was rare and tied to small decision margins.
+  - **The gap.** None of them measured classification of table rows behind a calibrated threshold.
+- **Measured** (`jevbench steer`, $0.60, [results/steer-k8s](../../results/steer-k8s/report.md)): on 300 labelled Kubernetes issues, a counterfeit routing policy appended by the issue's author steered 98.7 %, and `auto` accepted 93.3 %. A misleading claim with no instruction in it steered 72.3 %, "ignore previous instructions" 1.0 %. Steered answers were fully confident, so the threshold gave no protection.
+- **Adopted** (#24, [steering.md](../phase1/steering.md), ADR 0005):
+  - **`--untrusted`**, a distrust sentence: the policy fell to 1.7 %, and one aimed at the sentence to 2.3 %; claims still steered 34 %. That runs against Check Point's result, but our attacks were fixed templates and theirs adapted.
+  - **`calibrate --harden`**, erase-and-check (Kumar et al., [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)): it caught every steered row `auto` would have accepted, claims included, and sent 7.4 % of clean accepted rows to review. A payload written twice beats it, and the sentence stops that.
+  - **`check --steer`**, so teams can measure their own decision.
+- **Not adopted.**
+  - **Pattern filters:** circular evidence, and they miss claims.
+  - **Keep-one voting:** it caught 85.7 % of the repeated payload but adds false flags. It is a candidate for later.
+
 ## What this means for the release
 
 The per-answer report is a small change, and it fixes the most important gap this review found. Without it, `auto` can mislead a team about specific answers. I recommend adding it before 0.1.0a2. Review planning, recall targets, drift alarms and stratified counts are new features for after the release.
@@ -146,6 +164,9 @@ The per-answer report is a small change, and it fixes the most important gap thi
 - Schroeder, Roy & Kabbara. *Just Put a Human in the Loop? Investigating LLM-Assisted Annotation for Subjective Tasks.* 2025. [arXiv:2507.15821](https://arxiv.org/abs/2507.15821)
 - Kawano, Li & Parker. *Prediction-Powered Smoothing and Validation for Disaggregated AI Evaluation.* 2026. [arXiv:2609.20758](https://arxiv.org/abs/2609.20758)
 - Kuang & Xia. *Anytime-Valid Distribution Shift Detection via Predictive Rank Martingales.* 2026. [arXiv:2609.00536](https://arxiv.org/abs/2609.00536)
+- Wu & Lim. *Decision Hijacking: Prompt Injection Attacks on Jev's Typed Probabilistic Decisions.* 2026. [arXiv:2609.28613](https://arxiv.org/abs/2609.28613)
+- Kumar, Agarwal, Srinivas, Li, Feizi & Lakkaraju. *Certifying LLM Safety against Adversarial Prompting.* 2023. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)
+- Hines et al. *Defending Against Indirect Prompt Injection Attacks With Spotlighting.* 2024. [arXiv:2403.14720](https://arxiv.org/abs/2403.14720)
 - Rabanser, Günnemann & Lipton. *Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.* NeurIPS 2019. [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)
 - *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
 - *An Auditing Test to Detect Behavioral Shift in Language Models.* [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)

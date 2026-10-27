@@ -3,6 +3,9 @@
 Claim with a lease and claim token (FOR UPDATE SKIP LOCKED) → read rows → skip unchanged input →
 judge outside any transaction → append judgments, upsert `current` and dequeue (only rows still carrying our
 claim token) in one transaction. Failures back off; after 5 attempts a row shows as `error`.
+
+A hardened calibration (#24) also queues an erase-and-check ('check') for every row `auto` would accept: the row is
+judged again without each of its pieces, and the result goes to docket.robust, which the view requires.
 """
 import hashlib
 import json
@@ -12,6 +15,7 @@ from collections import defaultdict
 
 from psycopg import sql
 
+from . import calibration, steer
 from .backend import Backend, BackendError
 from .spec import option_display, read_answer
 
@@ -37,8 +41,8 @@ class Worker:
         self.claim_size, self.concurrency, self.max_usd = claim_size, concurrency, max_usd
         self.poll, self.lease, self.log = poll, lease_minutes, log
         self.backends, self.decisions = {}, {}
-        self.totals = {"judged": 0, "probed": 0, "skipped_unchanged": 0, "deleted_rows": 0, "failed": 0, "tokens": 0,
-                       "usd": 0.0}
+        self.totals = {"judged": 0, "probed": 0, "checked": 0, "flagged": 0, "skipped_unchanged": 0, "deleted_rows": 0,
+                       "failed": 0, "tokens": 0, "usd": 0.0}
 
     def _conn(self):
         import psycopg
@@ -96,9 +100,17 @@ class Worker:
                 self._handle(conn, did, ver, keys, token, purpose)
         return len(claimed)
 
+    def _calibration(self, conn, did, ver):
+        """Read fresh each time: unlike the spec, a version's calibration changes when it is recalibrated."""
+        return conn.execute("SELECT calibration FROM docket.version WHERE decision_id = %s AND version = %s",
+                            (did, ver)).fetchone()[0]
+
     def _handle(self, conn, did, ver, keys, token, purpose="live"):
         """purpose 'live': judge changed rows and make the answer current. 'probe': always re-ask (the point is
-        to measure run-to-run noise) and record the answer in the ledger without making it current."""
+        to measure run-to-run noise) and record the answer in the ledger without making it current. 'check':
+        erase-and-check the current answer (#24)."""
+        if purpose == "check":
+            return self._check(conn, did, ver, keys, token)
         d = self._decision(conn, did, ver)
         spec = d["spec"]
         rows = self._rows(conn, d, keys)
@@ -120,7 +132,7 @@ class Worker:
         try:
             answers = backend.judge([json.loads(rows[k]) for k, _ in todo], spec["kind"], spec["question"],
                                     option_display(spec) if spec["kind"] == "choice" else None,
-                                    spec.get("batch_size", 1))
+                                    spec.get("batch_size", 1), untrusted=spec.get("untrusted", False))
         except BackendError as e:
             with conn.transaction():
                 self._fail(conn, did, ver, [k for k, _ in todo], token, e, purpose)
@@ -143,8 +155,74 @@ class Worker:
                     "SELECT %s, %s, k, j FROM unnest(%s::bigint[], %s::text[]) AS t(j, k) "
                     "ON CONFLICT (decision_id, version, row_key) DO UPDATE SET judgment_id = EXCLUDED.judgment_id",
                     (did, ver, [i for i, _ in ids], [k for _, k in ids]))
+                cal = self._calibration(conn, did, ver)
+                if cal and cal.get("harden"):                    # rows `auto` would accept wait for their check
+                    accepted = [k for (k, _), a in zip(todo, answers) if calibration.auto(a, spec, cal)]
+                    if accepted:
+                        conn.execute("INSERT INTO docket.queue (decision_id, version, row_key, purpose) "
+                                     "SELECT %s, %s, k, 'check' FROM unnest(%s::text[]) AS t(k) "
+                                     "ON CONFLICT (decision_id, version, row_key, purpose) DO NOTHING", (did, ver, accepted))
             self._dequeue(conn, did, ver, [k for k, _ in todo], token, purpose)
         self.totals["probed" if purpose == "probe" else "judged"] += len(todo)
+        self.totals["tokens"] += tokens
+        self.totals["usd"] = sum(b.cost_usd() for b in self.backends.values() if b.paid)
+
+    def _check(self, conn, did, ver, keys, token):
+        """Erase-and-check: judge each row again without each of its pieces. The row is flagged when an answer
+        differs from the current one by the view's rules (choice: the option; yes/no: the band), or when its text is
+        one piece, which can't be checked. Rows changed or deleted since being queued are checked as they are now."""
+        d = self._decision(conn, did, ver)
+        spec = d["spec"]
+        cal = self._calibration(conn, did, ver) or {}
+        cur = {k: (j, a) for k, j, a in conn.execute(
+            "SELECT c.row_key, j.id, j.answer FROM docket.current c JOIN docket.judgment j ON j.id = c.judgment_id "
+            "WHERE c.decision_id = %s AND c.version = %s AND c.row_key = ANY(%s)", (did, ver, keys)).fetchall()}
+        rows = self._rows(conn, d, keys)
+        todo = [k for k in keys if k in rows and k in cur]
+        gone = [k for k in keys if k not in todo]
+        if gone:
+            with conn.transaction():
+                self._dequeue(conn, did, ver, gone, token, "check")
+        if not todo:
+            return
+        verdict = (lambda a: read_answer(spec, a)[0]) if spec["kind"] == "choice" else (
+            lambda a: calibration.noul_answer(a, spec, cal))
+        pieces = {k: steer.erased(steer.segments(json.loads(rows[k]), d["text"]), d["text"]) for k in todo}
+        flat = [(k, rec) for k in todo for rec in pieces[k]]
+        backend = self._backend(spec)
+        before = backend.stats["input_tokens"]
+        try:
+            answers = backend.judge([rec for _, rec in flat], spec["kind"], spec["question"],
+                                    option_display(spec) if spec["kind"] == "choice" else None, 1,
+                                    untrusted=spec.get("untrusted", False))
+        except BackendError as e:
+            with conn.transaction():
+                self._fail(conn, did, ver, todo, token, e, "check")
+            self.totals["failed"] += len(todo)
+            self.log(f"backend error on {len(todo)} checks of decision {did} v{ver}: {e}")
+            return
+        tokens = backend.stats["input_tokens"] - before
+        got = defaultdict(list)
+        for (k, _), a in zip(flat, answers):
+            got[k].append(a)
+        out = []
+        for k in todo:
+            jid, current = cur[k]
+            ref = verdict(current)
+            flagged = len(pieces[k]) < 2 or any(verdict(a) != ref for a in got[k])
+            out.append((jid, k, len(pieces[k]), flagged,
+                        json.dumps([{"value": verdict(a), "score": read_answer(spec, a)[1]} for a in got[k]])))
+        with conn.transaction():
+            conn.execute(
+                "INSERT INTO docket.robust (judgment_id, decision_id, version, row_key, pieces, flagged, answers, tokens) "
+                "SELECT j, %s, %s, k, p, f, a::jsonb, %s FROM unnest(%s::bigint[], %s::text[], %s::int[], %s::bool[], "
+                "%s::text[]) AS t(j, k, p, f, a) ON CONFLICT (judgment_id) DO UPDATE SET flagged = EXCLUDED.flagged, "
+                "pieces = EXCLUDED.pieces, answers = EXCLUDED.answers, tokens = EXCLUDED.tokens, checked_at = now()",
+                (did, ver, round(tokens / len(todo)), [o[0] for o in out], [o[1] for o in out], [o[2] for o in out],
+                 [o[3] for o in out], [o[4] for o in out]))
+            self._dequeue(conn, did, ver, todo, token, "check")
+        self.totals["checked"] += len(todo)
+        self.totals["flagged"] += sum(o[3] for o in out)
         self.totals["tokens"] += tokens
         self.totals["usd"] = sum(b.cost_usd() for b in self.backends.values() if b.paid)
 

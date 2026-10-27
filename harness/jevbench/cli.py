@@ -19,6 +19,7 @@
   driftvalidate does the drift check alarm when it should, and only then? (no API calls)
   auditvalidate does the audit alarm when accepted answers fall below target, and only then? (no API calls)
   stratvalidate would labels stratified by answer certify more answers? (no API calls)
+  steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
 """
 import argparse
 import json
@@ -102,6 +103,8 @@ def main(argv=None):
     sub.add_parser("driftvalidate")
     sub.add_parser("auditvalidate")
     sub.add_parser("stratvalidate")
+    st = sub.add_parser("steer")
+    st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     sub.add_parser("cachecheck")
     sub.add_parser("experiments")
 
@@ -183,6 +186,9 @@ def main(argv=None):
     elif args.cmd == "stratvalidate":
         from . import stratvalidate
         print("report:", stratvalidate.run() + "/report.md")
+    elif args.cmd == "steer":
+        from . import steer
+        print("report:", steer.run(args.max_usd) + "/report.md")
     elif args.cmd == "frontier":
         from . import frontier
         print("report:", frontier.run() + "/report.md")

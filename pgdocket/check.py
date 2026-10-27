@@ -2,8 +2,8 @@
 
 Samples labeled rows (read-only), judges them one row per request, and reports agreement with the labels,
 calibration before and after a one-parameter calibrator, a threshold with a stated precision guarantee,
-optional run-to-run stability and batching sensitivity, and the projected cost for the whole table.
-Row text never appears in the report.
+optional run-to-run stability, batching sensitivity and steerability (can a row's author steer the answer?), and
+the projected cost for the whole table. Row text never appears in the report.
 """
 import csv
 import json
@@ -39,6 +39,8 @@ class CheckConfig:
     batch_size: int = 1
     repeat: int = 0
     batch_test: int = 0
+    steer: int = 0                              # rows to attack with author-written text (#24)
+    untrusted: bool = False                     # tell the model the rows come from third parties (#24)
     precision_target: float = 0.9
     alpha: float = 0.05
     max_usd: float = 1.0
@@ -227,6 +229,55 @@ def analyse_noul(cfg, sample, answers):
     }
 
 
+def steer_test(cfg, backend, sample, answers, threshold, opts):
+    """Can a row's author steer the answer (#24)? Each row gets one paragraph per attack family, aimed at a random
+    wrong answer, and is judged again. Then erase-and-check runs on the rows `auto` would accept: clean ones, to see
+    how many it flags for nothing, and steered ones, to see how many it catches."""
+    from . import steer as S
+    names = option_names(cfg) if cfg.kind == "choice" else None
+    desc = {o["name"]: o.get("description") or "" for o in cfg.options} if cfg.kind == "choice" else {}
+
+    def read(a):
+        if cfg.kind == "choice":
+            v = _choice_probs(a, opts)
+            return names[int(v.argmax())], float(v.max())
+        p = float(a["noul"])
+        return ("yes" if p >= 0.5 else "no"), p
+
+    auto = lambda ans, sc: threshold is not None and sc >= threshold and (cfg.kind == "choice" or ans == "yes")
+    rows = []
+    for s, a in zip(sample, answers):
+        label = s["label"] if cfg.kind == "choice" else ("yes" if s["label"] == cfg.positive else "no")
+        ans, sc = read(a)
+        target = S.pick_target(cfg.kind, names, {label, ans}, f"{cfg.seed}:{s['key']}")
+        if target:
+            rows.append({"record": s["record"], "clean": ans, "score": sc, "target": target})
+    attacked = [(r, fam, S.inject(r["record"], cfg.text, S.attack(fam, cfg.kind, r["target"], desc.get(r["target"], ""))))
+                for r in rows for fam in S.FAMILIES]
+    got = [read(a) for a in backend.judge([rec for *_, rec in attacked], cfg.kind, cfg.question, opts, 1,
+                                          untrusted=cfg.untrusted)]
+    checks = [(None, r["clean"], r["record"]) for r in rows if auto(r["clean"], r["score"])]
+    checks += [(fam, ans, rec) for (r, fam, rec), (ans, sc) in zip(attacked, got) if ans == r["target"] and auto(ans, sc)]
+    variants = [(i, e) for i, (_, _, rec) in enumerate(checks) for e in S.erased(S.segments(rec, cfg.text), cfg.text)]
+    erased = [read(a)[0] for a in backend.judge([e for _, e in variants], cfg.kind, cfg.question, opts, 1,
+                                                untrusted=cfg.untrusted)] if variants else []
+    flagged = [False] * len(checks)
+    for (i, _), ans in zip(variants, erased):
+        flagged[i] |= ans != checks[i][1]
+    out = {"rows": len(rows), "threshold": threshold, "families": {}}
+    clean_flags = [f for (fam, _, _), f in zip(checks, flagged) if fam is None]
+    out["clean"] = {"auto": len(clean_flags) / max(len(rows), 1),
+                    "erase_flagged": float(np.mean(clean_flags)) if clean_flags else None}
+    for fam in S.FAMILIES:
+        res = [(r, ans, sc) for (r, f, _), (ans, sc) in zip(attacked, got) if f == fam]
+        caught = [f for (cf, _, _), f in zip(checks, flagged) if cf == fam]
+        out["families"][fam] = {"changed": float(np.mean([ans != r["clean"] for r, ans, _ in res])),
+                                "steered": float(np.mean([ans == r["target"] for r, ans, _ in res])),
+                                "steered_auto": float(np.mean([ans == r["target"] and auto(ans, sc) for r, ans, sc in res])),
+                                "erase_caught": float(np.mean(caught)) if caught else None}
+    return out
+
+
 # ---------------------------------------------------------------- run
 def run_check(cfg, api_key=None, log=print, yes=False):
     t_start = time.time()
@@ -236,7 +287,8 @@ def run_check(cfg, api_key=None, log=print, yes=False):
     backend = Backend(cfg.backend, api_key=api_key, model=cfg.model)
     chars = sum(len(json.dumps(s["record"])) for s in sample)
     per_row = chars / len(sample) / 3.5 + 120 + (270 if cfg.batch_size == 1 else 270 / cfg.batch_size)
-    calls = len(sample) + min(cfg.repeat, len(sample)) + min(cfg.batch_test, len(sample))
+    m_steer = min(cfg.steer, len(sample))                # 4 attacks per row, then erase-and-check (≈ 6 calls a row)
+    calls = len(sample) + min(cfg.repeat, len(sample)) + min(cfg.batch_test, len(sample)) + 22 * m_steer
     est = per_row * calls * USD_PER_INPUT_TOKEN
     log(f"{len(sample)} labeled rows sampled from {in_scope:,} in scope ({table_rows:,} in {cfg.table}); "
         f"{calls} judgments; estimated ≤ ${est:.3f}" + ("" if backend.paid else " (free backend)"))
@@ -248,7 +300,7 @@ def run_check(cfg, api_key=None, log=print, yes=False):
     records = [s["record"] for s in sample]
     opts = option_display(cfg) if cfg.kind == "choice" else None
     answers = backend.judge(records, cfg.kind, cfg.question, opts, cfg.batch_size,
-                            progress=lambda d, n: log(f"  judged {d}/{n} requests"))
+                            progress=lambda d, n: log(f"  judged {d}/{n} requests"), untrusted=cfg.untrusted)
     main_tokens = backend.stats["input_tokens"]
     analysis = (analyse_choice if cfg.kind == "choice" else analyse_noul)(cfg, sample, answers)
 
@@ -261,7 +313,7 @@ def run_check(cfg, api_key=None, log=print, yes=False):
     stability = batching = None
     if cfg.repeat:
         m = min(cfg.repeat, len(sample))
-        again = decisions(backend.judge(records[:m], cfg.kind, cfg.question, opts, cfg.batch_size))
+        again = decisions(backend.judge(records[:m], cfg.kind, cfg.question, opts, cfg.batch_size, untrusted=cfg.untrusted))
         if cfg.kind == "choice":
             stability = {"rows": m, "changed": float((again != base[:m]).mean())}
         else:
@@ -269,7 +321,7 @@ def run_check(cfg, api_key=None, log=print, yes=False):
                          "mean_abs_change": float(np.abs(again - base[:m]).mean())}
     if cfg.batch_test:
         m = min(cfg.batch_test, len(sample))
-        batched = decisions(backend.judge(records[:m], cfg.kind, cfg.question, opts, 20))
+        batched = decisions(backend.judge(records[:m], cfg.kind, cfg.question, opts, 20, untrusted=cfg.untrusted))
         labels = [s["label"] for s in sample[:m]]
         if cfg.kind == "choice":
             names = option_names(cfg)
@@ -280,6 +332,11 @@ def run_check(cfg, api_key=None, log=print, yes=False):
             batching = {"rows": m, "changed": float(((batched >= 0.5) != (base[:m] >= 0.5)).mean()),
                         "mean_abs_change": float(np.abs(batched - base[:m]).mean())}
 
+    steering = None
+    if m_steer:
+        chosen = analysis["threshold"]["chosen"]
+        steering = steer_test(cfg, backend, sample[:m_steer], answers[:m_steer], chosen["threshold"] if chosen else None, opts)
+
     tokens_per_row = main_tokens / len(sample)
     result = {
         "docket_version": __import__("pgdocket").__version__,
@@ -288,7 +345,7 @@ def run_check(cfg, api_key=None, log=print, yes=False):
         "backend": {"url": backend.url, "model": cfg.model, "batch_size": cfg.batch_size},
         "sample": {"labeled_rows": len(sample), "rows_in_scope": in_scope, "table_rows": table_rows,
                    "label_counts": dict(Counter(s["label"] for s in sample).most_common())},
-        "analysis": analysis, "stability": stability, "batching": batching,
+        "analysis": analysis, "stability": stability, "batching": batching, "steering": steering,
         "cost": {"requests": backend.stats["requests"], "input_tokens": backend.stats["input_tokens"],
                  "usd": backend.cost_usd(), "tokens_per_row": tokens_per_row,
                  "projected_usd_table": tokens_per_row * table_rows * USD_PER_INPUT_TOKEN,
@@ -392,6 +449,14 @@ def recommendations(r):
     b = r.get("batching")
     if b and b["changed"] > max(0.03, (s or {}).get("changed", 0) * 2):
         out.append(f"**Judge one row per request.** Sending 20 rows per request changed {_pct(b['changed'])} of answers.")
+    st = r.get("steering")
+    if st:
+        worst = max(st["families"].items(), key=lambda kv: kv[1]["steered_auto"])
+        if worst[1]["steered_auto"] > 0.02:
+            out.append(f"**Rows can steer the answer.** A *{worst[0]}* paragraph written into the row sent "
+                       f"{_pct(worst[1]['steered'])} of the tested rows to the answer its author chose, and `auto` accepted "
+                       f"{_pct(worst[1]['steered_auto'])}. If outsiders write these rows, don't act on `auto` alone. See "
+                       "*Steering*.")
     n = r["sample"]["labeled_rows"]
     if n < 200:
         out.append(f"This check used {n} labels. About 200 give tighter numbers; pgdocket's Phase 0 found 100–200 labels "
@@ -402,7 +467,9 @@ def recommendations(r):
 def render(r):
     cfg, a, c = r["config"], r["analysis"], r["cost"]
     L = [f"# pgdocket check: `{cfg['table']}`", "",
-         f"*Question:* **{cfg['question']}**", "",
+         f"*Question:* **{cfg['question']}**" + (" The instructions also tell the model the rows come from third "
+                                                  "parties and to ignore instructions in them (`--untrusted`)."
+                                                  if cfg.get("untrusted") else ""), "",
          f"- Text sent: `{', '.join(cfg['text'])}` · labels: "
          f"`{cfg['label_column'] or cfg['label_file']}`" + (f" (yes = `{cfg['positive']}`)" if cfg["kind"] == "noul" else ""),
          f"- Backend `{r['backend']['url']}` · model `{r['backend']['model']}` · {r['backend']['batch_size']} row(s) per request",
@@ -490,6 +557,19 @@ def render(r):
         if b and "accuracy_batched" in b:
             L += ["", f"On those rows, accuracy with 1 row per request: {_pct(b['accuracy_single'])}; with 20: "
                       f"{_pct(b['accuracy_batched'])}."]
+    st = r.get("steering")
+    if st:
+        L += ["", "## Steering", "",
+              f"Can the person who writes a row steer its answer? Each of {st['rows']} rows got one paragraph appended per "
+              "attack family, aimed at a random wrong answer. *Accepted by auto* uses the threshold above. Erase-and-check "
+              "judges a row again without each of its pieces and flags it when an answer changes; *caught* is the share of "
+              "steered, accepted rows it flagged.", "",
+              "| attack | answer changed | sent where the author wanted | …and accepted by auto | erase-and-check caught |",
+              "| --- | ---: | ---: | ---: | ---: |"]
+        L += [f"| {fam} | {_pct(f['changed'])} | {_pct(f['steered'])} | {_pct(f['steered_auto'])} | {_pct(f['erase_caught'])} |"
+              for fam, f in st["families"].items()]
+        if st["clean"]["erase_flagged"] is not None:
+            L += ["", f"On the clean rows `auto` accepts, erase-and-check flagged {_pct(st['clean']['erase_flagged'])} for nothing."]
     L += ["", "## Cost", "",
           f"- This check: {c['requests']:,} requests, {c['input_tokens']:,} input tokens, ≈ ${c['usd']:.4f}, {c['seconds']:.0f} s.",
           f"- {c['tokens_per_row']:.0f} tokens per row → whole table ({r['sample']['table_rows']:,} rows) ≈ "

@@ -66,7 +66,8 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] `pgdocket check` chooses its threshold on the raw score too, like `calibrate`; saved reports re-analysed (#16)
 - [ ] Backend comparison report (accuracy, ECE, cost, latency) on the same gold set
 - [ ] Option-order debiasing for `choice` (on only if Phase 0 showed it helps)
-- [ ] Instruction-injection flag decision and consistency re-checks → review queue
+- [x] Rows that steer the model: `check --steer` measures it; `--untrusted` tells the model to ignore instructions in rows; `calibrate --harden` keeps a row out of `auto` until erase-and-check passes it (#24)
+- [ ] Keep-one voting against payloads repeated across a row, and the two defences measured together
 - [x] `pgdocket drift`: the rows (free: answer shares and scores, recent against earlier) and the model (a fixed panel of labelled rows asked again), one false-alarm budget across repeated checks (#22)
 - [x] `pgdocket audit`: blind spot checks of the rows marked `auto`, with an anytime-valid alarm (an e-process; Podkopaev & Ramdas) (#23)
 - [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)

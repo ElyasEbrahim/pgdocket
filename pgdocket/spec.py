@@ -43,4 +43,6 @@ def validate(spec):
         raise ValueError("spec.question is required")
     if spec["kind"] == "choice" and len(spec.get("options", [])) < 2:
         raise ValueError("a choice needs at least two options")
+    if not isinstance(spec.get("untrusted", False), bool):
+        raise ValueError("spec.untrusted must be true or false")
     return spec

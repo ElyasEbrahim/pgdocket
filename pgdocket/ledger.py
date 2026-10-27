@@ -118,7 +118,8 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
         return len(rows)
 
 
-def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None):
+def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None,
+              harden=False):
     """Fit a calibrator on labeled rows that have a current answer, and store it on the active version.
 
     Uses labels drawn at random or a whole column. Hand-picked labels ('manual', e.g. the disagreements exported by
@@ -126,12 +127,33 @@ def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False,
     threshold guarantee assumes the labelled rows are like the rest.
     `per_answer`: one threshold and guarantee per answer instead of one for all accepted rows together (#19).
     `recall_target` (yes/no decisions): also a threshold below which rows are answered "no" without review (#21).
+    `harden`: a row is `auto` only once erase-and-check has passed it (#24); the rows `auto` accepts now are queued
+    for the worker to check (`cal["checks_queued"]`).
     """
     with connect(dsn) as conn:
-        return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer, recall_target)
+        return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer, recall_target,
+                          harden)
 
 
-def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None):
+def harden_enqueue(conn, d, cal):
+    """Queue erase-and-check for the current rows `auto` would accept that have no check for their answer. Yes/no
+    answers depend on the calibration's bands, so those rows are checked again after every recalibration."""
+    rows = conn.execute(
+        "SELECT c.row_key, j.answer, r.judgment_id IS NOT NULL FROM docket.current c "
+        "JOIN docket.judgment j ON j.id = c.judgment_id LEFT JOIN docket.robust r ON r.judgment_id = j.id "
+        "WHERE c.decision_id = %s AND c.version = %s", (d["id"], d["version"])).fetchall()
+    redo = d["spec"]["kind"] == "noul"
+    keys = [k for k, a, checked in rows if (redo or not checked) and calibration.auto(a, d["spec"], cal)]
+    if keys:
+        conn.execute("INSERT INTO docket.queue (decision_id, version, row_key, purpose) "
+                     "SELECT %s, %s, k, 'check' FROM unnest(%s::text[]) AS t(k) "
+                     "ON CONFLICT (decision_id, version, row_key, purpose) DO NOTHING", (d["id"], d["version"], keys))
+        conn.execute("SELECT pg_notify('docket', %s)", (str(d["id"]),))
+    return len(keys)
+
+
+def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None,
+               harden=False):
     sampling = ["random", "all", "manual"] if include_manual else ["random", "all"]
     rows = conn.execute(
         "SELECT l.label, j.answer FROM docket.label l "
@@ -143,8 +165,12 @@ def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, 
     labels = [r[0] for r in rows] if spec["kind"] == "choice" else [r[0] == "yes" for r in rows]  # yes/no normalised
     cal = calibration.fit(spec, [r[1] for r in rows], labels, precision_target, alpha, per_answer,
                           recall_target) | {"sampling": sampling}
+    if harden:
+        cal["harden"] = True
     conn.execute("UPDATE docket.version SET calibration = %s WHERE decision_id = %s AND version = %s",
                  (Jsonb(cal), d["id"], d["version"]))
+    if harden:
+        cal["checks_queued"] = harden_enqueue(conn, d, cal)
     return cal
 
 
@@ -155,7 +181,8 @@ def status(dsn):
         return [dict(zip(cols, r)) for r in cur.fetchall()]
 
 
-def load_spec(kind, question, options=None, options_file=None, backend="jev", model="jev-1.14.0", batch_size=1):
+def load_spec(kind, question, options=None, options_file=None, backend="jev", model="jev-1.14.0", batch_size=1,
+              untrusted=False):
     opts = []
     if options_file:
         with open(options_file) as f:
@@ -165,6 +192,8 @@ def load_spec(kind, question, options=None, options_file=None, backend="jev", mo
     spec = {"kind": kind, "question": question, "backend": backend, "model": model, "batch_size": batch_size}
     if kind == "choice":
         spec["options"] = opts
+    if untrusted:
+        spec["untrusted"] = True
     return validate(spec)
 
 
@@ -178,7 +207,7 @@ def estimate(dsn, name, answer=None, where=None, level=0.95, include_manual=Fals
 
 
 def revise(dsn, name, question=None, options=None, options_file=None, model=None, backend=None, batch_size=None,
-           backfill=False):
+           backfill=False, untrusted=None):
     """Add a shadow version: the active spec with the given fields replaced. Nothing is judged unless `backfill`;
     `compare` judges a sample first. Returns (version, spec)."""
     with connect(dsn) as conn:
@@ -187,7 +216,7 @@ def revise(dsn, name, question=None, options=None, options_file=None, model=None
             spec["question"] = question
         if options or options_file:
             spec["options"] = load_spec("choice", "x", options, options_file)["options"]
-        for k, v in (("model", model), ("backend", backend), ("batch_size", batch_size)):
+        for k, v in (("model", model), ("backend", backend), ("batch_size", batch_size), ("untrusted", untrusted)):
             if v is not None:
                 spec[k] = v
         validate(spec)
@@ -242,7 +271,7 @@ def promote(dsn, name, version, force=False):
             try:
                 cal = _calibrate(conn, _decision(conn, name), prev["precision_target"], prev.get("alpha", 0.05),
                                  "manual" in prev.get("sampling", []), prev.get("mode") == "per answer",
-                                 prev.get("recall_target"))
+                                 prev.get("recall_target"), prev.get("harden", False))
             except ValueError as e:
                 why = str(e)
     return {"previous": d["version"], "missing": missing, "comparison": comparison, "calibration": cal,

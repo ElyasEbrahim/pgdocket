@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -623,3 +623,52 @@ def test_audit_draws_blind_batches_and_catches_accepted_answers_going_wrong(env,
                          "WHERE d.name = 'inbox' AND l.sampling = 'audit'").fetchone()[0] == 60
     assert ledger.calibrate(env["owner"], "inbox")["n_labels"] == 100                  # audit labels stay apart...
     assert audit() == 0 and "0 rows drawn, 0 labelled" in capsys.readouterr().out       # ...and a new calibration starts afresh
+
+
+def test_harden_keeps_a_steered_row_out_of_auto(env, capsys):
+    """#24: with a model that obeys text in the row, an override appended by the row's author sends it to the
+    author's answer with full confidence. A hardened calibration keeps every row out of `auto` until erase-and-check
+    has run, then flags the steered rows and passes the rest; new rows are checked as they are judged."""
+    from pgdocket import cli
+    from pgdocket.backend import UNTRUSTED
+    from pgdocket.steer import attack
+    teams = ["billing", "technical", "sales"]
+    para = lambda t, c: t + " " + c * 150                       # each paragraph names the team: erasing one keeps it
+    rows = [(i, f"ticket {i}", para(teams[i % 3], "x") + "\n\n" + para(teams[i % 3], "y"), teams[i % 3]) for i in range(1, 55)]
+    rows += [(i, f"ticket {i}", para("billing", "x") + "\n\n" + para("billing", "y") + "\n\n"
+              + attack("override", "choice", "sales"), "billing") for i in range(55, 61)]
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.desk (id int PRIMARY KEY, title text, body text, team text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.desk VALUES (%s, %s, %s, %s)", rows)
+    spec = _spec(env["url"]) | {"untrusted": True}
+    FakeSystemOne.obey_injection = True
+    try:
+        ledger.create(env["owner"], "desk", "shop.desk", "id", ["title", "body"], spec)
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        assert FakeSystemOne.requests[-1]["questions"]["r0"]["instructions"].endswith(UNTRUSTED)
+        ledger.import_labels(env["owner"], "desk", column="team")
+
+        def view():
+            with psycopg.connect(env["owner"]) as c:
+                return {k: (a, auto, chk) for k, a, auto, chk in
+                        c.execute("SELECT key, answer, auto, erase_check FROM docket.v_desk")}
+        ledger.calibrate(env["owner"], "desk", precision_target=0.8)
+        assert {k: v[:2] for k, v in view().items() if k > 54} == {k: ("sales", True) for k in range(55, 61)}  # steered, auto
+        cli.main(["calibrate", "--dsn", env["owner"], "desk", "--precision-target", "0.8", "--harden"])
+        assert "hardened: 60 accepted rows queued for erase-and-check" in capsys.readouterr().out
+        assert not any(auto for _, auto, _ in view().values())                     # nothing is auto until checked
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        v = view()
+        assert all(v[k][1:] == (False, "flagged") for k in range(55, 61))          # the steered rows go to review
+        assert all(v[k][1:] == (True, "passed") for k in range(1, 55))
+        with psycopg.connect(env["owner"], autocommit=True) as c:                  # a new row is checked when judged
+            c.execute("INSERT INTO shop.desk VALUES (61, 'ticket 61', %s, 'sales')", (para("sales", "x") + "\n\n" + para("sales", "y"),))
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        assert view()[61] == ("sales", True, "passed")
+        ver, _ = ledger.revise(env["owner"], "desk", question="Which team should take this ticket?", backfill=True)
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        p = ledger.promote(env["owner"], "desk", ver)
+        assert p["calibration"]["harden"] and p["calibration"]["checks_queued"] > 0   # hardening carries over
+    finally:
+        FakeSystemOne.obey_injection = False

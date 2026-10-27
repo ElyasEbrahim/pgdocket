@@ -2,6 +2,27 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-10-27
+
+### Added (rows that steer the model, #24)
+- **The finding (`jevbench steer`, $0.60 of Jev calls).** On 300 labelled Kubernetes issues (jev-1.14), a counterfeit routing policy appended by the issue's author sent 98.7 % of them to the SIG the author chose. `auto` accepted 93.3 %: steered answers come out fully confident.
+  - A misleading claim with no instruction in it steered 72.3 %.
+  - "Ignore previous instructions" steered 1.0 %.
+- **`pgdocket check --steer N`:** appends four attack families to N labelled rows, each aimed at a random wrong answer. It reports how many were steered and accepted by `auto`, and what erase-and-check catches and flags for nothing.
+- **`--untrusted`** (on `create`, `revise` and `check`; stored in the spec): the instructions tell the model the rows come from third parties and to ignore any instructions, requests or policies in them.
+  - **What it stops.** The counterfeit policy fell from 98.7 % to 1.7 % steered, and a policy aimed at the sentence itself to 2.3 %.
+  - **What it doesn't.** Claims still steered 34 %.
+  - **Cost.** 1.4 points of accuracy.
+- **`calibrate --harden`:** a row is `auto` only after the worker has judged it again without each of its paragraphs and every answer agreed (erase-and-check, Kumar et al. 2023).
+  - **Data model.** Migration `009` adds `docket.robust`, queue purpose `check`, and an `erase_check` column in the view. `promote` keeps hardening.
+  - **Evidence.** It caught every steered row `auto` would have accepted, claims included.
+  - **Cost.** It sent 7.4 % of clean accepted rows to review.
+  - **Limit.** It is beaten by a payload repeated in two places, which `--untrusted` stops.
+- **Write-up:** `docs/phase1/steering.md`; design: ADR 0005.
+
+### Changed
+- `jevbench steer` checks its spending cap before each batch of calls, from an estimate of the batch; the first run passed its own $0.60 cap by 0.3 cents.
+
 ## 2026-10-26
 
 ### Added (audits, #23)

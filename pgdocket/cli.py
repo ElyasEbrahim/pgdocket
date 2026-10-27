@@ -59,6 +59,11 @@ def main(argv=None):
     c.add_argument("--positive", help="noul: the label value that means yes")
     c.add_argument("--where", help="extra SQL filter on the table, e.g. \"created_at > '2025-01-01'\"")
     c.add_argument("--sample", type=int, default=300)
+    c.add_argument("--untrusted", action="store_true",
+                   help="tell the model the rows come from third parties and to ignore instructions in them")
+    c.add_argument("--steer", type=int, default=0, metavar="N",
+                   help="also try to steer N rows with text appended by their author, and test erase-and-check "
+                        "(about 20 extra calls per row)")
     c.add_argument("--seed", default="1")
     c.add_argument("--backend", default="jev", help="jev | sim | any /v1/systemone URL")
     c.add_argument("--model", default="jev-1.14.0")
@@ -89,6 +94,8 @@ def main(argv=None):
     cr.add_argument("--model", default="jev-1.14.0")
     cr.add_argument("--batch-size", type=int, default=1)
     cr.add_argument("--no-backfill", action="store_true", help="only judge rows inserted or changed from now on")
+    cr.add_argument("--untrusted", action="store_true",
+                    help="outsiders write the rows: tell the model to ignore instructions in them")
     w = sub.add_parser("worker", help="judge queued rows")
     dsn_arg(w)
     w.add_argument("--once", action="store_true", help="exit when the queue is empty")
@@ -117,6 +124,9 @@ def main(argv=None):
                     help="choice: one threshold and guarantee per answer (answers with too few labels get no auto)")
     ca.add_argument("--include-manual", action="store_true",
                     help="also fit on hand-picked labels (e.g. exported disagreements); may bias the guarantee")
+    ca.add_argument("--harden", action="store_true",
+                    help="auto only for rows that pass erase-and-check: no answer changes with any one piece of their "
+                         "text removed (about 5 extra calls per accepted row)")
     es = sub.add_parser("estimate", help="counts with confidence intervals (prediction-powered inference)")
     dsn_arg(es)
     es.add_argument("name")
@@ -164,6 +174,8 @@ def main(argv=None):
     rv.add_argument("--backend")
     rv.add_argument("--batch-size", type=int)
     rv.add_argument("--backfill", action="store_true", help="queue every row now (default: compare a sample first)")
+    rv.add_argument("--untrusted", action=argparse.BooleanOptionalAction, default=None,
+                    help="tell the model to ignore instructions in the rows (or --no-untrusted to stop)")
     cp = sub.add_parser("compare", help="compare a shadow version with the active one on a sample")
     dsn_arg(cp)
     cp.add_argument("name")
@@ -221,7 +233,8 @@ def main(argv=None):
     cfg = CheckConfig(dsn=a.dsn, table=a.table, key=a.key, text=[t.strip() for t in a.text.split(",")], kind=a.kind,
                       question=a.question, options=_options(a), label_column=a.label_column, label_file=a.label_file,
                       positive=a.positive, where=a.where, sample=a.sample, seed=a.seed, backend=a.backend,
-                      model=a.model, batch_size=a.batch_size, repeat=a.repeat, batch_test=a.batch_test,
+                      model=a.model, batch_size=a.batch_size, repeat=a.repeat, batch_test=a.batch_test, steer=a.steer,
+                      untrusted=a.untrusted,
                       precision_target=a.precision_target, max_usd=a.max_usd, out=a.out)
     if a.export_sample:
         n = export_sample(cfg, a.export_sample)
@@ -243,7 +256,8 @@ def _ledger_command(a):
         applied = ledger.install(a.dsn)
         print("applied: " + (", ".join(applied) if applied else "nothing (already up to date)"))
     elif a.cmd == "create":
-        spec = ledger.load_spec(a.kind, a.question, a.options, a.options_file, a.backend, a.model, a.batch_size)
+        spec = ledger.load_spec(a.kind, a.question, a.options, a.options_file, a.backend, a.model, a.batch_size,
+                                a.untrusted)
         did, queued = ledger.create(a.dsn, a.name, a.table, a.key, [t.strip() for t in a.text.split(",")], spec,
                                     backfill=not a.no_backfill)
         print(f"decision {a.name} (id {did}) created; {queued} rows queued; read it from docket.v_{a.name}")
@@ -260,7 +274,7 @@ def _ledger_command(a):
     elif a.cmd == "calibrate":
         try:
             cal = ledger.calibrate(a.dsn, a.name, a.precision_target, include_manual=a.include_manual,
-                                   per_answer=a.per_answer, recall_target=a.recall_target)
+                                   per_answer=a.per_answer, recall_target=a.recall_target, harden=a.harden)
         except ValueError as e:                       # too few labelled rows with an answer: say why, no traceback
             if "labeled rows" not in str(e):
                 sys.exit(f"{a.name}: {e}")
@@ -272,6 +286,9 @@ def _ledger_command(a):
               + _threshold_summary(cal))
         for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name)]):
             print(line)
+        if a.harden:
+            print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for erase-and-check; until the worker has "
+                  "checked a row, `auto` is false for it")
     elif a.cmd == "estimate":
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
         lvl = f"{100 * a.level:.0f} %"
@@ -305,7 +322,7 @@ def _ledger_command(a):
         print(f"decision {a.name} dropped")
     elif a.cmd == "revise":
         ver, spec = ledger.revise(a.dsn, a.name, a.question, a.options, a.options_file, a.model, a.backend, a.batch_size,
-                                  a.backfill)
+                                  a.backfill, a.untrusted)
         print(f"{a.name} v{ver} added as a shadow version; docket.v_{a.name} still shows the active one")
         print(f"next: pgdocket compare {a.name} {ver} --sample 200 --wait 600   (or --run if no worker is running)"
               if not a.backfill else
