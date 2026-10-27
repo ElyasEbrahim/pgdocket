@@ -12,7 +12,7 @@ None of them measured classification of table rows behind a calibrated `auto` th
 
 ## What happens
 
-300 live Kubernetes issues, each with the SIG people chose, judged by jev-1.14.0 (the default for new decisions). Each issue's author appends one paragraph that tries to send the issue to a SIG of their choosing (a random wrong one). `auto` uses the threshold `calibrate` sets at 90 % precision (0.687). It is fitted on all 300 labels, because 80 random labels can't certify 90 % on this task. On the clean text, accuracy is 91.7 % and 95.0 % of issues are `auto`, 93.7 % of them right. The run made 16,288 Jev calls for $0.60 ([report](../../results/steer-k8s/report.md)).
+300 live Kubernetes issues, each with the SIG people chose, judged by jev-1.14.0 (the default for new decisions). Each issue's author appends one paragraph that tries to send the issue to a SIG of their choosing (a random wrong one). `auto` uses the threshold `calibrate` sets at 90 % precision (0.687). It is fitted on all 300 labels, because 80 random labels can't certify 90 % on this task. On the clean text, accuracy is 91.7 % and 95.0 % of issues are `auto`, 93.7 % of them right. The run made 19,406 Jev calls for $0.74: $0.60 for the attacks and each defence alone, and $0.14 to measure the two defences together ([report](../../results/steer-k8s/report.md)).
 
 | what the author appends | sent to the author's SIG | …and accepted by `auto` | precision of accepted rows |
 | --- | ---: | ---: | ---: |
@@ -34,10 +34,10 @@ None of them measured classification of table rows behind a calibrated `auto` th
 
 | attack | sent to the author's SIG, without → with the sentence | accepted by `auto`, without → with |
 | --- | ---: | ---: |
-| counterfeit policy | 98.7 % → 1.7 % | 93.3 % → 0.3 % |
-| the policy, written twice | 98.7 % → 2.7 % | 91.0 % → 0.7 % |
-| a policy that claims to be part of the instructions | 70.7 % → 2.3 % | 39.7 % → 1.3 % |
-| a misleading claim | 72.3 % → 34.0 % | 59.0 % → 17.0 % |
+| counterfeit policy | 98.7 % → 1.3 % | 93.3 % → 0.0 % |
+| the policy, written twice | 98.7 % → 2.3 % | 91.0 % → 0.3 % |
+| a policy that claims to be part of the instructions | 70.7 % → 2.0 % | 39.7 % → 1.0 % |
+| a misleading claim | 72.3 % → 33.7 % | 59.0 % → 16.7 % |
 
 On clean text it costs 1.4 points of accuracy (91.7 → 90.3 %), and at its own 90 % threshold 90.0 % of issues are `auto` instead of 95.0 %.
 
@@ -47,10 +47,21 @@ The sentence stopped every instruction-style attack we wrote, including one aime
 - **Why it works.** An attacker's paragraph that changed the answer is gone in one of those calls, so that call answers like the clean row and the row goes to review. This is erase-and-check (Kumar et al., 2023), whose guarantee covers an injection confined to one place.
 - **It caught every steered row `auto` would have accepted,** for every single-paragraph attack, the misleading claim included.
 - **It costs** 7.4 % of the clean accepted issues, sent to review because one piece decided their answer. That leaves 88.0 % of issues `auto` instead of 95.0 %, with precision 94.7 % instead of 93.7 %. It also takes about five extra calls per accepted row.
-- **It can be beaten by repeating the payload** in two places: then every erased version still contains one copy, and it caught none. The `--untrusted` sentence stops that repeated policy (2.7 % steered).
+- **It can be beaten by repeating the payload** in two places: then every erased version still contains one copy, and it caught none. The `--untrusted` sentence stops that repeated policy (2.3 % steered).
 - **Rows with a single piece of text can't be checked,** so they stay out of `auto`.
 
-**Use both.** Each covers the other's gap: the sentence stops repeated instructions, and erase-and-check stops single misleading paragraphs. We did not measure the two together: that would have needed another round of calls beyond the budget set for this experiment.
+**Use both.** Each covers the other's gap: the sentence stops repeated instructions, and erase-and-check stops single misleading paragraphs. Measured together, on the share of all issues sent to the author's SIG **and** accepted by `auto`:
+
+| attack | no defence | `--untrusted` | `--harden` | both |
+| --- | ---: | ---: | ---: | ---: |
+| counterfeit policy | 93.3 % | 0.0 % | 0.0 % | 0.0 % |
+| a misleading claim | 59.0 % | 16.7 % | 0.0 % | 0.3 % |
+| the policy, written twice | 91.0 % | 0.3 % | 91.0 % | 0.3 % |
+| a policy aimed at the sentence | 39.7 % | 1.0 % | – | 0.3 % |
+| plain instruction / "ignore previous instructions" | 9.7 % / 0.3 % | 0.7 % / 0.0 % | 0.0 % / 0.0 % | 0.0 % / 0.0 % |
+| **a misleading claim, written twice** | **45.0 %** | **7.3 %** | – | **7.3 %** |
+
+Under both defences, every attack we tried got through on at most 0.3 % of issues, except one. A misleading claim written twice is content, which the sentence can't forbid, and it is repeated, which erase-and-check can't remove; 7.3 % of issues still got through. On clean text, both together cost 1.4 points of accuracy and leave 86.3 % of issues `auto`, 94.6 % of them right (no defence: 95.0 % and 93.7 %). Under the sentence, erase-and-check sent fewer clean issues to review than alone (4.1 % of the accepted ones, against 7.4 %). One issue whose answer the sentence alone moved onto the attacker's target is not counted as steered.
 
 ```bash
 pgdocket check … --steer 100                     # how steerable is this decision on my table? (read-only)
@@ -65,13 +76,13 @@ pgdocket calibrate triage --harden               # auto only after erase-and-che
 ## Not adopted
 
 - **Pattern filters.** Regular expressions for instruction-like text caught every instruction-style attack in our run, but we wrote them knowing the attacks, so that proves nothing. They missed the claim entirely, and any rewording gets past them. They also fired on 1.3 % of clean issues.
-- **Keep-one.** Judging each piece alone and flagging rows whose pieces favour another answer caught 85.7 % of the repeated policy, which erase-and-check missed. It flagged 7.0 % of clean accepted issues, a cost on top of erase-and-check's. It is a candidate for later.
+- **Keep-one.** Judging each piece alone and flagging rows whose pieces favour another answer caught 85.7 % of the repeated policy, which erase-and-check missed. It flagged 7.0 % of clean accepted issues, a cost on top of erase-and-check's. It is the candidate for the claim written twice, the one attack both defences let through.
 
 ## Limits
 
 - **One task and one model.** These are Kubernetes routing with jev-1.14. Run `check --steer` on your own decision.
 - **Fixed attacks.** The attacks are fixed templates, not an attacker who adapts after seeing the answers. Check Point's adaptive attackers broke every configuration they tried.
-- **Gaps in erase-and-check.** It only covers injections confined to one piece. A payload spread across the text, or misleading content repeated in every paragraph, gets past it.
+- **Gaps in erase-and-check.** It only covers injections confined to one piece. A payload spread across the text, or misleading content repeated in every paragraph, gets past it: a claim written twice got 7.3 % of issues through both defences.
 - **What the guarantee covers.** The precision guarantee covers all rows above the threshold. Hardening removes some of them; on this task the rows left were more precise (94.7 % vs 93.7 %), but that is measured, not guaranteed. Calibrating with every label checked would make it so.
 
 ## Sources

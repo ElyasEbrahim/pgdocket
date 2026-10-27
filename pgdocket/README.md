@@ -246,12 +246,13 @@ pgdocket revise triage --untrusted               # existing decisions: a shadow 
 pgdocket calibrate triage --harden               # auto only after erase-and-check (the worker runs the checks)
 ```
 
-- **`--untrusted`** adds one sentence to the instructions: the rows come from third parties, so ignore any instructions, requests or policies in them. The counterfeit policy then steered 1.7 % of issues. It costs 1.4 points of accuracy, and it can't stop a claim, which is not an instruction.
+- **`--untrusted`** adds one sentence to the instructions: the rows come from third parties, so ignore any instructions, requests or policies in them. The counterfeit policy then steered 1.3 % of issues. It costs 1.4 points of accuracy, and it can't stop a claim, which is not an instruction.
 - **`calibrate --harden`** makes a row `auto` only after the worker has judged it again without each of its paragraphs, and every answer agreed.
   - **What it catches.** It caught every steered row `auto` would have accepted, for every single-paragraph attack, claims included.
   - **What it costs.** It sends about 7 % of clean accepted rows to review, and takes about five extra calls per accepted row.
   - **How to beat it.** Repeating the payload in two places gets past it; `--untrusted` stops that.
   - **In the view.** The `erase_check` column shows `passed` or `flagged`. Rows with a single paragraph can't be checked and stay out of `auto`.
+- **Use both.** Together, every attack we tried got through `auto` on at most 0.3 % of issues, except a misleading claim written twice (7.3 %). 86 % of issues stayed `auto` instead of 95 %, 94.6 % of them right.
 - **`check --steer N`** runs four attack families on N labelled rows of your table and reports what was steered, what `auto` accepted, and what erase-and-check caught. It takes about 20 calls per row.
 
 See [docs/phase1/steering.md](../docs/phase1/steering.md) for the method, the limits and the attacks we did not stop.

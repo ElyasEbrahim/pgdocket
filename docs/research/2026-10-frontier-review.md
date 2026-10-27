@@ -133,10 +133,11 @@ A fourth sweep, on the risk none of the earlier ones covered: text in a row aime
   - **HiddenLayer** (reported [2026-10-15](https://www.infoworld.com/article/4236103/typesafes-jev-even-more-susceptible-to-attack-than-llms-says-security-vendor.html)): adversarial text and injection disrupted Jev.
   - **Wu & Lim** ([arXiv:2609.28613](https://arxiv.org/abs/2609.28613)): on agent tasks, success was rare and tied to small decision margins.
   - **The gap.** None of them measured classification of table rows behind a calibrated threshold.
-- **Measured** (`jevbench steer`, $0.60, [results/steer-k8s](../../results/steer-k8s/report.md)): on 300 labelled Kubernetes issues, a counterfeit routing policy appended by the issue's author steered 98.7 %, and `auto` accepted 93.3 %. A misleading claim with no instruction in it steered 72.3 %, "ignore previous instructions" 1.0 %. Steered answers were fully confident, so the threshold gave no protection.
+- **Measured** (`jevbench steer`, $0.74, [results/steer-k8s](../../results/steer-k8s/report.md)): on 300 labelled Kubernetes issues, a counterfeit routing policy appended by the issue's author steered 98.7 %, and `auto` accepted 93.3 %. A misleading claim with no instruction in it steered 72.3 %, "ignore previous instructions" 1.0 %. Steered answers were fully confident, so the threshold gave no protection.
 - **Adopted** (#24, [steering.md](../phase1/steering.md), ADR 0005):
-  - **`--untrusted`**, a distrust sentence: the policy fell to 1.7 %, and one aimed at the sentence to 2.3 %; claims still steered 34 %. That runs against Check Point's result, but our attacks were fixed templates and theirs adapted.
+  - **`--untrusted`**, a distrust sentence: the policy fell to 1.3 %, and one aimed at the sentence to 2.0 %; claims still steered 33.7 %. That runs against Check Point's result, but our attacks were fixed templates and theirs adapted.
   - **`calibrate --harden`**, erase-and-check (Kumar et al., [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)): it caught every steered row `auto` would have accepted, claims included, and sent 7.4 % of clean accepted rows to review. A payload written twice beats it, and the sentence stops that.
+  - **Both together:** at most 0.3 % of issues got through `auto` for every attack except a misleading claim written twice (7.3 %).
   - **`check --steer`**, so teams can measure their own decision.
 - **Not adopted.**
   - **Pattern filters:** circular evidence, and they miss claims.
