@@ -87,10 +87,13 @@ pgdocket calibrate triage --harden               # auto only after erase-and-che
 
 ## Sources
 
+Every source the project uses, with what it was used for: [REFERENCES.md](../../REFERENCES.md).
+
+
 - Frichette & Al-Kassar. *Jev as a judge: how counterfeit policy steers Jev.* Datadog Security Labs, 2026-10-15. [article](https://securitylabs.datadoghq.com/articles/jev-as-a-judge-how-counterfeit-policy-steers-jev/)
 - Check Point. *A Decision Model Breaks Like Any Other Language Model: A First Look at Jev.* 2026-09-24. [blog](https://blog.checkpoint.com/ai-security/jev-is-not-a-language-model-but-it-breaks-like-one-prompt-injection-against-a-typed-decision-model/)
 - HiddenLayer research on Jev, reported by InfoWorld, 2026-10-15. [article](https://www.infoworld.com/article/4236103/typesafes-jev-even-more-susceptible-to-attack-than-llms-says-security-vendor.html)
 - Wu & Lim. *Decision Hijacking: Prompt Injection Attacks on Jev's Typed Probabilistic Decisions.* 2026. [arXiv:2609.28613](https://arxiv.org/abs/2609.28613)
-- Kumar, Agarwal, Srinivas, Li, Feizi & Lakkaraju. *Certifying LLM Safety against Adversarial Prompting.* 2023. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)
+- Kumar, Agarwal, Srinivas, Li, Feizi & Lakkaraju. *Certifying LLM Safety against Adversarial Prompting.* COLM 2024. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)
 - Hines, Lopez, Hall, Zarfati, Zunger & Kiciman. *Defending Against Indirect Prompt Injection Attacks With Spotlighting.* 2024. [arXiv:2403.14720](https://arxiv.org/abs/2403.14720)
 - Baxi, Xu, Jiang & Jasin. *Prompt Injection in Automated Résumé Screening with Large Language Models.* Findings of ACL 2026. [arXiv:2606.27287](https://arxiv.org/abs/2606.27287)

@@ -116,9 +116,25 @@ make bench BACKEND=jev ARGS=--yes   # 会先显示预估费用；超过 1 美元
 
 ## 参考来源
 
-- [realZachi/pg-jev](https://github.com/realZachi/pg-jev)：本项目所基于的 Postgres 扩展（PostgreSQL 许可证）。
-- winkrun，《不用向量索引，Postgres 也能做语义过滤：pg-jev 上手》（2026 年 10 月 4 日）。文中列出的 pg-jev 注意事项直接影响了本项目的设计；本仓库不转载原文。
-- 完整参考文献：[REPORT.md § Sources](REPORT.md#sources)。
+pgdocket 基于 [realZachi/pg-jev](https://github.com/realZachi/pg-jev)（PostgreSQL 许可证）和 TypeSafe 的 Jev 模型。每项功能都采用了已发表的方法：
+- **带保证的阈值：**
+  - 单侧 Clopper–Pearson 界与固定顺序检验（Learn then Test：Angelopoulos、Bates、Candès、Jordan 和 Lei，2021）；
+  - 按答案分别给出的保证参照按类别的共形预测（Ding 等，2023）；
+  - 温度缩放（Guo 等，2017）与 Platt 缩放。
+- **带误差范围的计数：** 预测驱动推断（Angelopoulos、Bates、Fannjiang、Jordan 和 Zrnic，2023）与 PPI++（Angelopoulos、Duchi 和 Zrnic，2023）。
+- **人工复核规划：** 概率近似正确标注（Candès、Ilyas 和 Zrnic，2025）。
+- **召回率目标：** SUPG（Kang 等，2020）与 BARGAIN（Zeighami、Shankar 和 Parameswaran，2026）。
+- **版本比较：** 针对分歧行的精确符号检验（Dixon 和 Mood，1946）与自助法（Efron，1979）。
+- **漂移检查：**
+  - 基于模型自身输出的双样本检验（Failing Loudly：Rabanser、Günnemann 和 Lipton，2019）；
+  - 重新提问一组固定的已标注行（Li，2026）。
+- **审计：** 有害分布变化追踪（Podkopaev 和 Ramdas，2022），结合基于下注的 e-process（Waudby-Smith 和 Ramdas，2024）与 Ville 不等式。
+- **试图操纵模型的行：**
+  - Datadog Security Labs、Check Point、HiddenLayer（2026）以及 Wu 和 Lim（2026）报告的攻击；
+  - 擦除并检查（Kumar 等，2024）与 spotlighting（Hines 等，2024）。
+- **设计：** winkrun，《不用向量索引，Postgres 也能做语义过滤：pg-jev 上手》（2026 年 10 月 4 日）。文中列出的 pg-jev 注意事项直接影响了本项目的设计；本仓库不转载原文。
+
+**全部来源、链接以及各自的用途：[REFERENCES.md](REFERENCES.md)（英文）。**
 
 ## 参与贡献
 

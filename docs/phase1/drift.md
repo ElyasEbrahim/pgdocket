@@ -98,10 +98,13 @@ Yes/no decisions are easier: on Kubernetes feature requests, a 100-row window ca
 
 ## Sources
 
+Every source the project uses, with what it was used for: [REFERENCES.md](../../REFERENCES.md).
+
+
 - Rabanser, Günnemann & Lipton. *Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.* NeurIPS 2019. [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)
-- *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
-- *An Auditing Test to Detect Behavioral Shift in Language Models.* [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)
-- *Log Probability Tracking of LLM APIs.* [arXiv:2512.03816](https://arxiv.org/abs/2512.03816)
-- *You've Changed: Detecting Modification of Black-Box Large Language Models.* [arXiv:2504.12335](https://arxiv.org/abs/2504.12335)
+- Li, Y. *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
+- Richter, He, Minervini & Kusner. *An Auditing Test To Detect Behavioral Shift in Language Models.* ICLR 2025. [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)
+- Chauvin, Le Merrer, Taïani & Tredan. *Log Probability Tracking of LLM APIs.* ICLR 2026. [arXiv:2512.03816](https://arxiv.org/abs/2512.03816)
+- Dima, Foulds, Pan & Feldman. *You've Changed: Detecting Modification of Black-Box Large Language Models.* 2025. [arXiv:2504.12335](https://arxiv.org/abs/2504.12335)
 - Podkopaev & Ramdas. *Tracking the Risk of a Deployed Model and Detecting Harmful Distribution Shifts.* ICLR 2022. [arXiv:2110.06177](https://arxiv.org/abs/2110.06177)
 - Zhang, Cai, Yu & Simeone. *Prediction-Powered Risk Monitoring of Deployed Models for Detecting Harmful Distribution Shifts.* ICML 2026. [arXiv:2602.02229](https://arxiv.org/abs/2602.02229)

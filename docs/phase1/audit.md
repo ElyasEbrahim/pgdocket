@@ -68,6 +68,9 @@ With 20 labels a week at a 90 % target, a 15-point fall shows in about three wee
 
 ## Sources
 
+Every source the project uses, with what it was used for: [REFERENCES.md](../../REFERENCES.md).
+
+
 - Podkopaev & Ramdas. *Tracking the Risk of a Deployed Model and Detecting Harmful Distribution Shifts.* ICLR 2022. [arXiv:2110.06177](https://arxiv.org/abs/2110.06177)
 - Waudby-Smith & Ramdas. *Estimating Means of Bounded Random Variables by Betting.* JRSS-B, 2024. [arXiv:2010.09686](https://arxiv.org/abs/2010.09686)
 - Ramdas, Grünwald, Vovk & Shafer. *Game-Theoretic Statistics and Safe Anytime-Valid Inference.* Statistical Science, 2023. [arXiv:2210.01948](https://arxiv.org/abs/2210.01948)

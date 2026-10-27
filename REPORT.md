@@ -297,6 +297,9 @@ Assumes ~20 h/week. Full-time, divide by about 2. The detailed checklist is in [
 
 ## Sources
 
+*This is the Phase 0 list (17 October 2026). The current, complete list, with what each source was used for, is [REFERENCES.md](REFERENCES.md).*
+
+
 **Primary inputs**
 - [realZachi/pg-jev](https://github.com/realZachi/pg-jev): README, CHANGELOG, AGENTS.md, `sql/jev--0.2.1.sql`, `test/mock_api.py`, `.agents/skills/pgjev/references/*`
 - winkrun, *不用向量索引，Postgres 也能做语义过滤：pg-jev 上手*, 4 Oct 2026 (WeChat article; not redistributed here)

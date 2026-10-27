@@ -117,7 +117,7 @@ A third sweep, for work on spending fewer human labels and on monitoring after d
   - **Why it looked promising.** Within one answer the labels stay a uniform sample, so per-answer guarantees stay exact, and rare answers could get enough labels.
   - **Result.** Tested (`jevbench stratvalidate`, [results/stratified-labels](../../results/stratified-labels/report.md)) and **not adopted**. It certified fewer answers than random labels: Kubernetes, 300 labels, 0.0 % of issues auto vs 30.1 %; CFPB, 2,000 complaints, 500 labels, 2.5 % vs 44.8 %.
   - **Why it failed.** Each answer needs ≥ 58 labelled rows above its threshold before it can be tested at 90 %. The small answers are mostly the inaccurate ones: even with every label known, per-answer mode could accept only 48–54 % of rows. Random labels also serve every other feature.
-- **Monitoring the guarantee itself.** Harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022) and prediction-powered risk monitoring (Zhang et al., ICML 2026) test whether a deployed model's error has risen, with labels that arrive over time. Recent anytime-valid detectors work the same way: predictive rank martingales ([arXiv:2609.00536](https://arxiv.org/abs/2609.00536)) and E-SHIFT ([arXiv:2510.03839](https://arxiv.org/abs/2510.03839)).
+- **Monitoring the guarantee itself.** Harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022) and prediction-powered risk monitoring (Zhang et al., ICML 2026) test whether a deployed model's error has risen, with labels that arrive over time. Recent anytime-valid detectors work the same way: predictive rank martingales (Kuang & Xia, [arXiv:2609.00536](https://arxiv.org/abs/2609.00536)) and an exponential martingale on non-conformity scores (Khan & Syed, [arXiv:2510.03839](https://arxiv.org/abs/2510.03839)).
   - **Adopted** as `pgdocket audit` (#23, [audit.md](../phase1/audit.md)). People label a few accepted rows per batch, blind, and an e-process tests "precision ≥ target". It is valid however often it is read.
   - **On real streams** it raised no false alarm. A fall to 70 % injected into the CFPB stream was caught in 93 % of audits.
   - **One lesson.** Bets sized from the all-time mean caught only 14 % of those falls, because months of good rows kept the mean high. Sizing them from the last 40 audited rows fixed it, and any bet chosen from past rows keeps the guarantee.
@@ -149,6 +149,9 @@ The per-answer report is a small change, and it fixes the most important gap thi
 
 ## Sources
 
+The complete list, for every feature and with what each source was used for, is [REFERENCES.md](../../REFERENCES.md).
+
+
 - Ding, Angelopoulos, Bates, Jordan & Tibshirani. *Class-Conditional Conformal Prediction with Many Classes.* NeurIPS 2023. [arXiv:2306.09335](https://arxiv.org/abs/2306.09335)
 - Candès, Ilyas & Zrnic. *Probably Approximately Correct Labels.* 2025. [arXiv:2506.10908](https://arxiv.org/abs/2506.10908)
 - Zeighami, Shankar & Parameswaran. *Cut Costs, Not Accuracy: LLM-Powered Data Processing with Guarantees* (BARGAIN). SIGMOD 2026. [arXiv:2509.02896](https://arxiv.org/abs/2509.02896) · [code](https://github.com/ucbepic/BARGAIN)
@@ -165,12 +168,13 @@ The per-answer report is a small change, and it fixes the most important gap thi
 - Schroeder, Roy & Kabbara. *Just Put a Human in the Loop? Investigating LLM-Assisted Annotation for Subjective Tasks.* 2025. [arXiv:2507.15821](https://arxiv.org/abs/2507.15821)
 - Kawano, Li & Parker. *Prediction-Powered Smoothing and Validation for Disaggregated AI Evaluation.* 2026. [arXiv:2609.20758](https://arxiv.org/abs/2609.20758)
 - Kuang & Xia. *Anytime-Valid Distribution Shift Detection via Predictive Rank Martingales.* 2026. [arXiv:2609.00536](https://arxiv.org/abs/2609.00536)
+- Khan & Syed. *Technical note on Sequential Test-Time Adaptation via Martingale-Driven Fisher Prompting.* 2025. [arXiv:2510.03839](https://arxiv.org/abs/2510.03839)
 - Wu & Lim. *Decision Hijacking: Prompt Injection Attacks on Jev's Typed Probabilistic Decisions.* 2026. [arXiv:2609.28613](https://arxiv.org/abs/2609.28613)
-- Kumar, Agarwal, Srinivas, Li, Feizi & Lakkaraju. *Certifying LLM Safety against Adversarial Prompting.* 2023. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)
+- Kumar, Agarwal, Srinivas, Li, Feizi & Lakkaraju. *Certifying LLM Safety against Adversarial Prompting.* COLM 2024. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)
 - Hines et al. *Defending Against Indirect Prompt Injection Attacks With Spotlighting.* 2024. [arXiv:2403.14720](https://arxiv.org/abs/2403.14720)
 - Rabanser, Günnemann & Lipton. *Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.* NeurIPS 2019. [arXiv:1810.11953](https://arxiv.org/abs/1810.11953)
-- *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
-- *An Auditing Test to Detect Behavioral Shift in Language Models.* [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)
+- Li, Y. *Who Drifted: the System or the Judge? Anytime-Valid Attribution in LLM Evaluation Pipelines.* Preprint, 2026. [arXiv:2606.15474](https://arxiv.org/abs/2606.15474)
+- Richter, He, Minervini & Kusner. *An Auditing Test To Detect Behavioral Shift in Language Models.* ICLR 2025. [arXiv:2410.19406](https://arxiv.org/abs/2410.19406)
 - Patel et al. *Semantic Operators and Their Optimization* (LOTUS). VLDB 2025. [paper](https://www.vldb.org/pvldb/vol18/p4171-patel.pdf)
 - Liskowski & Schmaus. *Streaming Model Cascades for Semantic SQL.* 2026. [arXiv:2604.00660](https://arxiv.org/abs/2604.00660)
 - *Beyond Linear LLM Invocation: An Efficient and Effective Semantic Filter Paradigm.* 2026. [arXiv:2603.04799](https://arxiv.org/abs/2603.04799)
