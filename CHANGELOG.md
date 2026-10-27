@@ -25,7 +25,7 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 - `jevbench steer` checks its spending cap before each batch of calls, from an estimate of the batch; the first run passed its own $0.60 cap by 0.3 cents.
 
 ### Added (sources)
-- **`REFERENCES.md`:** every source the project uses, grouped by the feature it shaped, each with where it is used. Titles and authors of arXiv papers were checked against arXiv's metadata. Both READMEs now name the work behind each feature and link to it.
+- **`REFERENCES.md`:** every source the project uses, grouped by the feature it shaped, each with where it is used. It opens with a table of the work behind each feature. Titles and authors of arXiv papers were checked against arXiv's metadata. Both READMEs' Sources sections now link to it.
 
 ### Fixed
 - The research review cited arXiv 2510.03839 as "E-SHIFT"; it is Khan & Syed's *Technical note on Sequential Test-Time Adaptation via Martingale-Driven Fisher Prompting*. Four drift sources now name their authors.

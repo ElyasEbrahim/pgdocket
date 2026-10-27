@@ -114,25 +114,7 @@ More commands (determinism, learning curve, batch context): [harness/README.md](
 
 ## Sources
 
-pgdocket builds on [realZachi/pg-jev](https://github.com/realZachi/pg-jev) (PostgreSQL License) and TypeSafe's Jev. Each feature applies published methods:
-- **Thresholds with guarantees:**
-  - one-sided Clopper–Pearson bounds with fixed-sequence testing (Learn then Test: Angelopoulos, Bates, Candès, Jordan & Lei, 2021);
-  - per-answer guarantees after class-conditional conformal prediction (Ding et al., 2023);
-  - temperature scaling (Guo et al., 2017) and Platt scaling.
-- **Counts with error bars:** prediction-powered inference (Angelopoulos, Bates, Fannjiang, Jordan & Zrnic, 2023) and PPI++ (Angelopoulos, Duchi & Zrnic, 2023).
-- **Review planning:** probably approximately correct labels (Candès, Ilyas & Zrnic, 2025).
-- **Recall targets:** SUPG (Kang et al., 2020) and BARGAIN (Zeighami, Shankar & Parameswaran, 2026).
-- **Comparing versions:** an exact sign test on the disagreements (Dixon & Mood, 1946) and the bootstrap (Efron, 1979).
-- **Drift checks:**
-  - two-sample tests on a model's own outputs (Failing Loudly: Rabanser, Günnemann & Lipton, 2019);
-  - a fixed panel of labelled rows asked again (Li, 2026).
-- **Audits:** harmful-shift tracking (Podkopaev & Ramdas, 2022) with betting e-processes (Waudby-Smith & Ramdas, 2024) and Ville's inequality.
-- **Rows that steer the model:**
-  - the attacks reported by Datadog Security Labs, Check Point and HiddenLayer (2026) and by Wu & Lim (2026);
-  - erase-and-check (Kumar et al., 2024) and spotlighting (Hines et al., 2024).
-- **Design:** winkrun, *不用向量索引，Postgres 也能做语义过滤：pg-jev 上手* (4 Oct 2026). Its list of pg-jev caveats shaped the design; the article isn't redistributed here.
-
-**Every source, with links and what each was used for: [REFERENCES.md](REFERENCES.md).**
+Every source, grouped by the feature it shaped and with what each was used for, is in [REFERENCES.md](REFERENCES.md).
 
 ## Contributing
 

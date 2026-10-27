@@ -2,7 +2,23 @@
 
 Every source pgdocket builds on, applies or measures itself against, grouped by the feature it shaped. Each entry says where it is used. Titles and authors of arXiv papers were checked against arXiv's metadata on 2026-10-27; venues are given where the paper or its arXiv record states one.
 
-[Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
+[At a glance](#at-a-glance) · [Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
+
+## At a glance
+
+The work behind each feature; details and links in the sections below.
+
+| Feature | What it applies |
+| --- | --- |
+| [Thresholds with guarantees](#thresholds-and-calibration) (`check`, `calibrate`) | One-sided Clopper–Pearson bounds with fixed-sequence testing (Learn then Test: Angelopoulos, Bates, Candès, Jordan & Lei, 2021). Per-answer guarantees after class-conditional conformal prediction (Ding et al., 2023). Temperature scaling (Guo et al., 2017) and Platt scaling. |
+| [Counts with error bars](#counts-with-error-bars) (`estimate`) | Prediction-powered inference (Angelopoulos, Bates, Fannjiang, Jordan & Zrnic, 2023) and PPI++ (Angelopoulos, Duchi & Zrnic, 2023). |
+| [Review planning](#review-planning) (`plan`) | Probably approximately correct labels (Candès, Ilyas & Zrnic, 2025). |
+| [Recall targets](#recall-targets) (`calibrate --recall-target`) | SUPG (Kang et al., 2020) and BARGAIN (Zeighami, Shankar & Parameswaran, 2026). |
+| [Comparing versions](#comparing-versions) (`compare`) | An exact sign test on the disagreements (Dixon & Mood, 1946) and the bootstrap (Efron, 1979). |
+| [Drift checks](#drift-checks) (`drift`) | Two-sample tests on a model's own outputs (Failing Loudly: Rabanser, Günnemann & Lipton, 2019). A fixed panel of labelled rows asked again (Li, 2026). |
+| [Audits](#audits) (`audit`) | Harmful-shift tracking (Podkopaev & Ramdas, 2022) with betting e-processes (Waudby-Smith & Ramdas, 2024) and Ville's inequality. |
+| [Rows that steer the model](#rows-that-steer-the-model) (`check --steer`, `--untrusted`, `--harden`) | The attacks reported by Datadog Security Labs, Check Point and HiddenLayer (2026) and by Wu & Lim (2026). Erase-and-check (Kumar et al., 2024) and spotlighting (Hines et al., 2024). |
+| [Design](#built-on) | pg-jev (realZachi) and TypeSafe's Jev, which pgdocket builds on. winkrun's list of pg-jev caveats (4 October 2026) shaped the design. |
 
 ## Built on
 
