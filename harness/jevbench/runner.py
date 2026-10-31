@@ -3,6 +3,7 @@ import json
 import os
 import time
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 from psycopg.types.json import Jsonb
 
@@ -105,10 +106,12 @@ def estimate_cost(conn, experiments, batch_size=None):
 def _configure(cur, api_url, model, n_items, api_key, batch_size=None):
     if batch_size:
         cur.execute("SELECT set_config('jev.batch_size', %s, false)", (str(batch_size),))
+    # Room to send rows twice: pg-jev sends a batch again when its request fails after retries (a busy local
+    # server), and counts those rows again; with the cap at exactly n_items one failure ended the run (#4).
     cur.execute("SELECT set_config('jev.api_url', %s, false), set_config('jev.model', %s, false), "
                 "set_config('jev.notices', 'off', false), "
                 "set_config('jev.max_rows_per_statement', %s, false)",
-                (api_url, model, str(n_items)))
+                (api_url, model, str(2 * n_items)))
     if api_key:
         cur.execute("SELECT set_config('jev.api_key', %s, false)", (api_key,))
 
@@ -119,8 +122,9 @@ def run(backend, model=None, api_url=None, experiments=None, max_usd=1.0, notes=
     default_url, default_model = BACKENDS.get(backend, (api_url, "jev-latest"))
     api_url, model = api_url or default_url, model or default_model
     experiments = experiments or default_experiments()
-    api_key = os.environ.get("TYPESAFE_API_KEY") or None
-    paid = "typesafe.ai" in api_url
+    host = (urlsplit(api_url).hostname or "").lower()
+    paid = host == "typesafe.ai" or host.endswith(".typesafe.ai")
+    api_key = (os.environ.get("TYPESAFE_API_KEY") or None) if paid else None     # TypeSafe's key goes to TypeSafe only
 
     with connect() as conn:
         ensure_schema(conn)
@@ -171,7 +175,7 @@ def run(backend, model=None, api_url=None, experiments=None, max_usd=1.0, notes=
                     cp.write_row((run_id, e.name, h, json.dumps(ans)))
             conn.commit()
         print(f"  {e.name:<24} {len(rows):>6} rows  {secs:7.1f}s  requests={delta.get('requests', 0):.0f} "
-              f"tokens={delta.get('input_tokens', 0):,.0f}  cost=${delta.get('estimated_cost_usd', 0):.4f}")
+              f"tokens={delta.get('input_tokens', 0):,.0f}" + (f"  cost=${delta.get('estimated_cost_usd', 0):.4f}" if paid else ""))
 
     with connect() as conn, conn.cursor() as cur:
         cur.execute("UPDATE bench.runs SET finished_at = now() WHERE run_id = %s", (run_id,))

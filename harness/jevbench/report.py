@@ -2,6 +2,7 @@
 import json
 import os
 from collections import defaultdict
+from urllib.parse import urlsplit
 
 import numpy as np
 
@@ -363,12 +364,14 @@ def render(r):
     L += ["## Sample", "", "| product | rows |", "| --- | ---: |"]
     L += [f"| {k} | {v} |" for k, v in r["sample"].items()] + [""]
 
+    host = (urlsplit(r["run"]["api_url"]).hostname or "").lower()
+    paid = host == "typesafe.ai" or host.endswith(".typesafe.ai")    # pg-jev prices every backend at Jev's rate
     L += ["## Cost and latency", "", "| experiment | seconds | requests | input tokens | est. cost (USD) |",
           "| --- | ---: | ---: | ---: | ---: |"]
     for name, m in sorted(r["experiment_meta"].items()):
         s = m["stats"] or {}
         L.append(f"| {name} | {_f(m['seconds'], 1)} | {s.get('requests', 0):.0f} | {s.get('input_tokens', 0):,.0f} | "
-                 f"{s.get('estimated_cost_usd', 0):.4f} |")
+                 + (f"{s.get('estimated_cost_usd', 0):.4f} |" if paid else "none (free backend) |"))
     L.append("")
 
     for name in sorted(ex):

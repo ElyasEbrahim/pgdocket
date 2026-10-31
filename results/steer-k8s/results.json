@@ -80,6 +80,13 @@
       "steered_and_auto": 0.45
     }
   },
+  "family_order": [
+    "instruction",
+    "override",
+    "policy",
+    "claim",
+    "policy twice"
+  ],
   "distrust": {
     "clean_accuracy": 0.9033333333333333,
     "threshold": 0.7179999999999999,
@@ -160,5 +167,7 @@
   },
   "threshold": 0.6865252525252526,
   "threshold_basis": "all 300 labels",
+  "model": "jev-1.14.0",
+  "backend": "jev",
   "spent_usd": 0.7377969060000001
 }

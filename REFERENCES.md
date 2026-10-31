@@ -1,8 +1,8 @@
 # References
 
-Every source pgdocket builds on, applies or measures itself against, grouped by the feature it shaped. Each entry says where it is used. Titles and authors of arXiv papers were checked against arXiv's metadata on 2026-10-27; venues are given where the paper or its arXiv record states one.
+Every source pgdocket builds on, applies or measures itself against, grouped by the feature it shaped. Each entry says where it is used. Titles and authors of arXiv papers were checked against arXiv's metadata when they were added (most on 2026-10-27); venues are given where the paper or its arXiv record states one.
 
-[At a glance](#at-a-glance) · [Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
+[At a glance](#at-a-glance) · [Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Other backends](#other-backends) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
 
 ## At a glance
 
@@ -18,6 +18,7 @@ The work behind each feature; details and links in the sections below.
 | [Drift checks](#drift-checks) (`drift`) | Two-sample tests on a model's own outputs (Failing Loudly: Rabanser, Günnemann & Lipton, 2019). A fixed panel of labelled rows asked again (Li, 2026). |
 | [Audits](#audits) (`audit`) | Harmful-shift tracking (Podkopaev & Ramdas, 2022) with betting e-processes (Waudby-Smith & Ramdas, 2024) and Ville's inequality. |
 | [Rows that steer the model](#rows-that-steer-the-model) (`check --steer`, `--untrusted`, `--harden`) | The attacks reported by Datadog Security Labs, Check Point and HiddenLayer (2026) and by Wu & Lim (2026). Erase-and-check (Kumar et al., 2024) and spotlighting (Hines et al., 2024). |
+| [Other backends](#other-backends) (`check --backend URL`, `jevbench backends`) | Laya (Convai Innovations, 2026), open weights, run locally and measured against Jev on the same labels. Earlier comparisons of the two reviewed their published specifications (dos Santos Barbosa, 2026). |
 | [Design](#built-on) | pg-jev (realZachi) and TypeSafe's Jev, which pgdocket builds on. winkrun's list of pg-jev caveats (4 October 2026) shaped the design. |
 
 ## Built on
@@ -25,7 +26,7 @@ The work behind each feature; details and links in the sections below.
 - **pg-jev.** [realZachi/pg-jev](https://github.com/realZachi/pg-jev), the Postgres extension pgdocket starts from (PostgreSQL License): its README, CHANGELOG, AGENTS.md, `sql/jev--0.2.1.sql`, `test/mock_api.py` and skill references. pgdocket speaks the same `/v1/systemone` API and borrows its request wording. Used throughout; teardown in [REPORT.md](REPORT.md).
 - **pg-jev documentation.** [pgjev.com docs](https://pgjev.com/docs.md) · [Where it runs](https://pgjev.com/docs/getting-started/where-it-runs.md). Used in [REPORT.md](REPORT.md) and [ADR 0001](docs/adr/0001-external-worker-not-extension.md).
 - **winkrun.** *不用向量索引，Postgres 也能做语义过滤：pg-jev 上手* (WeChat article, 4 October 2026; not redistributed here). Its list of pg-jev caveats shaped the design ([REPORT.md](REPORT.md)).
-- **TypeSafe.** [Documentation](https://docs.typesafe.ai) · [Models](https://docs.typesafe.ai/models) (jev-1.13.0, jev-1.14.0) · [Jev 1.13 model jaggedness](https://docs.typesafe.ai/model-jaggedness/jev-1.13). The decision model every measurement here uses.
+- **TypeSafe.** [Documentation](https://docs.typesafe.ai) · [Models](https://docs.typesafe.ai/models) (jev-1.13.0, jev-1.14.0) · [Jev 1.13 model jaggedness](https://docs.typesafe.ai/model-jaggedness/jev-1.13). The decision model behind almost every measurement here; [Laya](#other-backends) is the other.
 
 ## Data
 
@@ -118,6 +119,14 @@ The work behind each feature; details and links in the sections below.
 - Kumar, A., Agarwal, C., Srinivas, S., Li, A. J., Feizi, S. & Lakkaraju, H. (2024). *Certifying LLM Safety against Adversarial Prompting.* COLM 2024. [arXiv:2309.02705](https://arxiv.org/abs/2309.02705). Erase-and-check, the basis of `--harden`.
 - Hines, K., Lopez, G., Hall, M., Zarfati, F., Zunger, Y. & Kiciman, E. (2024). *Defending Against Indirect Prompt Injection Attacks With Spotlighting.* [arXiv:2403.14720](https://arxiv.org/abs/2403.14720). Marking text as data, the idea behind `--untrusted`.
 - Baxi, P., Xu, J., Jiang, J. Y. & Jasin, S. (2026). *Prompt Injection in Automated Résumé Screening with Large Language Models: Single and Multi-Injection Settings.* Findings of ACL 2026. [arXiv:2606.27287](https://arxiv.org/abs/2606.27287). Injection against classification-style decisions.
+
+## Other backends
+
+*`check --backend URL`, `jevbench backends` ([Laya against Jev](docs/phase1/backends.md)).*
+
+- Convai Innovations (2026). *Laya*, version 0.4.16: a decision model with open weights that serves `/v1/systemone`. [convaiinnovations/laya](https://huggingface.co/convaiinnovations/laya) on Hugging Face (Apache-2.0) · [NandhaKishorM/laya](https://github.com/NandhaKishorM/laya) · [laya on PyPI](https://pypi.org/project/laya/0.4.16/) · [documentation](https://nandhakishorm.github.io/laya/). The second backend measured; the comparison tests its README's statements on zero-shot accuracy and checkpoint routing.
+- dos Santos Barbosa, J. A. (2026), listed under [Jev in applied studies](#jev-in-applied-studies), reviews the published specifications of Jev and Laya; the comparison measures both on the same labelled rows.
+- Ratner, N., Levine, Y., Belinkov, Y., Ram, O., Magar, I., Abend, O., Karpas, E., Shashua, A., Leyton-Brown, K. & Shoham, Y. (2023). *Parallel Context Windows for Large Language Models.* ACL 2023. [arXiv:2212.10947](https://arxiv.org/abs/2212.10947). The idea behind the order-free option layout Laya describes for checkpoints trained with it; its published checkpoints don't use it, and the comparison measures their order sensitivity.
 
 ## Jev in applied studies
 

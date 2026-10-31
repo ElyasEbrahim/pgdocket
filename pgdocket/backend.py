@@ -50,9 +50,11 @@ class Backend:
         self.scheme, self.host, self.port = parts.scheme, parts.hostname, parts.port
         self.path = parts.path or "/"
         host = (self.host or "").lower()
-        if not api_key and (host == "typesafe.ai" or host.endswith(".typesafe.ai")):
+        self.typesafe = host == "typesafe.ai" or host.endswith(".typesafe.ai")
+        if not api_key and self.typesafe:
             raise BackendError("no API key for %s: set TYPESAFE_API_KEY" % self.url)
-        self.api_key, self.model = api_key, model
+        # `api_key` is TypeSafe's: a decision pointed at any other server (Laya, stuntd, a proxy) must never receive it
+        self.api_key, self.model = (api_key if self.typesafe else None), model
         self.concurrency, self.timeout = concurrency, timeout
         self.local = threading.local()
         self.lock = threading.Lock()
@@ -63,7 +65,12 @@ class Backend:
 
     @property
     def paid(self):
-        return "typesafe.ai" in (self.host or "")
+        return self.typesafe
+
+    @property
+    def usd_per_token(self):
+        """Free backends (Laya on your own hardware, stuntd, the sim) have no per-token price."""
+        return USD_PER_INPUT_TOKEN if self.paid else 0.0
 
     # ------------------------------------------------------------ transport
     def _conn(self):
@@ -147,4 +154,4 @@ class Backend:
         return [a for batch in out for a in batch]
 
     def cost_usd(self, tokens=None):
-        return (self.stats["input_tokens"] if tokens is None else tokens) * USD_PER_INPUT_TOKEN
+        return (self.stats["input_tokens"] if tokens is None else tokens) * self.usd_per_token

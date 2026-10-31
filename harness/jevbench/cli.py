@@ -20,6 +20,7 @@
   auditvalidate does the audit alarm when accepted answers fall below target, and only then? (no API calls)
   stratvalidate would labels stratified by answer certify more answers? (no API calls)
   steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
+  backends    Jev and Laya on the same labelled rows, from the stored check reports (no API calls)
 """
 import argparse
 import json
@@ -103,8 +104,12 @@ def main(argv=None):
     sub.add_parser("driftvalidate")
     sub.add_parser("auditvalidate")
     sub.add_parser("stratvalidate")
+    sub.add_parser("backends")
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
+    st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
+    st.add_argument("--model", default="jev-1.14.0")
+    st.add_argument("--out", default="results/steer-k8s")
     sub.add_parser("cachecheck")
     sub.add_parser("experiments")
 
@@ -186,9 +191,12 @@ def main(argv=None):
     elif args.cmd == "stratvalidate":
         from . import stratvalidate
         print("report:", stratvalidate.run() + "/report.md")
+    elif args.cmd == "backends":
+        from . import backends
+        print("report:", backends.run() + "/report.md")
     elif args.cmd == "steer":
         from . import steer
-        print("report:", steer.run(args.max_usd) + "/report.md")
+        print("report:", steer.run(args.max_usd, backend=args.backend, model=args.model, out=args.out) + "/report.md")
     elif args.cmd == "frontier":
         from . import frontier
         print("report:", frontier.run() + "/report.md")

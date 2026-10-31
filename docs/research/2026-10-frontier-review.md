@@ -143,6 +143,26 @@ A fourth sweep, on the risk none of the earlier ones covered: text in a row aime
   - **Pattern filters:** circular evidence, and they miss claims.
   - **Keep-one voting:** it caught 85.7 % of the repeated payload but adds false flags. It is a candidate for later.
 
+## Update, 30 October 2026
+
+A fifth round, on a question every earlier one took for granted: do pgdocket's numbers mean the same with another model?
+- **The gap.** Comparisons of Jev and Laya so far reviewed their published specifications (dos Santos Barbosa, [arXiv:2609.28940](https://arxiv.org/abs/2609.28940)) or came from vendors. None measured both on the same labelled rows. Laya's own README says its base checkpoints score near chance zero-shot on its typed-decisions benchmark.
+- **Measured** (#4, [backends.md](../phase1/backends.md)): Laya 0.4.16, open weights, on this machine's CPU, against Jev on the same rows: three `check` tasks and the six Phase 0 experiments.
+  - **Accuracy.** Zero-shot, Laya agreed with the labels 38.0 % of the time on Kubernetes routing (Jev 88.8 %) and 64.4–65.0 % on CFPB products (77–80 %).
+  - **Calibration.** With 2,000 labels, isotonic calibration made Laya's probabilities as reliable as Jev's (error 0.018 against 0.027). It can't fix ranking: Laya's most confident routing answers were right 30.7 % of the time, so `calibrate` would certify nothing and send every issue to review.
+  - **Per answer.** On CFPB, *credit reporting* passed 90 % on its own threshold: 36.4 % of complaints automatically, where no single threshold reached even 70 %.
+  - **Order.** Laya is deterministic but twice as order-sensitive as Jev (14.2 % of answers change across three orders, against 7.4 % including Jev's noise). Averaging the orders gained it 1.6 points.
+  - **Batches.** In a multi-row request Laya answers every question from the whole request, so pg-jev's 20-row batches give answers near chance.
+- **Adopted.**
+  - `check` now says when more labels can't help, and points to per-answer guarantees when those work.
+  - TypeSafe's key goes only to TypeSafe; pgdocket had been sending it to any backend.
+  - Free backends show no API cost.
+- **Not adopted, yet.**
+  - **A Laya fine-tuned on the ledger's labels.** That is what Laya is built for.
+  - **Laya's batch endpoint,** for speed.
+  - **Order averaging as a per-backend option.**
+  - **Cascades** (local model first, Jev for the rest) need a first stage that certifies something, and zero-shot Laya doesn't on these tasks.
+
 ## What this means for the release
 
 The per-answer report is a small change, and it fixes the most important gap this review found. Without it, `auto` can mislead a team about specific answers. I recommend adding it before 0.1.0a2. Review planning, recall targets, drift alarms and stratified counts are new features for after the release.

@@ -76,6 +76,25 @@ def test_choice_analysis_and_report():
     assert "Judge one row per request" in md and "Store answers" in md
     assert "## Steering" in md and "Rows can steer the answer.** A *policy* paragraph" in md
     assert "SECRET-ROW-TEXT" not in md                   # the report never contains row text
+    assert "no API cost" in md and "per million rows" not in md          # a free backend isn't priced like Jev
+    result["cost"]["paid"] = True
+    assert "≈ $4 per million rows" in render(result)
+
+
+def test_free_backends_cost_nothing():
+    from pgdocket.backend import USD_PER_INPUT_TOKEN
+    jev, laya = Backend("jev", api_key="k"), Backend("http://laya:8000/v1/systemone", model="laya")
+    for b in (jev, laya):
+        b.stats["input_tokens"] = 1_000_000
+    assert jev.paid and jev.cost_usd() == pytest.approx(1e6 * USD_PER_INPUT_TOKEN)
+    assert not laya.paid and laya.cost_usd() == 0.0 and laya.usd_per_token == 0.0
+
+
+def test_typesafe_key_goes_to_typesafe_only():
+    assert Backend("jev", api_key="k").api_key == "k"
+    for url in ("http://laya:8000/v1/systemone", "https://typesafe.ai.example.com/v1/systemone", "sim"):
+        b = Backend(url, api_key="k")
+        assert b.api_key is None and not b.paid
 
 
 def test_noul_analysis_threshold_has_recall():
@@ -108,6 +127,25 @@ def test_recommendation_when_calibration_does_not_help_yet():
                       "threshold": {"chosen": None, "target": 0.9, "alpha": 0.05}, "ladder": []}}
     text = " ".join(recommendations(r))
     assert "doesn't improve it yet" in text and "Don't read the raw scores" not in text
+
+
+def test_recommendations_when_no_threshold_reaches_the_target():
+    from pgdocket.check import recommendations
+    top = {"threshold": 0.74, "accepted": 75, "coverage": 0.15, "precision": 23 / 75, "lower_bound": 0.22}
+    r = {"config": {"kind": "choice"}, "sample": {"labeled_rows": 500}, "stability": None, "batching": None,
+         "analysis": {"ece_raw": 0.04, "ece_calibrated": 0.04, "ladder": [{"target": 0.7, "threshold": None, "coverage": 0.0}],
+                      "threshold": {"chosen": None, "target": 0.9, "alpha": 0.05, "tested": [top]},
+                      "per_answer": [{"answer": "a", "own_auto": 0, "below_target": False}], "per_answer_coverage": 0.0}}
+    text = " ".join(recommendations(r))                  # a weak model: its surest answers are demonstrably wrong
+    assert "right only 30.7 %" in text and "try another model" in text and "label more rows" not in text
+    r["analysis"]["per_answer"] = [{"answer": "a", "own_auto": 182, "below_target": False},
+                               {"answer": "b", "own_auto": 0, "below_target": False}]
+    r["analysis"]["per_answer_coverage"] = 0.364
+    text = " ".join(recommendations(r))                  # …but one answer passes on its own threshold
+    assert "still accepts 36.4 % of rows" in text and "*a* (182 rows)" in text and "*b*" not in text
+    r["analysis"]["threshold"]["tested"] = [dict(top, precision=0.88)]
+    r["analysis"]["per_answer"], r["analysis"]["per_answer_coverage"] = [], 0.0
+    assert "label more rows" in " ".join(recommendations(r))           # close to the target: more labels may do it
 
 
 def test_check_reports_the_threshold_calibrate_would_store():

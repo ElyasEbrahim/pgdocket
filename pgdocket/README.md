@@ -20,7 +20,7 @@ Eight pieces work today:
 - **a threshold with a guarantee**: which answers you can accept automatically with precision ≥ your target at 95 % confidence, and a table of what each target allows;
 - **precision per answer** among the accepted rows, flagging any answer that is demonstrably below the target (the guarantee is for all accepted rows together);
 - **consistency** (optional): how many answers change if you ask again, or send 20 rows per request;
-- **cost** for this check and projected for the whole table.
+- **cost** for this check and projected for the whole table, at Jev's list price (a backend you run yourself has no API cost).
 
 It is **read-only** on your database. It talks to any `/v1/systemone`-compatible backend (TypeSafe Jev, stuntd, laya-server) directly, so pg-jev doesn't need to be installed; managed Postgres works. **No row text appears in the report.** Per-row answers are saved next to it, keyed by your primary key.
 
@@ -29,7 +29,7 @@ It is **read-only** on your database. It talks to any `/v1/systemone`-compatible
 ```bash
 pip install "git+https://github.com/ElyasEbrahim/pgdocket"   # or use the Docker image
 export DATABASE_URL=postgresql://...          # your database (read-only access is enough)
-export TYPESAFE_API_KEY=...                   # for the Jev backend
+export TYPESAFE_API_KEY=...                   # for the Jev backend; never sent to any other backend
 
 # A choice question, with labels already in a column
 pgdocket check \
@@ -68,7 +68,7 @@ pgdocket report results/check-<timestamp> --precision-target 0.85
 | `--repeat N` | 0 | Ask again for N rows: how stable are the answers? |
 | `--batch-test N` | 0 | Send N rows 20 per request: does batching change answers? |
 | `--batch-size` | 1 | Rows per request for the main run. 1 is more accurate; see the findings. |
-| `--backend` | `jev` | `jev`, `sim` (the harness simulator) or any `/v1/systemone` URL. |
+| `--backend` | `jev` | `jev`, `sim` (the harness simulator) or any `/v1/systemone` URL, such as Laya running on your own machine ([how it compares](../docs/phase1/backends.md)). |
 | `--max-usd` | 1.0 | Refuses checks estimated above this. Paid checks also need `--yes`. |
 | `--where` | – | Extra SQL filter, e.g. `"created_at > '2026-01-01'"`. |
 

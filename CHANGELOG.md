@@ -2,6 +2,30 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-10-30
+
+### Added (another backend, #4)
+- **Laya on your own machine** (`docker compose --profile laya up -d laya`): an open-weights decision model (Convai Innovations, Apache-2.0) serving `/v1/systemone` on CPU. The image is 1.7 GB; the weights, 2.4 GB, live in a removable Docker volume.
+- **The comparison** (`jevbench backends`, no API calls): Jev and Laya on the same labelled rows, in three `check` tasks and the six Phase 0 experiments.
+  - **Accuracy.** Zero-shot, Laya agreed with the labels 38.0 % of the time on Kubernetes routing (Jev 88.8 %) and 65.0 % on CFPB products (79.8 %). Its AUROC on feature requests was 0.804 (0.966).
+  - **The guarantees held.** With Laya, no single threshold reached 90 % precision on any task, so `calibrate` would send everything to review. Per answer, it would still accept 36.4 % of CFPB complaints automatically (Jev: 51.2 %).
+  - **Calibration makes them comparable.** On 2,000 CFPB complaints, isotonic calibration on the labels brought Laya's calibration error to 0.018, as low as Jev's 0.027, although Laya was right less often (64.4 % against 77–79 %).
+  - **Option order.** 14.2 % of Laya's answers changed across three orders of the same options (Jev: 7.4 %, about 5 points of it noise). Averaging the orders raised Laya's accuracy by 1.6 points; Jev's not at all.
+  - **One row per request.** In a multi-row request Laya answers every question from the whole request, so pg-jev's 20-row batches gave answers near chance (routing: 38 % → 12 %). pgdocket judges one row per request.
+  - **Determinism and cost.** Laya is deterministic: two full runs of 2,000 complaints gave identical probabilities. It has no API cost and took 0.3–0.5 s per row on 12 CPU cores; Jev did about 40 rows per second.
+  - Write-up: `docs/phase1/backends.md`.
+- `jevbench steer --backend URL --model NAME --out DIR` runs the steering experiment against any backend. It adds a sixth attack family for models with short context windows: the policy as the first paragraph.
+
+### Changed
+- `check`, when no threshold reaches the target: the report says when even the surest answers are demonstrably below it, and suggests another model or backend instead of more labels. When some answers pass on a threshold of their own, it points to `calibrate --per-answer` and lists them under *Precision per answer*.
+- `check` and the Phase 0 report show no API cost for backends other than TypeSafe's; both used to price them at Jev's list price. `check` reports now record `paid`.
+
+### Fixed (security)
+- **TypeSafe's API key went to every backend.** pgdocket put `TYPESAFE_API_KEY` in the `Authorization` header of requests to any `/v1/systemone` server, and the harness gave it to pg-jev whatever the URL. Both now send it only to TypeSafe's hosts (`typesafe.ai` and its subdomains).
+
+### Fixed
+- `jevbench run` leaves pg-jev's per-statement row cap room for rows sent twice. pg-jev sends a batch again when its request fails, and counts those rows again, so with a busy local server one failed request ended a run.
+
 ## 2026-10-27
 
 ### Added (rows that steer the model, #24)

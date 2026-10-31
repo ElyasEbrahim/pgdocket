@@ -1,0 +1,9 @@
+# Laya, an open-weights decision model (Convai Innovations, Apache-2.0), served on /v1/systemone (#4).
+# CPU only: PyTorch comes from its CPU index, so the image stays small. The weights (~0.8 GB per checkpoint) download
+# from Hugging Face on first start into the `laya-cache` volume (`docker volume rm docket-phase0_laya-cache` frees it).
+FROM python:3.11-slim
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
+ && pip install --no-cache-dir "laya[serve]==0.4.16"
+ENV LAYA_DEVICE=cpu LAYA_PRELOAD=1 HF_HOME=/cache
+EXPOSE 8000
+CMD ["laya-serve"]

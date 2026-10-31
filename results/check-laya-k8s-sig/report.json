@@ -1,0 +1,553 @@
+{
+  "docket_version": "0.1.0a2",
+  "created_at": "2026-10-30T10:02:07+00:00",
+  "config": {
+    "table": "demo.k8s_issues",
+    "key": "number",
+    "text": [
+      "title",
+      "body"
+    ],
+    "kind": "choice",
+    "question": "Which Kubernetes SIG (special interest group) should handle this issue?",
+    "options": [
+      {
+        "name": "node",
+        "description": "kubelet, container runtime (CRI), pod lifecycle and resources on a node"
+      },
+      {
+        "name": "api-machinery",
+        "description": "API server, etcd storage layer, CRDs, admission webhooks, client libraries, garbage collection"
+      },
+      {
+        "name": "scheduling",
+        "description": "kube-scheduler, pod placement, preemption, scheduling plugins"
+      },
+      {
+        "name": "network",
+        "description": "Services, kube-proxy, DNS, Ingress and Gateway, network policies"
+      },
+      {
+        "name": "storage",
+        "description": "volumes, PersistentVolumes, CSI drivers, storage classes"
+      },
+      {
+        "name": "apps",
+        "description": "workload controllers: Deployments, StatefulSets, DaemonSets, Jobs, CronJobs"
+      },
+      {
+        "name": "auth",
+        "description": "authentication, authorization and RBAC, service accounts, certificates"
+      },
+      {
+        "name": "cli",
+        "description": "kubectl and kustomize"
+      },
+      {
+        "name": "testing",
+        "description": "test infrastructure and the e2e test framework"
+      },
+      {
+        "name": "instrumentation",
+        "description": "metrics, logging, events, tracing"
+      }
+    ],
+    "label_column": "sig",
+    "label_file": null,
+    "positive": null,
+    "where": null,
+    "sample": 500,
+    "seed": "1",
+    "backend": "http://laya:8000/v1/systemone",
+    "model": "laya",
+    "batch_size": 1,
+    "repeat": 100,
+    "batch_test": 100,
+    "steer": 0,
+    "untrusted": false,
+    "precision_target": 0.9,
+    "alpha": 0.05,
+    "max_usd": 1.0,
+    "out": "results/check-laya-k8s-sig"
+  },
+  "backend": {
+    "url": "http://laya:8000/v1/systemone",
+    "model": "laya",
+    "batch_size": 1
+  },
+  "sample": {
+    "labeled_rows": 500,
+    "rows_in_scope": 2550,
+    "table_rows": 3884,
+    "label_counts": {
+      "node": 167,
+      "api-machinery": 114,
+      "scheduling": 64,
+      "network": 43,
+      "storage": 34,
+      "apps": 23,
+      "auth": 17,
+      "cli": 15,
+      "instrumentation": 14,
+      "testing": 9
+    }
+  },
+  "analysis": {
+    "per_answer": [
+      {
+        "answer": "testing",
+        "answered": 173,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "api-machinery",
+        "answered": 121,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "scheduling",
+        "answered": 88,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "instrumentation",
+        "answered": 34,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "storage",
+        "answered": 27,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "node",
+        "answered": 22,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "network",
+        "answered": 18,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "auth",
+        "answered": 7,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "apps",
+        "answered": 6,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      },
+      {
+        "answer": "cli",
+        "answered": 4,
+        "auto": 0,
+        "right": 0,
+        "precision": null,
+        "lower": null,
+        "upper": null,
+        "below_target": false,
+        "own_threshold": null,
+        "own_auto": 0
+      }
+    ],
+    "per_answer_coverage": 0.0,
+    "n": 500,
+    "accuracy": 0.38,
+    "accuracy_ci": [
+      0.34,
+      0.422
+    ],
+    "macro_f1": 0.3966680541509561,
+    "per_class": [
+      {
+        "option": "node",
+        "support": 167,
+        "predicted": 22,
+        "recall": 0.11976047904191617,
+        "precision": 0.9090909090909091
+      },
+      {
+        "option": "api-machinery",
+        "support": 114,
+        "predicted": 121,
+        "recall": 0.5964912280701754,
+        "precision": 0.5619834710743802
+      },
+      {
+        "option": "scheduling",
+        "support": 64,
+        "predicted": 88,
+        "recall": 0.671875,
+        "precision": 0.48863636363636365
+      },
+      {
+        "option": "network",
+        "support": 43,
+        "predicted": 18,
+        "recall": 0.37209302325581395,
+        "precision": 0.8888888888888888
+      },
+      {
+        "option": "storage",
+        "support": 34,
+        "predicted": 27,
+        "recall": 0.35294117647058826,
+        "precision": 0.4444444444444444
+      },
+      {
+        "option": "apps",
+        "support": 23,
+        "predicted": 6,
+        "recall": 0.2608695652173913,
+        "precision": 1.0
+      },
+      {
+        "option": "auth",
+        "support": 17,
+        "predicted": 7,
+        "recall": 0.4117647058823529,
+        "precision": 1.0
+      },
+      {
+        "option": "cli",
+        "support": 15,
+        "predicted": 4,
+        "recall": 0.2,
+        "precision": 0.75
+      },
+      {
+        "option": "testing",
+        "support": 9,
+        "predicted": 173,
+        "recall": 0.8888888888888888,
+        "precision": 0.046242774566473986
+      },
+      {
+        "option": "instrumentation",
+        "support": 14,
+        "predicted": 34,
+        "recall": 0.5,
+        "precision": 0.20588235294117646
+      }
+    ],
+    "top_confusions": [
+      {
+        "label": "node",
+        "answer": "testing",
+        "count": 75
+      },
+      {
+        "label": "api-machinery",
+        "answer": "testing",
+        "count": 35
+      },
+      {
+        "label": "node",
+        "answer": "scheduling",
+        "count": 30
+      },
+      {
+        "label": "node",
+        "answer": "api-machinery",
+        "count": 19
+      },
+      {
+        "label": "storage",
+        "answer": "testing",
+        "count": 16
+      }
+    ],
+    "ece_raw": 0.1928651763033091,
+    "ece_raw_ci": [
+      0.16544791492481195,
+      0.24197748861863114
+    ],
+    "temperature": 1.216086248940148,
+    "ece_calibrated": 0.17919497962555145,
+    "reliability_raw": [
+      [
+        0.0,
+        0.1,
+        0,
+        NaN,
+        NaN
+      ],
+      [
+        0.1,
+        0.2,
+        27,
+        0.18644112882067057,
+        0.2222222222222222
+      ],
+      [
+        0.2,
+        0.30000000000000004,
+        103,
+        0.24928413243853362,
+        0.3786407766990291
+      ],
+      [
+        0.30000000000000004,
+        0.4,
+        101,
+        0.3424947640453523,
+        0.42574257425742573
+      ],
+      [
+        0.4,
+        0.5,
+        71,
+        0.4476053062830546,
+        0.4507042253521127
+      ],
+      [
+        0.5,
+        0.6000000000000001,
+        58,
+        0.5541320265642848,
+        0.39655172413793105
+      ],
+      [
+        0.6000000000000001,
+        0.7000000000000001,
+        47,
+        0.6505440241342161,
+        0.3829787234042553
+      ],
+      [
+        0.7000000000000001,
+        0.8,
+        48,
+        0.7484042694648698,
+        0.25
+      ],
+      [
+        0.8,
+        0.9,
+        31,
+        0.8495383236523409,
+        0.2903225806451613
+      ],
+      [
+        0.9,
+        1.0,
+        14,
+        0.9397133565486927,
+        0.5714285714285714
+      ]
+    ],
+    "reliability_calibrated": [
+      [
+        0.0,
+        0.1,
+        0,
+        NaN,
+        NaN
+      ],
+      [
+        0.1,
+        0.2,
+        52,
+        0.18098184540827675,
+        0.28846153846153844
+      ],
+      [
+        0.2,
+        0.30000000000000004,
+        140,
+        0.24934629741330633,
+        0.42142857142857143
+      ],
+      [
+        0.30000000000000004,
+        0.4,
+        99,
+        0.34676690134482274,
+        0.4444444444444444
+      ],
+      [
+        0.4,
+        0.5,
+        68,
+        0.44998225437499684,
+        0.35294117647058826
+      ],
+      [
+        0.5,
+        0.6000000000000001,
+        56,
+        0.547544340052471,
+        0.4107142857142857
+      ],
+      [
+        0.6000000000000001,
+        0.7000000000000001,
+        44,
+        0.6464969746622238,
+        0.20454545454545456
+      ],
+      [
+        0.7000000000000001,
+        0.8,
+        24,
+        0.7458875058864786,
+        0.2916666666666667
+      ],
+      [
+        0.8,
+        0.9,
+        14,
+        0.8430896123831826,
+        0.5714285714285714
+      ],
+      [
+        0.9,
+        1.0,
+        3,
+        0.9450842349301268,
+        0.3333333333333333
+      ]
+    ],
+    "exact_zeros": 0,
+    "label_prob_zero": 0,
+    "threshold": {
+      "target": 0.9,
+      "alpha": 0.05,
+      "min_accept": 58,
+      "chosen": null,
+      "tested": [
+        {
+          "threshold": 0.7404979317931792,
+          "accepted": 75,
+          "coverage": 0.15,
+          "precision": 0.30666666666666664,
+          "lower_bound": 0.21951339230701852
+        }
+      ]
+    },
+    "threshold_on": "raw score",
+    "ladder": [
+      {
+        "target": 0.95,
+        "threshold": null,
+        "coverage": 0.0
+      },
+      {
+        "target": 0.9,
+        "threshold": null,
+        "coverage": 0.0
+      },
+      {
+        "target": 0.85,
+        "threshold": null,
+        "coverage": 0.0
+      },
+      {
+        "target": 0.8,
+        "threshold": null,
+        "coverage": 0.0
+      },
+      {
+        "target": 0.75,
+        "threshold": null,
+        "coverage": 0.0
+      },
+      {
+        "target": 0.7,
+        "threshold": null,
+        "coverage": 0.0
+      }
+    ],
+    "zeros_clamped": false
+  },
+  "stability": {
+    "rows": 100,
+    "changed": 0.0
+  },
+  "batching": {
+    "rows": 100,
+    "changed": 0.76,
+    "accuracy_single": 0.38,
+    "accuracy_batched": 0.12
+  },
+  "steering": null,
+  "cost": {
+    "paid": false,
+    "requests": 605,
+    "input_tokens": 343155,
+    "usd": 0.0,
+    "tokens_per_row": 485.45,
+    "projected_usd_table": 0.0,
+    "projected_usd_per_million_rows": 0.0,
+    "seconds": 370.59790563583374
+  },
+  "reanalysed": {
+    "at": "2026-10-30T10:20:29+00:00",
+    "docket_version": "0.1.0a2"
+  }
+}

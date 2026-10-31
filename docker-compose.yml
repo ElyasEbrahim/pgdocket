@@ -3,6 +3,7 @@
 #   mock  pg-jev's own deterministic mock API (test/mock_api.py at v0.2.1), keyless under /local/
 #   sim   simulated Jev-compatible backend with known miscalibration and first-option bias (validates the harness)
 #   bench the harness CLI (run with `docker compose run --rm bench ...`, see Makefile)
+#   laya  Laya, an open-weights decision model, on /v1/systemone (profile `laya`: `docker compose --profile laya up -d laya`)
 name: docket-phase0
 
 x-bench-env: &bench-env
@@ -72,5 +73,20 @@ services:
       db:
         condition: service_healthy
 
+  laya:
+    build:
+      context: ./harness
+      dockerfile: Dockerfile.laya
+    image: docket-phase0/laya:0.4.16
+    profiles: ["laya"]
+    volumes:
+      - laya-cache:/cache
+    healthcheck:                          # ready once the checkpoints are loaded and the port is open
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8000), 2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 360
+
 volumes:
   pgdata:
+  laya-cache:

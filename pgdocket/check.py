@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 from . import metrics as M
-from .backend import USD_PER_INPUT_TOKEN, Backend
+from .backend import Backend
 
 
 @dataclass
@@ -289,9 +289,9 @@ def run_check(cfg, api_key=None, log=print, yes=False):
     per_row = chars / len(sample) / 3.5 + 120 + (270 if cfg.batch_size == 1 else 270 / cfg.batch_size)
     m_steer = min(cfg.steer, len(sample))                # 4 attacks per row, then erase-and-check (≈ 6 calls a row)
     calls = len(sample) + min(cfg.repeat, len(sample)) + min(cfg.batch_test, len(sample)) + 22 * m_steer
-    est = per_row * calls * USD_PER_INPUT_TOKEN
+    est = per_row * calls * backend.usd_per_token
     log(f"{len(sample)} labeled rows sampled from {in_scope:,} in scope ({table_rows:,} in {cfg.table}); "
-        f"{calls} judgments; estimated ≤ ${est:.3f}" + ("" if backend.paid else " (free backend)"))
+        f"{calls} judgments; " + (f"estimated ≤ ${est:.3f}" if backend.paid else "free backend, no API cost"))
     if backend.paid and est > cfg.max_usd:
         raise SystemExit(f"estimated ${est:.2f} exceeds --max-usd {cfg.max_usd}")
     if backend.paid and not yes:
@@ -346,10 +346,10 @@ def run_check(cfg, api_key=None, log=print, yes=False):
         "sample": {"labeled_rows": len(sample), "rows_in_scope": in_scope, "table_rows": table_rows,
                    "label_counts": dict(Counter(s["label"] for s in sample).most_common())},
         "analysis": analysis, "stability": stability, "batching": batching, "steering": steering,
-        "cost": {"requests": backend.stats["requests"], "input_tokens": backend.stats["input_tokens"],
+        "cost": {"paid": backend.paid, "requests": backend.stats["requests"], "input_tokens": backend.stats["input_tokens"],
                  "usd": backend.cost_usd(), "tokens_per_row": tokens_per_row,
-                 "projected_usd_table": tokens_per_row * table_rows * USD_PER_INPUT_TOKEN,
-                 "projected_usd_per_million_rows": tokens_per_row * 1e6 * USD_PER_INPUT_TOKEN,
+                 "projected_usd_table": tokens_per_row * table_rows * backend.usd_per_token,
+                 "projected_usd_per_million_rows": tokens_per_row * 1e6 * backend.usd_per_token,
                  "seconds": time.time() - t_start},
     }
     out = cfg.out or os.path.join("results", "check-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S"))
@@ -433,8 +433,24 @@ def recommendations(r):
         caught = f", catching {_pct(best['recall'])} of the real yeses" if best and "recall" in best else ""
         alt = (f" The highest target that can be guaranteed here is {_pct(best['target'])}, for {_pct(best['coverage'])} "
                f"of rows{caught} (see the table under Threshold)." if best else "")
-        out.append(f"**No threshold reaches {_pct(th['target'])} precision with this many labels.**{alt} "
-                   "Otherwise: label more rows, or rephrase the question.")
+        own = [p for p in a.get("per_answer") or [] if p.get("own_auto")]
+        top = (th.get("tested") or [None])[0]                  # the answers the model was surest of
+        upper = None
+        if top:
+            n = top["accepted"]
+            upper = 1 - M.clopper_pearson_lower(n - round(top["precision"] * n), n, th["alpha"])
+        if own:
+            listed = ", ".join(f"*{p['answer']}* ({p['own_auto']} rows)" for p in own)
+            tail = (f" Giving each answer its own threshold still accepts {_pct(a['per_answer_coverage'])} of rows, each "
+                    f"answer with precision ≥ {_pct(th['target'])}: {listed} (`pgdocket calibrate --per-answer`; see "
+                    "*Precision per answer*).")
+        elif not best and upper is not None and upper < th["target"]:
+            tail = (f" Even the {_pct(top['coverage'])} of answers the model was surest of were right only "
+                    f"{_pct(top['precision'])} of the time (at most {_pct(upper)} at {100 * (1 - th['alpha']):.0f} % "
+                    "confidence), so more labels are unlikely to help: rephrase the question, or try another model or backend.")
+        else:
+            tail = " Otherwise: label more rows, or rephrase the question."
+        out.append(f"**No threshold reaches {_pct(th['target'])} precision with this many labels.**{alt}{tail}")
     weak = [p for p in a.get("per_answer", []) if p["below_target"]]
     if weak and th["chosen"]:
         listed = "; ".join(f"*{p['answer']}* ({p['right']} of {p['auto']} right, at most {_pct(p['upper'])})" for p in weak)
@@ -537,6 +553,12 @@ def render(r):
               "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
         L += [f"| {p['answer']}{' ⚠' if p['below_target'] else ''} | {p['answered']} | {p['auto']} | {_pct(p['precision'])} | "
               f"{_pct(p['lower'])} | {_pct(p['upper'])} | {p['own_auto']} |" for p in a["per_answer"]]
+    elif a.get("per_answer_coverage"):                   # no single threshold, but some answers pass on their own
+        L += ["", "### Precision per answer", "",
+              f"No single threshold reaches {_pct(th['target'])}, but some answers do on a threshold of their own "
+              f"({_pct(a['per_answer_coverage'])} of all rows together; `pgdocket calibrate --per-answer`).", "",
+              "| answer | answered | own threshold | own guarantee accepts |", "| --- | ---: | ---: | ---: |"]
+        L += [f"| {p['answer']} | {p['answered']} | {_num(p['own_threshold'])} | {p['own_auto']} |" for p in a["per_answer"]]
     if a.get("recall_ladder"):
         L += ["", "What each recall target allows: rows scored below the threshold can be answered *no* without review, "
                   "keeping at least that share of the real yeses (95 % confidence; fixed-sequence testing with one-sided "
@@ -570,11 +592,15 @@ def render(r):
               for fam, f in st["families"].items()]
         if st["clean"]["erase_flagged"] is not None:
             L += ["", f"On the clean rows `auto` accepts, erase-and-check flagged {_pct(st['clean']['erase_flagged'])} for nothing."]
-    L += ["", "## Cost", "",
-          f"- This check: {c['requests']:,} requests, {c['input_tokens']:,} input tokens, ≈ ${c['usd']:.4f}, {c['seconds']:.0f} s.",
-          f"- {c['tokens_per_row']:.0f} tokens per row → whole table ({r['sample']['table_rows']:,} rows) ≈ "
-          f"${c['projected_usd_table']:.2f}; ≈ ${c['projected_usd_per_million_rows']:.0f} per million rows "
-          "(jev-1.13 list price).", "",
-          "---", "*Generated by `pgdocket check`. The report contains no row text; per-row answers are in `judgments.jsonl` "
+    L += ["", "## Cost", ""]
+    if c.get("paid", "typesafe.ai" in r["backend"]["url"]):      # older reports have no `paid`
+        L += [f"- This check: {c['requests']:,} requests, {c['input_tokens']:,} input tokens, ≈ ${c['usd']:.4f}, {c['seconds']:.0f} s.",
+              f"- {c['tokens_per_row']:.0f} tokens per row → whole table ({r['sample']['table_rows']:,} rows) ≈ "
+              f"${c['projected_usd_table']:.2f}; ≈ ${c['projected_usd_per_million_rows']:.0f} per million rows "
+              "(jev-1.13 list price)."]
+    else:
+        L += [f"- This check: {c['requests']:,} requests, {c['input_tokens']:,} input tokens, {c['seconds']:.0f} s; "
+              "no API cost (free backend: the price is the hardware it runs on)."]
+    L += ["", "---", "*Generated by `pgdocket check`. The report contains no row text; per-row answers are in `judgments.jsonl` "
           "next to it, keyed by your primary key.*"]
     return "\n".join(L) + "\n"

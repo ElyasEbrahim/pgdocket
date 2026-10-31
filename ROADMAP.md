@@ -13,7 +13,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] Harness validated against a simulated backend with planted flaws (16 tests, plus a 2,000-row Docker run that recovers T ≈ 1/0.5)
 - [x] Found: pg-jev's session cache ignores `jev.model` / `jev.api_url` (2,000/2,000 stale answers after switching backend); draft issue in [docs/phase0/upstream-issue-cache-key.md](docs/phase0/upstream-issue-cache-key.md)
 - [x] Real run on jev-1.13.0 (`jev-20261017-122314`, ≈ $0.146): see [docs/phase0/FINDINGS-jev-1.13.md](docs/phase0/FINDINGS-jev-1.13.md)
-- [ ] Optional second backend: stuntd / laya-server via `--api-url`; OpenAI Decisions needs an adapter (different contract)
+- [x] Second backend: Laya (open weights, run locally) via `--api-url`, all six experiments at one row per request, since multi-row requests break it ([comparison](docs/phase1/backends.md), #4)
 - [x] Run-to-run determinism check and label learning curve (FINDINGS §7–§8; corrected the order and drift claims)
 - [x] Batch-context check (#3): ~16.5 % of answers change with batch neighbours (FINDINGS §9)
 - [x] Batch size 1 (#10): +2.4 pp accuracy at 1.8× tokens; pgdocket judges one row per request (FINDINGS §10, ADR 0002)
@@ -60,12 +60,13 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 
 ## Phase 3: Multi-backend + drift (weeks 11–12)
 
-- [ ] Adapters: OpenAI Decisions API, `/v1/systemone`-compatible (stuntd, laya-server), Jev via OpenRouter
+- [x] Any `/v1/systemone` server, measured with Laya run locally; TypeSafe's key goes to TypeSafe's hosts only (#4)
+- [ ] Adapters: OpenAI Decisions API (a different contract), Jev via OpenRouter
 - [x] Shadow versions, `revise`, `compare` (changes against the re-ask noise baseline, accuracy from labels on the disagreements), gated `promote`, `retire` (#15)
 - [x] Calibration in `compare` (error, guaranteed threshold, auto-accept share per version); `promote` recalibrates; thresholds on the model's own score (#16)
 - [x] `pgdocket check` chooses its threshold on the raw score too, like `calibrate`; saved reports re-analysed (#16)
-- [ ] Backend comparison report (accuracy, ECE, cost, latency) on the same gold set
-- [ ] Option-order debiasing for `choice` (on only if Phase 0 showed it helps)
+- [x] Backend comparison report (accuracy, ECE, cost, latency) on the same gold set: Jev and Laya on Kubernetes issues and CFPB complaints (`jevbench backends`, [write-up](docs/phase1/backends.md), #4)
+- [ ] Option-order debiasing for `choice` (on only if Phase 0 showed it helps): no gain for Jev; for Laya, +1.6 points [0.7, 2.6] at 3× the calls ([backends.md](docs/phase1/backends.md)), so a per-backend option if anyone runs Laya
 - [x] Rows that steer the model: `check --steer` measures it; `--untrusted` tells the model to ignore instructions in rows; `calibrate --harden` keeps a row out of `auto` until erase-and-check passes it (#24)
 - [ ] Keep-one voting against payloads repeated across a row, and the two defences measured together
 - [x] `pgdocket drift`: the rows (free: answer shares and scores, recent against earlier) and the model (a fixed panel of labelled rows asked again), one false-alarm budget across repeated checks (#22)
@@ -88,5 +89,5 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 ## Later (driven by user demand)
 
 - Gateway mode: `/v1/systemone`-compatible proxy so pg-jev's `jev.api_url` gets a persistent cross-session cache and ledger
-- Cascades through stuntd/Laya (local-first, escalate uncertain rows)
+- Cascades through stuntd/Laya (local-first, escalate uncertain rows). Zero-shot Laya certifies too little on our tasks for this to pay; a Laya fine-tuned on the ledger's labels might
 - dbt package; minimal review web UI
