@@ -1,0 +1,4651 @@
+{
+  "rows": 2000,
+  "shard_rows": 563191,
+  "trials": 500,
+  "alloc_trials": 100,
+  "heaviest": {
+    "held": {
+      "1": 0.13039126478616925,
+      "10": 0.4856232939035487,
+      "40": 0.7537761601455869,
+      "100": 0.875705186533212
+    },
+    "texts": 2000,
+    "copies": 21980,
+    "max": 2866,
+    "single": 1591,
+    "same_label": 0.9949954504094631,
+    "kish": 26.072280469982797,
+    "wrong": {
+      "Jev, 20 rows per request": {
+        "top40": 2,
+        "texts": 0.2295,
+        "weight": 0.05559599636032757
+      },
+      "Jev, 1 row per request": {
+        "top40": 4,
+        "texts": 0.206,
+        "weight": 0.0945859872611465
+      },
+      "Laya, 1 row per request": {
+        "top40": 13,
+        "texts": 0.356,
+        "weight": 0.2894449499545041
+      }
+    }
+  },
+  "queries": {
+    "all complaints": {
+      "texts": 2000,
+      "copies": 21980,
+      "max": 2866,
+      "target": 0.02,
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9434940855323021,
+          "texts_share": 0.624,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.9373976342129209,
+              "coverage": {
+                "truth": 0.9434940855323021,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.878,
+                      "half_width": 0.061764243604297185,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.07861836067686116,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.052076181144923996,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.254,
+                      "half_width": 0.010591570195736182,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 29
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.956,
+                      "half_width": 0.051237482305587806,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.0382075953942142,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.226,
+                      "half_width": 0.006643807082775424,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 148
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.97,
+                      "half_width": 0.03808861552051593,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.05135245004523244,
+                      "draws": 9
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02883030343465538,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.248,
+                      "half_width": 0.004470752116712614,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 396
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.962,
+                    "reliable_coverage": 0.9678068410462777,
+                    "reliable": 0.994,
+                    "half_width": 0.020040370641378473,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.97,
+                    "reliable": 1.0,
+                    "half_width": 0.012636661414595563,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.007266165087374025,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1890.0,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 111.96,
+                  "labels_p90": 130.20000000000002,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 111.16,
+                  "labels_p90": 130.0,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.8749317561419472,
+              "coverage": {
+                "truth": 0.9434940855323021,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.91,
+                      "half_width": 0.06660084817519792,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.09062042233836032,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04931266698782559,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.134,
+                      "half_width": 0.010254788995991955,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 28
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.94,
+                      "half_width": 0.052137097057009404,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.04170857505865814,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03680873348484179,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.152,
+                      "half_width": 0.0066430291270309985,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 151
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.966,
+                      "half_width": 0.039015634329220394,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.049664287298749575,
+                      "draws": 6
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.028071210024010425,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.198,
+                      "half_width": 0.0046765734544830075,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 407
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.962,
+                    "reliable_coverage": 0.9678068410462777,
+                    "reliable": 0.994,
+                    "half_width": 0.01946493350023199,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.97,
+                    "reliable": 1.0,
+                    "half_width": 0.011308101745284798,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.96,
+                    "reliable": 1.0,
+                    "half_width": 0.0069175645030325255,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1882.25,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 112.38,
+                  "labels_p90": 127.10000000000001,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 113.95,
+                  "labels_p90": 131.0,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.6909918107370336,
+              "coverage": {
+                "truth": 0.9434940855323021,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.904,
+                      "half_width": 0.07047851826174051,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05642001530004336,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.194,
+                      "half_width": 0.011089421733970336,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 24
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.962,
+                      "half_width": 0.05423282474684051,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04097950360129003,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.18,
+                      "half_width": 0.007309872567524533,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 179
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.982,
+                      "half_width": 0.04209926822167611,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.75,
+                      "half_width": 0.053188921355383126,
+                      "draws": 4
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.030169647781042575,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.15,
+                      "half_width": 0.004950025105601436,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 401
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.938,
+                    "reliable_coverage": 0.9455645161290323,
+                    "reliable": 0.992,
+                    "half_width": 0.02098671245681222,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.964,
+                    "reliable": 1.0,
+                    "half_width": 0.013187239791566373,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.972,
+                    "reliable_coverage": 0.972,
+                    "reliable": 1.0,
+                    "half_width": 0.007713372558094049,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1889.5,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 123.17,
+                  "labels_p90": 136.0,
+                  "coverage": 0.96
+                },
+                "complaints at random": {
+                  "labels": 128.77,
+                  "labels_p90": 148.0,
+                  "coverage": 0.95
+                }
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.01569608735213831,
+          "texts_share": 0.1195,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.02429481346678799,
+              "coverage": {
+                "truth": 0.01569608735213831,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.9,
+                      "half_width": 0.021642181311129733,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.0375797235013372,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.312,
+                      "half_width": 0.0061462888321292194,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 47
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.932,
+                      "half_width": 0.01657652369502492,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02748392709262276,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.272,
+                      "half_width": 0.0038773678763223637,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 154
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.968,
+                      "half_width": 0.012010096969304456,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.020264741767958526,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.238,
+                      "half_width": 0.0025546867726124528,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 396
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9272727272727272,
+                    "reliable_coverage": 0.9931972789115646,
+                    "reliable": 0.296969696969697,
+                    "half_width": 0.013726646033757763,
+                    "draws": 495
+                  },
+                  "150": {
+                    "coverage": 0.948,
+                    "reliable_coverage": 0.9882629107981221,
+                    "reliable": 0.852,
+                    "half_width": 0.008920813480294925,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.96,
+                    "reliable": 1.0,
+                    "half_width": 0.005174055469283458,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1956.25,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 177.61,
+                  "labels_p90": 247.0,
+                  "coverage": 0.96
+                },
+                "complaints at random": {
+                  "labels": 160.07,
+                  "labels_p90": 198.10000000000002,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.04899909008189263,
+              "coverage": {
+                "truth": 0.01569608735213831,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.896,
+                      "half_width": 0.023699416400821037,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03668293979922238,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.24,
+                      "half_width": 0.006200928785730419,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 57
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.93,
+                      "half_width": 0.016672140743518648,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02665879979966268,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.268,
+                      "half_width": 0.003941701407347444,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 134
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.958,
+                      "half_width": 0.01179756887354401,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.019884998787061556,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.31,
+                      "half_width": 0.0026165911918888643,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 417
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9230769230769231,
+                    "reliable_coverage": 0.986013986013986,
+                    "reliable": 0.2894736842105263,
+                    "half_width": 0.014040934547194118,
+                    "draws": 494
+                  },
+                  "150": {
+                    "coverage": 0.954,
+                    "reliable_coverage": 0.9929245283018868,
+                    "reliable": 0.848,
+                    "half_width": 0.008356182821129732,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.958,
+                    "reliable_coverage": 0.958,
+                    "reliable": 1.0,
+                    "half_width": 0.004915743208815124,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1953.5,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 191.57,
+                  "labels_p90": 250.0,
+                  "coverage": 0.97
+                },
+                "complaints at random": {
+                  "labels": 158.42,
+                  "labels_p90": 193.0,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.10759781619654231,
+              "coverage": {
+                "truth": 0.01569608735213831,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.884,
+                      "half_width": 0.0245204773207229,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04152078757073838,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.332,
+                      "half_width": 0.007103420606838625,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 55
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.922,
+                      "half_width": 0.016610689075702324,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02971583535812887,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.312,
+                      "half_width": 0.004186494917727943,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 165
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.956,
+                      "half_width": 0.011760050955674974,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.021364342764521753,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.37,
+                      "half_width": 0.002704861019000765,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 405
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9136546184738956,
+                    "reliable_coverage": 0.9759036144578314,
+                    "reliable": 0.3333333333333333,
+                    "half_width": 0.015005294360598422,
+                    "draws": 498
+                  },
+                  "150": {
+                    "coverage": 0.942,
+                    "reliable_coverage": 0.9953596287703016,
+                    "reliable": 0.862,
+                    "half_width": 0.009451434387629604,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.964,
+                    "reliable": 1.0,
+                    "half_width": 0.005641068228102452,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1950.0,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 177.08,
+                  "labels_p90": 250.0,
+                  "coverage": 0.97
+                },
+                "complaints at random": {
+                  "labels": 156.49,
+                  "labels_p90": 190.20000000000002,
+                  "coverage": 0.92
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.02388535031847134,
+          "texts_share": 0.071,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.017606915377616016,
+              "coverage": {
+                "truth": 0.02388535031847134,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.542,
+                      "half_width": 0.0436912537803053,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.1,
+                      "half_width": 0.03046847867834488,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.136,
+                      "half_width": 0.007128161172095137,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 18
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.686,
+                      "half_width": 0.0365772398459336,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.022105900379959232,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.11,
+                      "half_width": 0.004889621684972497,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 34
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.744,
+                      "half_width": 0.02635065534324046,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.016143921310586017,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.106,
+                      "half_width": 0.0031085788128191044,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 88
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9617706237424547,
+                    "reliable_coverage": 0.9836065573770492,
+                    "reliable": 0.3682092555331992,
+                    "half_width": 0.014663644263335425,
+                    "draws": 497
+                  },
+                  "150": {
+                    "coverage": 0.9679358717434869,
+                    "reliable_coverage": 0.995260663507109,
+                    "reliable": 0.845691382765531,
+                    "half_width": 0.008783748441846399,
+                    "draws": 499
+                  },
+                  "250": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.9795501022494888,
+                    "reliable": 0.978,
+                    "half_width": 0.004562245630758019,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1946.75,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 148.21,
+                  "labels_p90": 199.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 126.29,
+                  "labels_p90": 155.10000000000002,
+                  "coverage": 0.94
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.05473157415832575,
+              "coverage": {
+                "truth": 0.02388535031847134,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.662,
+                      "half_width": 0.0321489778527695,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.102,
+                      "half_width": 0.029753332919585526,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.236,
+                      "half_width": 0.006170400535780166,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 13
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.804,
+                      "half_width": 0.03232964653234105,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.021664902609824538,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.154,
+                      "half_width": 0.004254087959878879,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 33
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.876,
+                      "half_width": 0.027100782685075372,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.015905501482007922,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.096,
+                      "half_width": 0.003016239618220582,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 91
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9398797595190381,
+                    "reliable_coverage": 0.984375,
+                    "reliable": 0.3847695390781563,
+                    "half_width": 0.014030536268105905,
+                    "draws": 499
+                  },
+                  "150": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.9837209302325581,
+                    "reliable": 0.86,
+                    "half_width": 0.008300353860561547,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.9698795180722891,
+                    "reliable": 0.996,
+                    "half_width": 0.004575732075898609,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1940.0,
+                  "labels_p90": 2000.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 136.03,
+                  "labels_p90": 184.20000000000002,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 121.5,
+                  "labels_p90": 151.10000000000002,
+                  "coverage": 0.93
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.18721565059144676,
+              "coverage": {
+                "truth": 0.02388535031847134,
+                "texts": 2000,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.694,
+                      "half_width": 0.04813493858338268,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.146,
+                      "half_width": 0.03215523787382726,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.176,
+                      "half_width": 0.007176334207339196,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 22
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.734,
+                      "half_width": 0.03723118399038641,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.02306646372651191,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.146,
+                      "half_width": 0.0046726885700145125,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 38
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.862,
+                      "half_width": 0.028824793795091962,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.016794943156792558,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.142,
+                      "half_width": 0.0032279014784414705,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 86
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9497991967871486,
+                    "reliable_coverage": 0.9783783783783784,
+                    "reliable": 0.3714859437751004,
+                    "half_width": 0.015004010336074016,
+                    "draws": 498
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.9930715935334873,
+                    "reliable": 0.866,
+                    "half_width": 0.009003583024485218,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.95,
+                    "reliable_coverage": 0.9693877551020408,
+                    "reliable": 0.98,
+                    "half_width": 0.004588657166131103,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1937.5,
+                  "labels_p90": 2000.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 167.38,
+                  "labels_p90": 249.0,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 127.24,
+                  "labels_p90": 150.10000000000002,
+                  "coverage": 0.95
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Midwest": {
+      "texts": 336,
+      "copies": 2554,
+      "max": 300,
+      "target": 0.05,
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9028974158183242,
+          "texts_share": 0.6964285714285714,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.9283476898981989,
+              "coverage": {
+                "truth": 0.9028974158183242,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.874,
+                      "half_width": 0.0768354955242018,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.9166666666666666,
+                      "half_width": 0.032316051395552305,
+                      "draws": 24
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05808715344431326,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.246,
+                      "half_width": 0.013865772225850103,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 198
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.972,
+                    "reliable_coverage": 0.972,
+                    "reliable": 1.0,
+                    "half_width": 0.017140173603449667,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.972,
+                    "reliable_coverage": 0.972,
+                    "reliable": 1.0,
+                    "half_width": 0.010353694032311385,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.998,
+                    "reliable_coverage": 0.998,
+                    "reliable": 1.0,
+                    "half_width": 0.0055291166296664845,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 297.5,
+                  "labels_p90": 336.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 57.86,
+                  "labels_p90": 70.40000000000003,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 53.6,
+                  "labels_p90": 62.0,
+                  "coverage": 0.97
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.8085356303837118,
+              "coverage": {
+                "truth": 0.9028974158183242,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.92,
+                      "half_width": 0.0740729482592068,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.90625,
+                      "half_width": 0.03570416373612856,
+                      "draws": 32
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05701367299134698,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.37,
+                      "half_width": 0.013888272212965784,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 198
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.988,
+                    "reliable_coverage": 0.988,
+                    "reliable": 1.0,
+                    "half_width": 0.01643127904614552,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.974,
+                    "reliable_coverage": 0.974,
+                    "reliable": 1.0,
+                    "half_width": 0.00920865591603022,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.998,
+                    "reliable_coverage": 0.998,
+                    "reliable": 1.0,
+                    "half_width": 0.0049610082813618004,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 291.54,
+                  "labels_p90": 336.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 60.67,
+                  "labels_p90": 74.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 53.55,
+                  "labels_p90": 62.0,
+                  "coverage": 0.97
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.6996867658574785,
+              "coverage": {
+                "truth": 0.9028974158183242,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.912,
+                      "half_width": 0.07551923847594992,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.9117647058823529,
+                      "half_width": 0.03510500920403567,
+                      "draws": 34
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05950809438511142,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.4,
+                      "half_width": 0.01421018414757841,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 195
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.976,
+                    "reliable_coverage": 0.976,
+                    "reliable": 1.0,
+                    "half_width": 0.01852273306831871,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.010498254831609103,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.998,
+                    "reliable_coverage": 0.998,
+                    "reliable": 1.0,
+                    "half_width": 0.005834930400179547,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 290.42,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 64.54,
+                  "labels_p90": 78.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 56.28,
+                  "labels_p90": 65.0,
+                  "coverage": 0.93
+                }
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.017227877838684416,
+          "texts_share": 0.08630952380952381,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.021143304620203602,
+              "coverage": {
+                "truth": 0.017227877838684416,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.932,
+                      "half_width": 0.014572935525203511,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.03727004383835371,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.726,
+                      "half_width": 0.006053846411645901,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 204
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.8924949290060852,
+                    "reliable_coverage": 0.9846153846153847,
+                    "reliable": 0.26369168356997974,
+                    "half_width": 0.010695033284018768,
+                    "draws": 493
+                  },
+                  "150": {
+                    "coverage": 0.956,
+                    "reliable_coverage": 0.9912663755458515,
+                    "reliable": 0.916,
+                    "half_width": 0.007250204750352659,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.988,
+                    "reliable_coverage": 0.988,
+                    "reliable": 1.0,
+                    "half_width": 0.0044675669697603095,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 333.69,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 157.31,
+                  "labels_p90": 221.0,
+                  "coverage": 0.97
+                },
+                "complaints at random": {
+                  "labels": 128.36,
+                  "labels_p90": 158.10000000000002,
+                  "coverage": 0.99
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.09631949882537197,
+              "coverage": {
+                "truth": 0.017227877838684416,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.944,
+                      "half_width": 0.01778759291180421,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03685059385327568,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.622,
+                      "half_width": 0.0066079239703939335,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 195
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9310344827586207,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.2515212981744422,
+                    "half_width": 0.01012022616843976,
+                    "draws": 493
+                  },
+                  "150": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.9977220956719818,
+                    "reliable": 0.878,
+                    "half_width": 0.006621026273155734,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.994,
+                    "reliable": 1.0,
+                    "half_width": 0.0041389108250963974,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 333.55,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 154.94,
+                  "labels_p90": 247.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 131.81,
+                  "labels_p90": 161.0,
+                  "coverage": 0.98
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.17893500391542677,
+              "coverage": {
+                "truth": 0.017227877838684416,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.926,
+                      "half_width": 0.017335496547946035,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03753929753228776,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.636,
+                      "half_width": 0.006585092411162994,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 212
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9313929313929314,
+                    "reliable_coverage": 0.9701492537313433,
+                    "reliable": 0.2785862785862786,
+                    "half_width": 0.011066323990676348,
+                    "draws": 481
+                  },
+                  "150": {
+                    "coverage": 0.948,
+                    "reliable_coverage": 0.9821428571428571,
+                    "reliable": 0.896,
+                    "half_width": 0.007266453928227635,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.998,
+                    "reliable_coverage": 0.998,
+                    "reliable": 1.0,
+                    "half_width": 0.004243053176321334,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 332.67,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 154.5,
+                  "labels_p90": 237.10000000000008,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 129.47,
+                  "labels_p90": 160.10000000000002,
+                  "coverage": 0.97
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.06108065779169929,
+          "texts_share": 0.0744047619047619,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.020360219263899765,
+              "coverage": {
+                "truth": 0.06108065779169929,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.734,
+                      "half_width": 0.07146548169903431,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.992,
+                      "half_width": 0.034365480784001944,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.178,
+                      "half_width": 0.011500539927894139,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 3
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.99,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.902,
+                    "half_width": 0.014142227261529604,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.986,
+                    "reliable_coverage": 0.9941860465116279,
+                    "reliable": 0.688,
+                    "half_width": 0.006483203893880042,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.9979838709677419,
+                    "reliable": 0.992,
+                    "half_width": 0.0029844273783766234,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 323.62,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 92.78,
+                  "labels_p90": 133.60000000000005,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 64.48,
+                  "labels_p90": 75.10000000000001,
+                  "coverage": 0.98
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.06812842599843383,
+              "coverage": {
+                "truth": 0.06108065779169929,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.752,
+                      "half_width": 0.038689841542797594,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.03085074218606244,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.996,
+                      "half_width": 0.03412888362253788,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.478,
+                      "half_width": 0.009911988158938994,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 7
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.99,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.92,
+                    "half_width": 0.014447132273798055,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.988950276243094,
+                    "reliable": 0.724,
+                    "half_width": 0.0062790372089630555,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.99,
+                    "reliable_coverage": 0.997979797979798,
+                    "reliable": 0.99,
+                    "half_width": 0.003033583415746057,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 325.87,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 103.28,
+                  "labels_p90": 170.9000000000001,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 65.03,
+                  "labels_p90": 78.10000000000001,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.10610806577916992,
+              "coverage": {
+                "truth": 0.06108065779169929,
+                "texts": 336,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.754,
+                      "half_width": 0.0702274930638149,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.031677895835881285,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.996,
+                      "half_width": 0.03469065752241541,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.154,
+                      "half_width": 0.011561462730830857,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 7
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.988,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.89,
+                    "half_width": 0.014135298665764942,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.9941520467836257,
+                    "reliable": 0.684,
+                    "half_width": 0.0062161135232983574,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.9979879275653923,
+                    "reliable": 0.994,
+                    "half_width": 0.0031012493200512845,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 323.29,
+                  "labels_p90": 336.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 111.19,
+                  "labels_p90": 219.5000000000001,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 66.49,
+                  "labels_p90": 80.10000000000001,
+                  "coverage": 0.94
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Northeast": {
+      "texts": 432,
+      "copies": 3980,
+      "max": 729,
+      "target": 0.05,
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9339195979899497,
+          "texts_share": 0.6898148148148148,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.9507537688442211,
+              "coverage": {
+                "truth": 0.9339195979899497,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.898,
+                      "half_width": 0.059887910844538414,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.044161361019497525,
+                      "draws": 5
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05544059966634602,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.272,
+                      "half_width": 0.010823788695440787,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 185
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.994,
+                      "half_width": 0.032958537642890334,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.9940652818991098,
+                      "half_width": 0.026867404204776943,
+                      "draws": 337
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04459535453972836,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.86,
+                      "half_width": 0.00798676537044323,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 162
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.014725282589079593,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.972,
+                    "reliable_coverage": 0.972,
+                    "reliable": 1.0,
+                    "half_width": 0.009702629941891515,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.992,
+                    "reliable_coverage": 0.992,
+                    "reliable": 1.0,
+                    "half_width": 0.005244244508324231,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 385.45,
+                  "labels_p90": 425.70000000000005,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 56.14,
+                  "labels_p90": 71.60000000000005,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 54.31,
+                  "labels_p90": 64.10000000000001,
+                  "coverage": 0.99
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.835678391959799,
+              "coverage": {
+                "truth": 0.9339195979899497,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.968,
+                      "half_width": 0.06677370752833499,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.038040711378080835,
+                      "draws": 5
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05511691120231885,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.238,
+                      "half_width": 0.011381686634503193,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 189
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.031502329284440175,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.02551818628150187,
+                      "draws": 363
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.044553476905034695,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.834,
+                      "half_width": 0.007995417563351556,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 137
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.966,
+                    "reliable": 1.0,
+                    "half_width": 0.013861981514812072,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.982,
+                    "reliable_coverage": 0.982,
+                    "reliable": 1.0,
+                    "half_width": 0.009509514661826785,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.994,
+                    "reliable": 1.0,
+                    "half_width": 0.005411961765163718,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 394.06,
+                  "labels_p90": 425.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 53.48,
+                  "labels_p90": 59.0,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 56.63,
+                  "labels_p90": 68.10000000000001,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.5484924623115578,
+              "coverage": {
+                "truth": 0.9339195979899497,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.97,
+                      "half_width": 0.06544520596381122,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.058673136089190704,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.222,
+                      "half_width": 0.011496249661572023,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 170
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.031924245449847566,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.025089871673838346,
+                      "draws": 344
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.044873632514535876,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.79,
+                      "half_width": 0.008067358237791911,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 156
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.972,
+                    "reliable_coverage": 0.972,
+                    "reliable": 1.0,
+                    "half_width": 0.016095773885904236,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.010752051574336204,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.998,
+                    "reliable_coverage": 0.998,
+                    "reliable": 1.0,
+                    "half_width": 0.006192767379523182,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 389.2,
+                  "labels_p90": 425.70000000000005,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 55.03,
+                  "labels_p90": 66.40000000000003,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 55.73,
+                  "labels_p90": 65.0,
+                  "coverage": 0.93
+                }
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.019095477386934675,
+          "texts_share": 0.08796296296296297,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.013819095477386936,
+              "coverage": {
+                "truth": 0.019095477386934675,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.882,
+                      "half_width": 0.022148492055239798,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03607361425242497,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.494,
+                      "half_width": 0.006321128734276788,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 134
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.013757544768765296,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.987012987012987,
+                      "half_width": 0.006100215364586781,
+                      "draws": 77
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027494533377214338,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.938,
+                      "half_width": 0.004452458982579377,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 34
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9759519038076152,
+                    "reliable_coverage": 0.9962121212121212,
+                    "reliable": 0.5290581162324649,
+                    "half_width": 0.011149981186236056,
+                    "draws": 499
+                  },
+                  "150": {
+                    "coverage": 0.969939879759519,
+                    "reliable_coverage": 0.9914163090128756,
+                    "reliable": 0.9338677354709419,
+                    "half_width": 0.0069188535171182865,
+                    "draws": 499
+                  },
+                  "250": {
+                    "coverage": 0.98,
+                    "reliable_coverage": 0.98,
+                    "reliable": 1.0,
+                    "half_width": 0.0038618245776988777,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 421.35,
+                  "labels_p90": 432.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 125.53,
+                  "labels_p90": 169.3,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 118.43,
+                  "labels_p90": 146.10000000000002,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.054271356783919596,
+              "coverage": {
+                "truth": 0.019095477386934675,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.926,
+                      "half_width": 0.022236431009829142,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.036134600507917974,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.368,
+                      "half_width": 0.006316002595927615,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 128
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.013375924472544494,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.005934164931678442,
+                      "draws": 81
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02746003923893286,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.88,
+                      "half_width": 0.00441765076643254,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 34
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9719438877755511,
+                    "reliable_coverage": 0.9889705882352942,
+                    "reliable": 0.5450901803607214,
+                    "half_width": 0.011130980313559729,
+                    "draws": 499
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.9978401727861771,
+                    "reliable": 0.926,
+                    "half_width": 0.006991107406050917,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.992,
+                    "reliable_coverage": 0.992,
+                    "reliable": 1.0,
+                    "half_width": 0.003956466232265069,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 419.64,
+                  "labels_p90": 432.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 128.73,
+                  "labels_p90": 174.40000000000003,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 116.32,
+                  "labels_p90": 138.10000000000002,
+                  "coverage": 0.97
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.10477386934673368,
+              "coverage": {
+                "truth": 0.019095477386934675,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.934,
+                      "half_width": 0.023196099029970003,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.038047456713107476,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.482,
+                      "half_width": 0.006505984678175043,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 111
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.996,
+                      "half_width": 0.012877717341392324,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.006320514633971709,
+                      "draws": 117
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02771143335191681,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.906,
+                      "half_width": 0.004409876965582175,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 33
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9679358717434869,
+                    "reliable_coverage": 0.9884169884169884,
+                    "reliable": 0.5190380761523046,
+                    "half_width": 0.011718252341256803,
+                    "draws": 499
+                  },
+                  "150": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.9978632478632479,
+                    "reliable": 0.936,
+                    "half_width": 0.007446258442642526,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.986,
+                    "reliable_coverage": 0.986,
+                    "reliable": 1.0,
+                    "half_width": 0.004395771471886706,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 421.04,
+                  "labels_p90": 432.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 125.49,
+                  "labels_p90": 180.50000000000006,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 111.11,
+                  "labels_p90": 139.20000000000002,
+                  "coverage": 0.96
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.032160804020100506,
+          "texts_share": 0.08564814814814815,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.017839195979899497,
+              "coverage": {
+                "truth": 0.032160804020100506,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.726,
+                      "half_width": 0.0490612582445156,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.062,
+                      "half_width": 0.035588447064423205,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.122,
+                      "half_width": 0.007962428862395735,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 76
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.94,
+                      "half_width": 0.02667880262954254,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.9861111111111112,
+                      "half_width": 0.005829596694297712,
+                      "draws": 72
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027147329400090677,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.916,
+                      "half_width": 0.005678128776474276,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 22
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9353535353535354,
+                    "reliable_coverage": 0.9800995024875622,
+                    "reliable": 0.40606060606060607,
+                    "half_width": 0.009763083687503447,
+                    "draws": 495
+                  },
+                  "150": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.9893390191897654,
+                    "reliable": 0.938,
+                    "half_width": 0.006729087617415257,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.0036626992874386494,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 422.78,
+                  "labels_p90": 432.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 131.03,
+                  "labels_p90": 173.9000000000001,
+                  "coverage": 0.97
+                },
+                "complaints at random": {
+                  "labels": 85.18,
+                  "labels_p90": 104.10000000000001,
+                  "coverage": 0.99
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.09120603015075376,
+              "coverage": {
+                "truth": 0.032160804020100506,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.766,
+                      "half_width": 0.04852469948551256,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.026,
+                      "half_width": 0.035388441573556265,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.226,
+                      "half_width": 0.008003223105440103,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 76
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.946,
+                      "half_width": 0.026681659157626204,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.005903725552171933,
+                      "draws": 76
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02715451116002161,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.864,
+                      "half_width": 0.005720132093711667,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 29
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9512195121951219,
+                    "reliable_coverage": 0.9791666666666666,
+                    "reliable": 0.3902439024390244,
+                    "half_width": 0.009646314258618597,
+                    "draws": 492
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.9936575052854123,
+                    "reliable": 0.946,
+                    "half_width": 0.006454665969313948,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.982,
+                    "reliable_coverage": 0.9839679358717435,
+                    "reliable": 0.998,
+                    "half_width": 0.003621410644270958,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 422.61,
+                  "labels_p90": 432.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 127.86,
+                  "labels_p90": 188.10000000000002,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 81.63,
+                  "labels_p90": 102.0,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.33190954773869347,
+              "coverage": {
+                "truth": 0.032160804020100506,
+                "texts": 432,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.772,
+                      "half_width": 0.04823530818907037,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.084,
+                      "half_width": 0.03672611393886376,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.212,
+                      "half_width": 0.008144706192123295,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 79
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.936,
+                      "half_width": 0.025723658766181635,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.9875,
+                      "half_width": 0.006146973201412301,
+                      "draws": 80
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027303464255459525,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.852,
+                      "half_width": 0.005699799318795282,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 15
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9556451612903226,
+                    "reliable_coverage": 0.9951923076923077,
+                    "reliable": 0.41935483870967744,
+                    "half_width": 0.010476733350110567,
+                    "draws": 496
+                  },
+                  "150": {
+                    "coverage": 0.976,
+                    "reliable_coverage": 0.9936440677966102,
+                    "reliable": 0.944,
+                    "half_width": 0.007153773610607859,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.003948328278191976,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 423.47,
+                  "labels_p90": 432.0,
+                  "coverage": 0.99
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 127.25,
+                  "labels_p90": 186.0,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 82.81,
+                  "labels_p90": 105.10000000000001,
+                  "coverage": 0.94
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "South": {
+      "texts": 1046,
+      "copies": 13316,
+      "max": 2203,
+      "target": 0.05,
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9632021628116552,
+          "texts_share": 0.6835564053537285,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.9465304896365275,
+              "coverage": {
+                "truth": 0.9632021628116552,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.964,
+                      "half_width": 0.04023212949694347,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05287129520889536,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.302,
+                      "half_width": 0.007942942329500375,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 126
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.982,
+                      "half_width": 0.028194726152831546,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03948643102652056,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.376,
+                      "half_width": 0.004971176700074392,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 374
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.018592306123299963,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.017262756740866775,
+                      "draws": 24
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03066859983315358,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.618,
+                      "half_width": 0.0035624226940138694,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 476
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.9795081967213115,
+                    "reliable": 0.976,
+                    "half_width": 0.014810062441544238,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.00961300232996624,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.97,
+                    "reliable": 1.0,
+                    "half_width": 0.005536216135168448,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 945.54,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 81.04,
+                  "labels_p90": 118.30000000000003,
+                  "coverage": 0.96
+                },
+                "complaints at random": {
+                  "labels": 85.88,
+                  "labels_p90": 102.20000000000002,
+                  "coverage": 0.93
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.9042505256833884,
+              "coverage": {
+                "truth": 0.9632021628116552,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.95,
+                      "half_width": 0.03637528376141016,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.050049676484442626,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.17,
+                      "half_width": 0.0074401973754519585,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 139
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.978,
+                      "half_width": 0.02834346380173874,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.04480200340051517,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03812772561024122,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.266,
+                      "half_width": 0.005116542894051831,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 365
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.0186900834017557,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.017142833866322087,
+                      "draws": 22
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03035745084135885,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.414,
+                      "half_width": 0.0035835906917179123,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 478
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.954,
+                    "reliable_coverage": 0.9754098360655737,
+                    "reliable": 0.976,
+                    "half_width": 0.014556305730360831,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.008636814736683051,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.005128461680322218,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 972.5,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 85.75,
+                  "labels_p90": 122.70000000000006,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 84.17,
+                  "labels_p90": 101.10000000000001,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.7273205166716732,
+              "coverage": {
+                "truth": 0.9632021628116552,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.956,
+                      "half_width": 0.04097233360182921,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05653530074031557,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.258,
+                      "half_width": 0.00823000032868644,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 132
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.98,
+                      "half_width": 0.028846730087259458,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.030882785393590944,
+                      "draws": 2
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04134204663410818,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.282,
+                      "half_width": 0.005438968832562514,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 381
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.01897795374322929,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.017070957528785343,
+                      "draws": 26
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03115051288469799,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.49,
+                      "half_width": 0.0036863436647394414,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 474
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.9837067209775967,
+                    "reliable": 0.982,
+                    "half_width": 0.01623389723989037,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.948,
+                    "reliable_coverage": 0.948,
+                    "reliable": 1.0,
+                    "half_width": 0.009992602331621204,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.966,
+                    "reliable": 1.0,
+                    "half_width": 0.005820862651146111,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 982.06,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 93.32,
+                  "labels_p90": 125.10000000000001,
+                  "coverage": 0.97
+                },
+                "complaints at random": {
+                  "labels": 84.43,
+                  "labels_p90": 101.0,
+                  "coverage": 0.98
+                }
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.011414839291078402,
+          "texts_share": 0.11281070745697896,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.02590868128567137,
+              "coverage": {
+                "truth": 0.011414839291078402,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.956,
+                      "half_width": 0.012899916548560984,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03781356696717558,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.368,
+                      "half_width": 0.0044969956427901485,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 171
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.978,
+                      "half_width": 0.009823372767050207,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027910171705955455,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.248,
+                      "half_width": 0.0029891320392502856,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 291
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.006628624979230805,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02114662071512916,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.65,
+                      "half_width": 0.0020662075434190953,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 500
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.947261663286004,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.23732251521298176,
+                    "half_width": 0.010484476994076319,
+                    "draws": 493
+                  },
+                  "150": {
+                    "coverage": 0.938,
+                    "reliable_coverage": 0.9922077922077922,
+                    "reliable": 0.77,
+                    "half_width": 0.006355836099072285,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.97,
+                    "reliable": 1.0,
+                    "half_width": 0.003964160341092181,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1028.38,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 185.77,
+                  "labels_p90": 248.0,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 163.53,
+                  "labels_p90": 200.0,
+                  "coverage": 1.0
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.039951937518774405,
+              "coverage": {
+                "truth": 0.011414839291078402,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.932,
+                      "half_width": 0.013968932350337923,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.036924124782048366,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.302,
+                      "half_width": 0.004762806028296286,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 183
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.972,
+                      "half_width": 0.009970222669320367,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027369238468531756,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.392,
+                      "half_width": 0.003108742272027869,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 280
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.006533166317056099,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.021000792694554144,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.68,
+                      "half_width": 0.002067793893139867,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 500
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9158110882956879,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.24435318275154005,
+                    "half_width": 0.011146500115079831,
+                    "draws": 487
+                  },
+                  "150": {
+                    "coverage": 0.9556451612903226,
+                    "reliable_coverage": 0.994579945799458,
+                    "reliable": 0.7439516129032258,
+                    "half_width": 0.006070544492450911,
+                    "draws": 496
+                  },
+                  "250": {
+                    "coverage": 0.962,
+                    "reliable_coverage": 0.962,
+                    "reliable": 1.0,
+                    "half_width": 0.0037982622866550965,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1034.65,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 183.73,
+                  "labels_p90": 248.0,
+                  "coverage": 0.95
+                },
+                "complaints at random": {
+                  "labels": 166.02,
+                  "labels_p90": 199.10000000000002,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.09537398618203664,
+              "coverage": {
+                "truth": 0.011414839291078402,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.924,
+                      "half_width": 0.012981964166402609,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04083657893506851,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.418,
+                      "half_width": 0.004718402473625059,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 186
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.982,
+                      "half_width": 0.009809504241654263,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.029557679943741925,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.5,
+                      "half_width": 0.0031745832796535134,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 287
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.006639403439204534,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.021593218538839803,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.798,
+                      "half_width": 0.0021034036935066226,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 500
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9183673469387755,
+                    "reliable_coverage": 0.9831932773109243,
+                    "reliable": 0.24285714285714285,
+                    "half_width": 0.011693296607925617,
+                    "draws": 490
+                  },
+                  "150": {
+                    "coverage": 0.948,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.738,
+                    "half_width": 0.00694765960614506,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.946,
+                    "reliable_coverage": 0.946,
+                    "reliable": 1.0,
+                    "half_width": 0.004338623856535996,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1030.26,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 182.21,
+                  "labels_p90": 248.0,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 158.9,
+                  "labels_p90": 190.20000000000002,
+                  "coverage": 0.98
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.013742865725443075,
+          "texts_share": 0.055449330783938815,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.012916791829378192,
+              "coverage": {
+                "truth": 0.013742865725443075,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.69,
+                      "half_width": 0.02201851330933075,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.1,
+                      "half_width": 0.028237625141699012,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.224,
+                      "half_width": 0.004985741196115011,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 27
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.76,
+                      "half_width": 0.016832489436391547,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.020632262274107502,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.2,
+                      "half_width": 0.003142078411446857,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 40
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.93,
+                      "half_width": 0.013271483879292898,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.015430155495346817,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.57,
+                      "half_width": 0.0022445318386493415,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 100
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9873949579831933,
+                    "reliable_coverage": 0.9302325581395349,
+                    "reliable": 0.09033613445378151,
+                    "half_width": 0.010131945874623877,
+                    "draws": 476
+                  },
+                  "150": {
+                    "coverage": 0.958,
+                    "reliable_coverage": 0.9918256130790191,
+                    "reliable": 0.734,
+                    "half_width": 0.006575436001915799,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.976,
+                    "reliable_coverage": 1.0,
+                    "reliable": 0.964,
+                    "half_width": 0.003297317394558799,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1031.34,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 163.86,
+                  "labels_p90": 237.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 147.3,
+                  "labels_p90": 184.10000000000002,
+                  "coverage": 0.93
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.04100330429558426,
+              "coverage": {
+                "truth": 0.013742865725443075,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.764,
+                      "half_width": 0.02045896379400872,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.082,
+                      "half_width": 0.02679315445594198,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.222,
+                      "half_width": 0.004347958441230606,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 25
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.872,
+                      "half_width": 0.01825400230355986,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.019889716148757175,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.13,
+                      "half_width": 0.0029834077112032434,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 33
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.956,
+                      "half_width": 0.012823366620484862,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.015268222521246528,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.502,
+                      "half_width": 0.0021838258197575543,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 129
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.909853249475891,
+                    "reliable_coverage": 0.8636363636363636,
+                    "reliable": 0.09224318658280922,
+                    "half_width": 0.009255674877042317,
+                    "draws": 477
+                  },
+                  "150": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.9777158774373259,
+                    "reliable": 0.718,
+                    "half_width": 0.00593269466380281,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.964,
+                    "reliable_coverage": 0.9875,
+                    "reliable": 0.96,
+                    "half_width": 0.0031306254376486397,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1029.42,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 176.43,
+                  "labels_p90": 248.0,
+                  "coverage": 0.95
+                },
+                "complaints at random": {
+                  "labels": 141.38,
+                  "labels_p90": 169.20000000000002,
+                  "coverage": 0.97
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.16731751276659657,
+              "coverage": {
+                "truth": 0.013742865725443075,
+                "texts": 1046,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.756,
+                      "half_width": 0.02494340548583577,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.136,
+                      "half_width": 0.029199933425325682,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.264,
+                      "half_width": 0.005012728321269298,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 35
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.898,
+                      "half_width": 0.019279707210628678,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.021309984900080296,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.226,
+                      "half_width": 0.0034242598286557497,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 33
+                  },
+                  "800": {
+                    "weighted": {
+                      "coverage": 0.972,
+                      "half_width": 0.013809701495594701,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.01557467971219985,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.502,
+                      "half_width": 0.002310070804489043,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 101
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9748953974895398,
+                    "reliable_coverage": 0.9615384615384616,
+                    "reliable": 0.1087866108786611,
+                    "half_width": 0.010496707875377816,
+                    "draws": 478
+                  },
+                  "150": {
+                    "coverage": 0.9679358717434869,
+                    "reliable_coverage": 0.9943820224719101,
+                    "reliable": 0.7134268537074149,
+                    "half_width": 0.006686729389235892,
+                    "draws": 499
+                  },
+                  "250": {
+                    "coverage": 0.954,
+                    "reliable_coverage": 0.9892703862660944,
+                    "reliable": 0.932,
+                    "half_width": 0.0032427581435917102,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 1031.51,
+                  "labels_p90": 1046.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 195.14,
+                  "labels_p90": 267.20000000000005,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 146.85,
+                  "labels_p90": 176.0,
+                  "coverage": 0.97
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "West": {
+      "texts": 501,
+      "copies": 2118,
+      "max": 225,
+      "target": 0.05,
+      "answers": {
+        "credit reporting": {
+          "truth": 0.8885741265344664,
+          "texts_share": 0.5848303393213573,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.8677998111425873,
+              "coverage": {
+                "truth": 0.8885741265344664,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.996,
+                      "half_width": 0.048430085718664,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.043977799690305804,
+                      "draws": 12
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05668370085257591,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.778,
+                      "half_width": 0.018075500843010232,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 460
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.03395940745439818,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.02820569493900406,
+                      "draws": 158
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.045761834769478954,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.988,
+                      "half_width": 0.014226637170227093,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 342
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.98,
+                    "reliable_coverage": 0.98,
+                    "reliable": 1.0,
+                    "half_width": 0.029515460081273502,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.974,
+                    "reliable_coverage": 0.974,
+                    "reliable": 1.0,
+                    "half_width": 0.01862033734764005,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.992,
+                    "reliable_coverage": 0.992,
+                    "reliable": 1.0,
+                    "half_width": 0.01201518999560427,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 420.02,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 65.53,
+                  "labels_p90": 80.0,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 62.65,
+                  "labels_p90": 73.0,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.8465533522190746,
+              "coverage": {
+                "truth": 0.8885741265344664,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.04411907943879434,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.03383086226976164,
+                      "draws": 7
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.05602592993850183,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.85,
+                      "half_width": 0.017613155607921215,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 464
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.03281739087928588,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.026921571708631287,
+                      "draws": 172
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.04563144550944384,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 1.0,
+                      "half_width": 0.014059503847279902,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 328
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.968,
+                    "reliable_coverage": 0.968,
+                    "reliable": 1.0,
+                    "half_width": 0.028186681878576987,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.968,
+                    "reliable_coverage": 0.968,
+                    "reliable": 1.0,
+                    "half_width": 0.01885732679957311,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.994,
+                    "reliable": 1.0,
+                    "half_width": 0.011671657595119749,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 424.01,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 62.05,
+                  "labels_p90": 77.0,
+                  "coverage": 0.92
+                },
+                "complaints at random": {
+                  "labels": 58.47,
+                  "labels_p90": 69.10000000000001,
+                  "coverage": 0.95
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.7223796033994334,
+              "coverage": {
+                "truth": 0.8885741265344664,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.944,
+                      "half_width": 0.05732867629546884,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 0.95,
+                      "half_width": 0.04743543236828239,
+                      "draws": 20
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.060273882367787336,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.372,
+                      "half_width": 0.02036458946806304,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 454
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.03633993994758926,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.028128296370257173,
+                      "draws": 145
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.046495780754458975,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.744,
+                      "half_width": 0.014796945654241703,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 355
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.97,
+                    "reliable": 1.0,
+                    "half_width": 0.03323357673084415,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.988,
+                    "reliable_coverage": 0.988,
+                    "reliable": 1.0,
+                    "half_width": 0.022412676136963752,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.994,
+                    "reliable_coverage": 0.994,
+                    "reliable": 1.0,
+                    "half_width": 0.013109347685626098,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 412.25,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 74.92,
+                  "labels_p90": 90.0,
+                  "coverage": 0.96
+                },
+                "complaints at random": {
+                  "labels": 70.75,
+                  "labels_p90": 86.0,
+                  "coverage": 0.97
+                }
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.0339943342776204,
+          "texts_share": 0.11776447105788423,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.037299338999055714,
+              "coverage": {
+                "truth": 0.0339943342776204,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.982,
+                      "half_width": 0.02346899544157377,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.026588137611913962,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03878129704811196,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.712,
+                      "half_width": 0.01146919864736307,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 451
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.01582456807773737,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.01424180716304003,
+                      "draws": 36
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.030293560966610462,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.95,
+                      "half_width": 0.008444217390025103,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 464
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.968,
+                    "reliable_coverage": 0.9901960784313726,
+                    "reliable": 0.816,
+                    "half_width": 0.021145663897587194,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.976,
+                    "reliable_coverage": 0.9838709677419355,
+                    "reliable": 0.992,
+                    "half_width": 0.01363491664808761,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.008703352286853865,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 468.3,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 123.19,
+                  "labels_p90": 182.0,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 121.36,
+                  "labels_p90": 148.10000000000002,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.03871576959395656,
+              "coverage": {
+                "truth": 0.0339943342776204,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.976,
+                      "half_width": 0.022693717858665283,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.03913242884319342,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.818,
+                      "half_width": 0.01161390842942014,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 447
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 1.0,
+                      "half_width": 0.015410996249815938,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.014229964558534198,
+                      "draws": 42
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.030342294810082073,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.986,
+                      "half_width": 0.008390817325149425,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 458
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.958,
+                    "reliable_coverage": 0.9975609756097561,
+                    "reliable": 0.82,
+                    "half_width": 0.022311859089628194,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.971830985915493,
+                    "reliable": 0.994,
+                    "half_width": 0.01421967596027335,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.00874197448172967,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 470.3,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 106.81,
+                  "labels_p90": 167.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 122.69,
+                  "labels_p90": 152.10000000000002,
+                  "coverage": 0.97
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.10387157695939565,
+              "coverage": {
+                "truth": 0.0339943342776204,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.982,
+                      "half_width": 0.02393029803740919,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.029439705016572105,
+                      "draws": 1
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.042297563646626346,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.828,
+                      "half_width": 0.012379277441071292,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 442
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.015705430789877264,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.014249623741346445,
+                      "draws": 33
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.031089801775121904,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.982,
+                      "half_width": 0.008608370695305161,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 467
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.95,
+                    "reliable_coverage": 0.9903381642512077,
+                    "reliable": 0.828,
+                    "half_width": 0.02432552778112845,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.97,
+                    "reliable_coverage": 0.9797979797979798,
+                    "reliable": 0.99,
+                    "half_width": 0.016220601951872346,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.966,
+                    "reliable_coverage": 0.966,
+                    "reliable": 1.0,
+                    "half_width": 0.009912831486628715,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 476.52,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 120.74,
+                  "labels_p90": 198.0,
+                  "coverage": 0.99
+                },
+                "complaints at random": {
+                  "labels": 120.27,
+                  "labels_p90": 146.20000000000002,
+                  "coverage": 0.98
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.027384324834749764,
+          "texts_share": 0.08782435129740519,
+          "models": {
+            "Jev, 20 rows per request": {
+              "model_share": 0.04343720491029273,
+              "coverage": {
+                "truth": 0.027384324834749764,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.97,
+                      "half_width": 0.020862915134550054,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.006,
+                      "half_width": 0.03547729225683278,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.81,
+                      "half_width": 0.010559667295940475,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 287
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.994,
+                      "half_width": 0.014858045503186623,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.013649057680913412,
+                      "draws": 28
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.026901123941037434,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.982,
+                      "half_width": 0.0076265686004248195,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 472
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.954,
+                    "reliable_coverage": 0.984472049689441,
+                    "reliable": 0.644,
+                    "half_width": 0.02062271136433327,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.948,
+                    "reliable_coverage": 0.9789473684210527,
+                    "reliable": 0.95,
+                    "half_width": 0.012796909501610616,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.99,
+                    "reliable_coverage": 0.99,
+                    "reliable": 1.0,
+                    "half_width": 0.008208197781639576,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 468.0,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 126.41,
+                  "labels_p90": 187.40000000000003,
+                  "coverage": 0.96
+                },
+                "complaints at random": {
+                  "labels": 144.97,
+                  "labels_p90": 181.20000000000002,
+                  "coverage": 0.96
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "model_share": 0.056185080264400375,
+              "coverage": {
+                "truth": 0.027384324834749764,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.966,
+                      "half_width": 0.0194048910805046,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.002,
+                      "half_width": 0.03454019775173599,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.814,
+                      "half_width": 0.01007571727413899,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 282
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.014398188634582691,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.013734537578564522,
+                      "draws": 24
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.02667495555267376,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.988,
+                      "half_width": 0.007505833211957957,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 476
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.956,
+                    "reliable_coverage": 0.9869281045751634,
+                    "reliable": 0.612,
+                    "half_width": 0.01904546624500482,
+                    "draws": 500
+                  },
+                  "150": {
+                    "coverage": 0.962,
+                    "reliable_coverage": 0.9873150105708245,
+                    "reliable": 0.946,
+                    "half_width": 0.012082184374111786,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.984,
+                    "reliable_coverage": 0.984,
+                    "reliable": 1.0,
+                    "half_width": 0.007740456170497236,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 471.53,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 133.42,
+                  "labels_p90": 201.0,
+                  "coverage": 1.0
+                },
+                "complaints at random": {
+                  "labels": 143.69,
+                  "labels_p90": 179.10000000000002,
+                  "coverage": 0.99
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "model_share": 0.1364494806421152,
+              "coverage": {
+                "truth": 0.027384324834749764,
+                "texts": 501,
+                "random": {
+                  "200": {
+                    "weighted": {
+                      "coverage": 0.966,
+                      "half_width": 0.02310959473219532,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": null,
+                      "half_width": null,
+                      "draws": 0
+                    },
+                    "texts": {
+                      "coverage": 0.022,
+                      "half_width": 0.03727409980761358,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.616,
+                      "half_width": 0.011303491849657643,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 282
+                  },
+                  "400": {
+                    "weighted": {
+                      "coverage": 0.998,
+                      "half_width": 0.015184016631451564,
+                      "draws": 500
+                    },
+                    "reliable": {
+                      "coverage": 1.0,
+                      "half_width": 0.014142060054786201,
+                      "draws": 31
+                    },
+                    "texts": {
+                      "coverage": 0.0,
+                      "half_width": 0.027295009608991443,
+                      "draws": 500
+                    },
+                    "copies": {
+                      "coverage": 0.832,
+                      "half_width": 0.007800972962167706,
+                      "draws": 500
+                    },
+                    "flagged_heavy": 469
+                  }
+                },
+                "by weight": {
+                  "100": {
+                    "coverage": 0.9418837675350702,
+                    "reliable_coverage": 0.9967741935483871,
+                    "reliable": 0.6212424849699398,
+                    "half_width": 0.021964508365500922,
+                    "draws": 499
+                  },
+                  "150": {
+                    "coverage": 0.96,
+                    "reliable_coverage": 0.9936440677966102,
+                    "reliable": 0.944,
+                    "half_width": 0.014349143404431506,
+                    "draws": 500
+                  },
+                  "250": {
+                    "coverage": 0.978,
+                    "reliable_coverage": 0.978,
+                    "reliable": 1.0,
+                    "half_width": 0.008945596525685016,
+                    "draws": 500
+                  }
+                }
+              },
+              "allocation": {
+                "texts at random": {
+                  "labels": 477.54,
+                  "labels_p90": 500.0,
+                  "coverage": 1.0
+                },
+                "drawn by weight (the plan)": {
+                  "labels": 142.18,
+                  "labels_p90": 218.0,
+                  "coverage": 0.98
+                },
+                "complaints at random": {
+                  "labels": 139.19,
+                  "labels_p90": 181.20000000000002,
+                  "coverage": 0.97
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

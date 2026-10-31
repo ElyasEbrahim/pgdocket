@@ -54,6 +54,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] `docket.estimate()` / `pgdocket estimate`: PPI++ in SQL, with a reliability flag and refusal when labels in scope can't support an interval (#14)
 - [x] Review-budget planner: labels needed for a target CI width, per group (`estimate --by --target`, #25); for a guarantee, `pgdocket plan` (#20)
 - [x] **Coverage-test suite** (simulation) in CI for the threshold guarantee and the count intervals
+- [x] Weighted shares and join fan-out (`estimate --weight`, labels drawn by weight, migration 011, #26). Rows are drawn in proportion to weight (sequential Poisson sampling). On 21,980 CFPB complaints judged as 2,000 distinct texts, that took 53–94 % fewer labels than texts drawn at random to reach ± 2–5 points ([write-up](docs/phase1/weights.md)). Taking the heaviest rows outright and the rest at random was not adopted
 - [x] Stratified label sampling within the groups of a source column (`--draw`, `label --stratified`, migration 010, #25): 24–64 % fewer labels than random labels for every group to reach ± 5 points ([write-up](docs/phase1/groups.md)). Stratifying by the model's answer certified less and was not adopted; uncertainty-guided labelling broke coverage (#18)
 
 **Exit:** all coverage tests pass at their stated rates.

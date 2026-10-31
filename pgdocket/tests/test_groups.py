@@ -16,9 +16,7 @@ def _counts(f, y, lab):
 
 
 def _group(g, f, y, lab):
-    c = _counts(f, y, lab)
-    return {"g": g, "judged": c["n"] + c["nu"], "n": c["n"], "k": c["k"], "sf_l": c["sf_l"], "syf": c["syf"],
-            "sf_u": c["sf_u"]}
+    return groups.sums(g, np.ones(len(f)), f, y, lab, lab)
 
 
 def _sample(rng, N, share, agree, n_labels, flip_to_one=0.0):
@@ -98,8 +96,8 @@ def test_all_groups_is_the_size_weighted_estimate():
     o = groups.combine(gs, Z)
     assert o["theta"] == pytest.approx(0.75 * gs[0]["est"]["theta"] + 0.25 * gs[1]["est"]["theta"])
     assert o["se"] == pytest.approx(math.hypot(0.75 * gs[0]["est"]["se"], 0.25 * gs[1]["est"]["se"]))
-    assert groups.combine(gs + groups.summarise([{"g": "c", "judged": 50, "n": 0, "k": 0, "sf_l": 0, "syf": 0,
-                                                  "sf_u": 10}], Z), Z) is None
+    unlabelled = _group("c", np.r_[np.ones(10), np.zeros(40)], np.zeros(50), np.zeros(50, bool))
+    assert groups.combine(gs + groups.summarise([unlabelled], Z), Z) is None
 
 
 def test_render_names_the_flagged_group_and_the_saving():
@@ -111,3 +109,127 @@ def test_render_names_the_flagged_group_and_the_saving():
     out = groups.render(r)
     assert "by region" in out and "overstates 'billing'" in out and "in skewed" in out
     assert "drawn at random across all groups instead, about" in out and "all groups" in out
+
+
+# ---------------------------------------------------------------- weighted shares (#26)
+def _skewed(rng, N, share=0.3, agree=0.9, sigma=2.0):
+    """N rows with lognormal weights (a few rows hold much of the total), the answer at `share` and a model that agrees
+    with the truth on `agree` of them, more often wrong on heavy rows than on light ones."""
+    w = np.ceil(rng.lognormal(0, sigma, N))
+    y = (rng.random(N) < share).astype(int)
+    wrong = rng.random(N) > np.where(w > np.median(w), agree - 0.05, agree)
+    return w, np.where(wrong, 1 - y, y), y
+
+
+def test_unit_weights_are_the_unweighted_estimate():
+    rng = np.random.default_rng(10)
+    f, y, lab = _sample(rng, 800, 0.3, 0.85, 120)
+    c = _counts(f, y, lab)
+    assert groups.estimate_group(_group("g", f, y, lab)) == pytest.approx(
+        groups.ppi_binary(c["n"], c["k"], c["sf_l"], c["syf"], c["nu"], c["sf_u"]))
+
+
+def test_rows_heavier_than_every_unlabelled_row_count_exactly():
+    rng = np.random.default_rng(11)
+    w = np.r_[500.0, 400.0, np.ones(398)]
+    f, y, _ = _sample(rng, 400, 0.3, 0.9, 1)
+    y[:2], f[:2] = 1, 0                                        # the model misses both heavy rows
+    labelled = np.zeros(400, bool)
+    labelled[rng.choice(np.arange(2, 400), 120, replace=False)] = True
+    uniform = labelled.copy()
+    labelled[:2] = True                                        # labelled by hand: exact, never a sample
+    g = groups.summarise([groups.sums("g", w, f, y, labelled, uniform)], Z)[0]
+    rest = groups.estimate_group(groups.sums("g", w[2:], f[2:], y[2:], labelled[2:], uniform[2:]))
+    assert g["c_n"] == 2 and g["labels"] == 122 and g["exact_share"] == pytest.approx(900 / w.sum())
+    assert g["est"]["theta"] == pytest.approx((900 + w[2:].sum() * rest["theta"]) / w.sum())
+    assert g["est"]["se"] == pytest.approx(w[2:].sum() / w.sum() * rest["se"])
+
+
+def test_random_labels_cannot_vouch_for_an_unlabelled_heavy_row():
+    rng = np.random.default_rng(12)
+    w = np.r_[1500.0, np.ones(1999)]                           # one row holds 43 % of the weight
+    f, y, lab = _sample(rng, 2000, 0.3, 0.9, 600)
+    lab[0] = False
+    g = groups.summarise([groups.sums("g", w, f, y, lab, lab)], Z)[0]
+    assert min(g["effective"]) >= 10 and g["heaviest"] > Z * g["est"]["se"] and not g["reliable"]
+    lab[0] = True
+    g = groups.summarise([groups.sums("g", w, f, y, lab, lab)], Z)[0]
+    assert g["c_n"] == 1 and g["reliable"]
+
+
+def test_rows_drawn_by_weight_cover_a_skewed_sum():
+    rng = np.random.default_rng(13)
+    w, f, y = _skewed(rng, 2000)
+    truth = (w * y).sum() / w.sum()
+    hits, flagged = [], 0
+    for _ in range(300):
+        u = rng.random(2000)
+        lab = np.zeros(2000, bool)
+        lab[np.argsort(u / w)[:200]] = True                    # the first 200 of the ranking by u / w
+        g = groups.summarise([groups.sums("g", w, f, y, lab, np.zeros(2000, bool), u)], Z)[0]
+        assert g["method"] == "weight" and g["labels"] == 200
+        if g["reliable"]:
+            hits.append(g["ci"][0] <= truth <= g["ci"][1])
+        else:
+            flagged += 1
+    assert np.mean(hits) >= 0.92 and flagged < 30
+
+
+def test_every_row_drawn_by_weight_is_exact():
+    rng = np.random.default_rng(14)
+    w, f, y = _skewed(rng, 60)
+    g = groups.summarise([groups.sums("g", w, f, y, np.ones(60, bool), np.zeros(60, bool), rng.random(60))], Z)[0]
+    assert g["est"]["exact"] and g["est"]["theta"] == pytest.approx((w * y).sum() / w.sum())
+
+
+def test_a_weighted_plan_pilots_then_walks_down_the_ranking():
+    rng = np.random.default_rng(15)
+    w, f, y = _skewed(rng, 3000)
+    u = rng.random(3000)
+    lab, none = np.zeros(3000, bool), np.zeros(3000, bool)
+    order = np.argsort(u / w)
+    ranking = lambda: [(float(u[i] / w[i]), float(w[i]), bool(lab[i]), int(i)) for i in order]
+    kinds = []
+    for _ in range(8):
+        g = groups.summarise([groups.sums(groups.ALL, w, f, y, lab, none, u)], Z)[0]
+        thr = g["weight"] * 0.03 / (2 * Z * math.sqrt(g["judged"]))
+        top = {"thr": thr, "rows": sorted(((float(a), int(b)) for a, b in zip(w, f) if a >= thr), reverse=True)}
+        p = groups.plan([g], 0.03, Z, {groups.ALL: top})["groups"][0]
+        kinds.append(p["kind"])
+        if not p["draw"]:
+            break
+        keys, out = groups.walk(ranking(), p["draw"])
+        assert not out and set(keys).isdisjoint(np.flatnonzero(lab))
+        if kinds == ["pilot"]:
+            assert w[keys].max() == w.max()                    # the heaviest row is certain to be drawn
+        lab[keys] = True
+    assert kinds[0] == "pilot" and kinds[-1] == "target" and p["draw"] == 0 and p["more"] == 0
+    assert g["method"] == "weight" and g["reliable"] and Z * g["est"]["se"] <= 0.03 and g["labels"] < 1500
+
+
+def test_walk_counts_rows_drawn_not_rows_certain():
+    # weights 100 and 1s: the heavy row is certain once ξ ≥ 1/100, so it doesn't count towards the rows drawn
+    ranking = [(0.001, 100.0, False, "heavy")] + [(0.01 * (i + 1), 1.0, i < 2, f"r{i}") for i in range(10)]
+    keys, out = groups.walk(ranking, 3)
+    assert keys == ["heavy", "r2"] and not out
+    keys, out = groups.walk(ranking, 50)
+    assert out and len(keys) == 9
+
+
+def test_prn_is_stable_and_uniform():
+    assert groups.prn("42") == groups.prn("42") != groups.prn("42", seed="2")
+    u = np.array([groups.prn(str(i)) for i in range(20000)])
+    assert 0 < u.min() and u.max() < 1 and abs(u.mean() - 0.5) < 0.01
+
+
+def test_render_names_the_heavy_row_and_how_labels_were_drawn():
+    rng = np.random.default_rng(16)
+    w = np.r_[1500.0, np.ones(1999)]
+    f, y, lab = _sample(rng, 2000, 0.3, 0.9, 600)
+    lab[0] = False
+    gs = groups.summarise([groups.sums(groups.ALL, w, f, y, lab, lab, rng.random(2000))], Z)
+    r = {"name": "t", "by": None, "answer": "billing", "level": 0.95, "where": None, "weight": "amount", "groups": gs,
+         "overall": None, "systematic": [], "plan": None}
+    out = groups.render(r)
+    assert "each counted by amount" in out and "at random" in out
+    assert "an unlabelled row holds 42.9 % of the weight" in out and "Draw by weight" in out

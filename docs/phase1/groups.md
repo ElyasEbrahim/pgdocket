@@ -67,8 +67,8 @@ With Jev 1.13 one row per request; the other predictors are in the report.
 - **Labels must be random within each group.** `--draw` makes them so. Rows labelled by hand or drawn by an audit are skipped by the draw only if labelled at random or for the same column. The groups must not change after drawing.
 - **A group that only just reaches the floor by chance is less reliable than stated.** With 400 labels drawn across the table, 2020 (145 complaints) reached 10 debt-collection labels in only 31–35 of 500 draws. Its intervals in those draws held 86–90 % of the time: the draws that got there had more positives. Planning each group's labels up front avoids this.
 - **Normal intervals**, as in `estimate`. Tiny groups are labelled whole and reported exactly.
+- **Built since:** weighted queries, and rows counted several times by a join (`--weight`, #26): rows drawn by weight. See [weighted shares](weights.md).
 - **Not built.**
-  - Weighted queries, and rows counted several times by a join. Each row's influence on the result (its weight, or how often the join uses it) would multiply its share of the labels.
   - Choosing a cheaper model for some rows (Multiple-PPI).
   - Judging only a sample of rows when the statistic alone is wanted.
 

@@ -4,6 +4,27 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-10-31
 
+### Added (weighted shares and join fan-out, #26)
+- **`pgdocket estimate NAME --weight EXPR --answer A [--by COL]`**: the share of an answer when a query counts each row by EXPR, an SQL expression on the source row `s`: a column it sums, or how often a join uses the row. The share is Σ w·y / Σ w.
+  - **From labels drawn at random**, rows heavier than every unlabelled row count exactly, and the rest is PPI++ on weighted means (a Hájek estimator). With every weight 1 it is the unweighted estimate.
+  - **When to trust it.** Only while no unlabelled row holds more of the weight than the interval's half-width. The floor of 10 labelled rows each way is counted by weight (Kish's effective sample size).
+- **Rows drawn by weight** (`--target --draw`): sequential Poisson sampling, with a permanent random number from each row's key and `--seed`.
+  - **The estimate.** Rows heavy enough to be certain count exactly. The rest give a Hájek mean of residuals, with half a disagreement added each way to the variance and a floor of 5 drawn rows each way.
+  - **Reading it back.** The estimate finds the sample in the ledger as the labelled run at the top of the ranking, so rounds nest.
+  - **The plan** asks for as many rows drawn by weight as the target needs: a pilot of 30, then at least a quarter more per round and at most four times as many.
+  - **Data model.** Migration `011` adds the `weighted` sampling. `label` imports rows the CSV marks drawn "by weight" as such, and calibration, plain estimates and drift ignore them.
+- **Validation** (`jevbench weightvalidate`, no API calls): the 2,000 judged CFPB narratives and the 21,980 complaints in the source shard that carry them word for word, over all complaints and by region.
+  - **Drawing by weight** brought every query to its target (± 2 points overall, ± 5 by region) with 53–94 % fewer labels than texts drawn at random. Final intervals held 92–100 %. It needed between 13 % fewer and 67 % more labels than drawing the complaints themselves.
+  - **The shortcuts failed.** The texts' own share, weights ignored, held the truth in 4 % of draws. Copies counted as labelled rows held it in 46 %, with intervals 2–9 times too narrow.
+  - **Random labels** held 92 % pooled, down to 54 %, because the heaviest texts were rarely labelled. The draws the new rule trusts held 99.4 %.
+  - **Not adopted:** the heaviest rows outright and the rest at random, which held 81–98 %.
+  - Write-up: `docs/phase1/weights.md`.
+
+### Changed
+- **`estimate --by`: a group whose rows all carry a label, of any kind, is exact.** Before, only labels drawn at random counted.
+- **Draws within groups no longer skip rows labelled from a whole column (`all`).** Skipping them made the draw non-uniform over its group.
+- **Draw CSVs** (`estimate --draw`) gain a `drawn` column: "at random" or "by weight".
+
 ### Added (shares by group, #25)
 - **`pgdocket estimate NAME --by COL --answer A`**: the share of an answer for each value of a source column, each group corrected with its own labels (PPI++ within the group). An all-groups line weights the groups by size. A group is flagged when the model's error there differs from the other groups' (a step-down z-test, Bonferroni across groups).
 - **`--target SHARE`**: how many more labels each group needs for ± SHARE.

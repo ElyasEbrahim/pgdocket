@@ -8,7 +8,8 @@
   pgdocket worker     judge queued rows and keep the ledger current
   pgdocket label      import human labels (from a column or a key,label CSV)
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
-  pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group
+  pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group;
+                      --weight: a share of a sum, or of a join's rows
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
@@ -137,10 +138,15 @@ def main(argv=None):
     es.add_argument("--level", type=float, default=0.95)
     es.add_argument("--include-manual", action="store_true", help="also use labels not drawn at random (intervals may be biased)")
     es.add_argument("--by", metavar="COL", help="a share per value of this source column, each group corrected with its own labels")
+    es.add_argument("--weight", metavar="EXPR",
+                    help="count each row by this SQL expression on the source row s: a column to sum, or how often a join "
+                         "uses the row, e.g. \"(SELECT count(*) FROM orders o WHERE o.ticket_id = s.id)\"")
     es.add_argument("--target", type=float, metavar="SHARE",
-                    help="with --by: how many more labels each group needs for an interval of ± SHARE (e.g. 0.02)")
-    es.add_argument("--draw", metavar="CSV", help="with --by --target: write those rows to label, drawn at random within each group")
-    es.add_argument("--seed", default="1", help="with --draw")
+                    help="with --by or --weight: how many more labels each group needs for an interval of ± SHARE (e.g. 0.02)")
+    es.add_argument("--draw", metavar="CSV",
+                    help="with --target: write those rows to label (drawn at random within each group; with --weight, by weight)")
+    es.add_argument("--seed", default="1",
+                    help="with --draw; with --weight, also the ranking rows are drawn by, so keep it for later estimates")
     pl = sub.add_parser("plan", help="how much review keeps the column's error ≤ ε (95 %% confidence)")
     dsn_arg(pl)
     pl.add_argument("name")
@@ -299,11 +305,11 @@ def _ledger_command(a):
         if a.harden:
             print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for erase-and-check; until the worker has "
                   "checked a row, `auto` is false for it")
-    elif a.cmd == "estimate" and a.by:
+    elif a.cmd == "estimate" and (a.by or a.weight):
         _estimate_by(a, ledger)
     elif a.cmd == "estimate":
         if a.target or a.draw:
-            sys.exit("--target and --draw plan labels per group: add --by COL")
+            sys.exit("--target and --draw plan labels for a share: add --by COL or --weight EXPR")
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
         lvl = f"{100 * a.level:.0f} %"
         print(f"{a.name}: how many judged rows truly have each answer ({lvl} intervals)"
@@ -386,19 +392,21 @@ def _estimate_by(a, ledger):
     if a.draw and not a.target:
         sys.exit("--draw writes the labels a --target needs: add --target")
     if a.include_manual:
-        sys.exit("--by uses labels drawn at random (from the table or within its groups) only")
+        sys.exit("--by and --weight use only labels drawn at random, within groups or by weight")
     import psycopg
     with ledger.connect(a.dsn) as conn:
         try:
-            r = groups.estimate_by(conn, a.name, a.by, a.answer, a.where, a.level, a.target)
-        except psycopg.errors.UndefinedColumn as e:
-            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--by and --where name columns of the source table)")
+            r = groups.estimate_by(conn, a.name, a.by, a.answer, a.where, a.level, a.target, a.weight, a.seed)
+        except psycopg.Error as e:
+            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--by and --where name columns of the source table; --weight "
+                     "is an SQL expression on its row, s)")
         print(groups.render(r))
         if a.draw:
             d, rows = groups.draw(conn, a.name, a.by, r["plan"], a.where, a.seed)
             n = groups.export(conn, d, a.by, rows, a.draw)
-            print(f"{n} rows to label written to {a.draw}, blind (no AI answer). Fill in `label`, then:\n"
-                  f"  pgdocket label {a.name} --csv {a.draw} --stratified {a.by}")
+            then = (f"  pgdocket label {a.name} --csv {a.draw}" + ("" if a.weight else f" --stratified {a.by}")
+                    + ("\nand estimate with the same --seed" if a.weight and a.seed != "1" else ""))
+            print(f"{n} rows to label written to {a.draw}, blind (no AI answer). Fill in `label`, then:\n{then}")
 
 
 def _plan(a, ledger):

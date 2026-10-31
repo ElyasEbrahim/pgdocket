@@ -69,6 +69,8 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
     e.g. a file from `pgdocket check --export-sample`). Rows an audit drew get 'audit' (#23): they are used only by
     `pgdocket audit`. Only 'random' labels feed `estimate` by default. A CSV from `estimate --by COL --draw` is
     'stratified' (`stratified=COL`, #25): drawn at random within COL's groups, it counts for `estimate --by COL` only.
+    Rows the CSV marks drawn "by weight" (`estimate --weight --draw`, #26) are 'weighted': a sample of the query, not of
+    the table, which `estimate --weight` finds again by their ranking.
     Sampling records how a row was chosen, so re-labelling a row drawn at random keeps it 'random', and one drawn within
     groups keeps it 'stratified' (docket.label_sampling).
     Labels may name an option of any version not yet retired (e.g. one only a shadow version has).
@@ -114,10 +116,11 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
                     label = "yes" if label == str(positive) else "no"
                 elif label not in names:
                     continue
-                kind = ("stratified" if stratified else "audit" if r["key"] in audited else "random" if random
-                        else "manual")
+                drawn = (r.get("drawn") or "").strip()
+                kind = ("weighted" if drawn == "by weight" else "stratified" if stratified else
+                        "audit" if r["key"] in audited else "random" if random else "manual")
                 rows.append((d["id"], r["key"], label, "csv:" + os.path.basename(csv_path), kind,
-                             [stratified] if stratified else None))
+                             [stratified] if kind == "stratified" else None))
         with conn.cursor() as cur:
             cur.executemany("INSERT INTO docket.label (decision_id, row_key, label, source, sampling, strata) "
                             "VALUES (%s, %s, %s, %s, %s, %s) "

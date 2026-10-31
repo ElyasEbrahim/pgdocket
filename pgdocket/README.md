@@ -170,6 +170,20 @@ pgdocket label complaints --csv next.csv --stratified region     # once people h
 
 Labels imported with `--stratified region` count for `--by region` only: they are a random sample of their group, not of the table. On 2,000 CFPB complaints, drawing labels within groups needed 24–64 % fewer than drawing them across the table for every group to reach ± 5 points. See [docs/phase1/groups.md](../docs/phase1/groups.md).
 
+## Weighted shares
+
+`--weight EXPR` counts each row by an SQL expression on its source row `s`: a column a query sums, or how often a join uses the row. The share is then Σ w·y / Σ w, as the query computes it.
+
+```bash
+pgdocket estimate texts --weight "(SELECT count(*) FROM complaints c WHERE c.text_hash = s.text_hash)" \
+    --answer "debt collection" --target 0.02 --draw next.csv
+pgdocket label texts --csv next.csv         # the file marks the rows drawn by weight
+```
+
+- **With labels drawn at random**, rows heavier than every unlabelled row count exactly. The estimate warns when an unlabelled row holds more of the weight than the interval's half-width.
+- **`--target --draw` draws rows by weight instead.** This is sequential Poisson sampling: rows are ranked by a permanent random number over their weight, and heavy rows are certain to be drawn. Later estimates find that sample again from the labels; keep the same `--seed` for draws and estimates.
+- **Measured** on 2,000 CFPB texts standing for 21,980 complaints: drawing by weight reached ± 2 points with 112–192 labels, 53–94 % fewer than texts drawn at random. See [docs/phase1/weights.md](../docs/phase1/weights.md).
+
 # Planning human review
 
 `pgdocket plan` answers *how many rows must people check so that at most ε of this column is wrong?* It keeps the model's answer where it's most confident and sends the rest to people, with a 95 % guarantee on the whole column (probably approximately correct labels).

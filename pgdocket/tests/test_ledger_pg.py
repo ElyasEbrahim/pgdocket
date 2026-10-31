@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -718,8 +718,8 @@ def test_estimate_by_corrects_each_group_with_its_own_labels(env, capsys):
         d, drawn = groups.draw(c, "leads", "region", r["plan"], seed="1")
         random_keys = {k for (k,) in c.execute("SELECT row_key FROM docket.label WHERE decision_id = %s "
                                                 "AND sampling = 'random'", (d["id"],))}
-    assert Counter(g for _, g in drawn) == {g: p["more"] for g, p in plan.items() if p["more"]}
-    assert not random_keys & {k for k, _ in drawn}
+    assert Counter(g for _, g, _ in drawn) == {g: p["more"] for g, p in plan.items() if p["more"]}
+    assert not random_keys & {k for k, _, _ in drawn} and {how for _, _, how in drawn} == {"at random"}
     path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"draw-{uuid.uuid4().hex[:6]}.csv")
     cli.main(["estimate", "--dsn", env["owner"], "leads", "--by", "region", "--answer", "billing", "--target", "0.05",
               "--draw", path])
@@ -729,7 +729,7 @@ def test_estimate_by_corrects_each_group_with_its_own_labels(env, capsys):
     team = {str(i): t for i, _, t, _, _ in rows}
     with open(path, newline="") as f:
         sheet = list(csv.DictReader(f))
-    assert set(sheet[0]) == {"key", "region", "body", "label"} and all(s["label"] == "" for s in sheet)
+    assert set(sheet[0]) == {"key", "region", "drawn", "body", "label"} and all(s["label"] == "" for s in sheet)
     for s in sheet:
         s["label"] = team[s["key"]]
     with open(path, "w", newline="") as f:
@@ -740,11 +740,11 @@ def test_estimate_by_corrects_each_group_with_its_own_labels(env, capsys):
     with psycopg.connect(env["owner"]) as c:
         kinds = dict(c.execute("SELECT sampling, count(*) FROM docket.label WHERE decision_id = %s GROUP BY 1",
                                (d["id"],)).fetchall())
-        after = {g["g"]: g["n"] for g in groups.estimate_by(c, "leads", "region", "billing")["groups"]}
+        after = {g["g"]: g["labels"] for g in groups.estimate_by(c, "leads", "region", "billing")["groups"]}
         tier = groups.estimate_by(c, "leads", "tier", "billing")
     assert kinds == {"random": 240, "stratified": len(sheet)}
     assert after == {g: by[g]["n"] + sum(s["region"] == g for s in sheet) for g in ("north", "south")}
-    assert sum(g["n"] for g in tier["groups"]) == 240          # other columns' groups and plain estimates ignore them
+    assert sum(g["labels"] for g in tier["groups"]) == 240     # other columns' groups and plain estimates ignore them
     assert ledger.estimate(env["owner"], "leads", "billing")[0]["labels"] == 240
 
     # How a row was chosen outlives re-labelling: by hand it stays drawn within regions; drawn again within tiers it
@@ -770,3 +770,110 @@ def test_estimate_by_an_unknown_column_says_so(env):
     with pytest.raises(SystemExit) as e:
         cli.main(["estimate", "--dsn", env["owner"], "leads", "--by", "regoin", "--answer", "billing"])
     assert "regoin" in str(e.value) and "columns of the source table" in str(e.value)
+
+
+def test_estimate_weight_reads_rows_drawn_by_weight_back(env, capsys):
+    """A share of a sum (--weight amount) and of a join's rows (--weight: how many orders a case has). The SQL sums are
+    those `groups.sums` computes from the rows, its permanent random numbers are `groups.prn`'s; labels drawn at random
+    can't vouch for a heavy row nobody labelled; `--draw` writes rows drawn by weight, `label` imports them as
+    'weighted', and the estimate finds them again by their ranking (#26)."""
+    import numpy as np
+
+    from pgdocket import cli, groups
+    rng = np.random.default_rng(26)
+    teams, N = ["billing", "technical", "sales"], 900
+    team = rng.choice(teams, N, p=[0.3, 0.5, 0.2])
+    said = np.where(rng.random(N) < 0.85, team, rng.choice(teams, N))
+    amount = np.round(np.exp(rng.normal(3, 1.5, N)), 2)
+    region = rng.choice(["north", "south"], N)
+    orders = rng.integers(0, 4, N)
+    heavy = 0
+    orders[heavy], team[heavy], said[heavy] = 3000, "billing", "technical"   # ordered 3,000 times; the model misses it
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.cases (id int PRIMARY KEY, body text, team text, region text, amount numeric)")
+        c.execute("CREATE TABLE shop.case_orders (case_id int)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.cases VALUES (%s, %s, %s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i]), str(region[i]), float(amount[i])) for i in range(N)])
+            cur.executemany("INSERT INTO shop.case_orders VALUES (%s)", [(i + 1,) for i in range(N) for _ in range(orders[i])])
+    ledger.create(env["owner"], "cases", "shop.cases", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "cases", column="team", sample=200, seed="9")
+    fanout = "(SELECT count(*) FROM shop.case_orders o WHERE o.case_id = s.id)"
+
+    def reference(c, by, weight, seed="1"):                   # the same statistics, from the rows themselves
+        d = groups.decision(c, "cases")
+        rows = c.execute(
+            f"SELECT s.id::text, {'s.' + by + '::text' if by else repr(groups.ALL)}, ({weight})::float8, "
+            "(v.answer = 'billing')::int, l.label, l.sampling, l.strata FROM shop.cases s "
+            "JOIN docket.v_cases v ON v.key = s.id LEFT JOIN docket.label l ON l.decision_id = %s AND l.row_key = s.id::text "
+            "WHERE v.status = 'judged'", (d["id"],)).fetchall()
+        out = []
+        for g in sorted({r[1] for r in rows}):
+            rs = [r for r in rows if r[1] == g]
+            out.append(groups.sums(g, [r[2] for r in rs], [r[3] for r in rs], [r[4] == "billing" for r in rs],
+                                   [r[4] is not None for r in rs],
+                                   [r[5] == "random" or (r[5] == "stratified" and by in (r[6] or [])) for r in rs],
+                                   [groups.prn(r[0], seed) for r in rs]))
+        return d, out
+
+    with psycopg.connect(env["owner"]) as c:
+        for by, weight in ((None, "amount"), ("region", "amount"), (None, fanout)):
+            d, want = reference(c, by, weight)
+            got = groups.group_stats(c, d, by, "billing", weight=weight)
+            assert [g["g"] for g in got] == [g["g"] for g in want]
+            for a, b in zip(got, want):
+                assert set(a) == set(b)
+                for k in a:
+                    assert a[k] == pytest.approx(b[k], rel=1e-9, abs=1e-9), (by, weight, k)
+        u = dict(c.execute("SELECT s.id::text, ((('x' || substr(md5(s.id::text || ':w:' || '1'), 1, 13))::bit(52)"
+                           "::bigint)::float8 + 0.5) / 4503599627370496.0 FROM shop.cases s").fetchall())
+        assert all(v == pytest.approx(groups.prn(k), rel=1e-15) for k, v in u.items())
+
+        r = groups.estimate_by(c, "cases", None, "billing", weight=fanout)
+    g = r["groups"][0]
+    truth = sum(o for o, t in zip(orders, team) if t == "billing") / orders.sum()
+    assert g["method"] == "random" and not g["reliable"] and g["heaviest"] > 1.96 * g["est"]["se"]
+    out = groups.render(r)
+    assert "an unlabelled row holds" in out and "Draw by weight" in out
+
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"weight-{uuid.uuid4().hex[:6]}.csv")
+    for _ in range(6):                                         # rounds: draw by weight, label, estimate
+        cli.main(["estimate", "--dsn", env["owner"], "cases", "--weight", fanout, "--answer", "billing",
+                  "--target", "0.05", "--draw", path])
+        printed = capsys.readouterr().out
+        with open(path, newline="") as f:
+            sheet = list(csv.DictReader(f))
+        if not sheet:
+            break
+        assert "drawn by weight" in printed and f"label cases --csv {path}" in printed and "--stratified" not in printed
+        assert set(sheet[0]) == {"key", "drawn", "body", "label"} and {s["drawn"] for s in sheet} == {"by weight"}
+        for s in sheet:
+            s["label"] = str(team[int(s["key"]) - 1])
+        with open(path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(sheet[0]))
+            w.writeheader()
+            w.writerows(sheet)
+        cli.main(["label", "--dsn", env["owner"], "cases", "--csv", path])
+        capsys.readouterr()
+    with psycopg.connect(env["owner"]) as c:
+        r = groups.estimate_by(c, "cases", None, "billing", weight=fanout, target=0.05)
+        d = groups.decision(c, "cases")
+        kinds = dict(c.execute("SELECT sampling, count(*) FROM docket.label WHERE decision_id = %s GROUP BY 1",
+                               (d["id"],)).fetchall())
+        drawn_heavy = c.execute("SELECT sampling FROM docket.label WHERE decision_id = %s AND row_key = %s",
+                                (d["id"], str(heavy + 1))).fetchone()
+    g = r["groups"][0]
+    assert g["method"] == "weight" and g["reliable"] and 1.96 * g["est"]["se"] <= 0.05 and r["plan"]["more"] == 0
+    # rows labelled at random count too once they're in the run at the top of the ranking: fewer new labels
+    assert drawn_heavy == ("weighted",) and kinds["random"] == 200 and 0 < kinds["weighted"] <= g["labels"]
+    assert g["labels"] >= groups.PILOT and g["exact_share"] > 0.5            # the heavy case alone is most of it
+    assert g["ci"][0] - 0.02 <= truth <= g["ci"][1] + 0.02
+    assert ledger.estimate(env["owner"], "cases", "billing")[0]["labels"] == 200   # plain estimates ignore them
+
+    with pytest.raises(SystemExit) as e:
+        cli.main(["estimate", "--dsn", env["owner"], "cases", "--weight", "amount - 100", "--answer", "billing"])
+    assert "weights must be ≥ 0" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        cli.main(["estimate", "--dsn", env["owner"], "cases", "--weight", "amout", "--answer", "billing"])
+    assert "amout" in str(e.value) and "--weight" in str(e.value)

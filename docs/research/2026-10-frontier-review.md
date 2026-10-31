@@ -177,7 +177,10 @@ A sixth sweep, on spending human labels where a query's result needs them: how m
   - **Allocation.** Labels drawn within groups brought every group to ± 5 points with 24–64 % fewer labels than random labels across the table; intervals held 98–100 %.
   - **The model.** It saved at most 22 %: what it buys is agreement with people within each group. For rare answers the floor of 10 labelled rows each way sets the cost.
   - **One correction for all groups** worked across the four regions, where errors were alike, and failed in small groups.
-- **Not built.** Weights and join fan-out as each row's influence on the result; judging a sample of rows instead of all; choosing a cheaper model per row (Multiple-PPI).
+- **Then built** (#26, [weights.md](../phase1/weights.md)): weights and join fan-out as each row's influence on the result.
+  - **The literature.** A join's output is not sampled by sampling its input (Chaudhuri, Motwani & Narasayya, SIGMOD 1999). Sampling in proportion to size (Hansen & Hurwitz, 1943) is the remedy, and sequential Poisson sampling (Ohlsson, 1998) makes it nest across rounds. PPI with nonuniform samples (Kluger et al., [arXiv:2501.18577](https://arxiv.org/abs/2501.18577)) and BaS for joins over unstructured data (Zhu et al., [arXiv:2603.16153](https://arxiv.org/abs/2603.16153)) are the nearest recent work.
+  - **Measured** on the 2,000 CFPB texts and the 21,980 complaints in the source shard that carry them: drawing by weight took 53–94 % fewer labels than texts at random, and came within 13 % fewer to 67 % more of drawing the complaints themselves. The texts' own share held the weighted truth in 4 % of draws; copies counted as labelled rows, in 46 %.
+- **Not built.** Judging a sample of rows instead of all; choosing a cheaper model per row (Multiple-PPI).
 
 ## What this means for the release
 
