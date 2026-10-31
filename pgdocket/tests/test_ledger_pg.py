@@ -62,7 +62,7 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -672,3 +672,101 @@ def test_harden_keeps_a_steered_row_out_of_auto(env, capsys):
         assert p["calibration"]["harden"] and p["calibration"]["checks_queued"] > 0   # hardening carries over
     finally:
         FakeSystemOne.obey_injection = False
+
+
+def test_estimate_by_corrects_each_group_with_its_own_labels(env, capsys):
+    """Shares by region (#25). In the north the model calls most technical leads billing; in the south its few
+    mistakes never touch billing. Each region is corrected with its own labels, the north is flagged, and rows drawn
+    within regions count for regions only."""
+    from collections import Counter
+
+    from pgdocket import cli, groups
+    teams = ["billing", "technical", "sales"]
+    rows = []
+    for i in range(1, 601):
+        region, team = ("north" if i % 3 == 0 else "south"), teams[(i // 3) % 3]
+        said = team
+        if region == "north" and team == "technical" and i % 5:
+            said = "billing"                                   # 80 % of the north's technical leads
+        elif region == "south" and team == "technical" and i % 10 == 1:
+            said = "sales"
+        rows.append((i, said, team, region, "gold" if i % 2 else "basic"))
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.leads (id int PRIMARY KEY, body text, team text, region text, tier text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.leads VALUES (%s, %s, %s, %s, %s)", rows)
+    ledger.create(env["owner"], "leads", "shop.leads", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "leads", column="team", sample=240, seed="3")
+    truth = {g: sum(t == "billing" for _, _, t, r, _ in rows if r == g) / sum(r == g for *_, r, _ in rows)
+             for g in ("north", "south")}
+    with psycopg.connect(env["owner"]) as c:
+        r = groups.estimate_by(c, "leads", "region", "billing", target=0.05)
+    by = {g["g"]: g for g in r["groups"]}
+    for g in ("north", "south"):                               # the same numbers as estimate --where on that group
+        row = ledger.estimate(env["owner"], "leads", "billing", where=f"region = '{g}'")[0]
+        assert by[g]["n"] == row["labels"] and by[g]["judged"] == row["judged"]
+        assert by[g]["est"]["theta"] * by[g]["judged"] == pytest.approx(row["estimate"], rel=1e-9)
+        assert by[g]["ci"][1] * by[g]["judged"] == pytest.approx(row["ci_high"], rel=1e-9)
+        assert by[g]["ci"][0] <= truth[g] <= by[g]["ci"][1]
+    assert by["north"]["model_share"] - truth["north"] > 0.15                       # the model's systematic error
+    assert [f["group"] for f in r["systematic"]] == ["north"]
+    plan = {p["group"]: p for p in r["plan"]["groups"]}
+    assert plan["north"]["more"] > plan["south"]["more"] and r["plan"]["uniform"] > r["plan"]["need"]
+
+    with psycopg.connect(env["owner"]) as c:                  # draw the north's and south's extra labels
+        d, drawn = groups.draw(c, "leads", "region", r["plan"], seed="1")
+        random_keys = {k for (k,) in c.execute("SELECT row_key FROM docket.label WHERE decision_id = %s "
+                                                "AND sampling = 'random'", (d["id"],))}
+    assert Counter(g for _, g in drawn) == {g: p["more"] for g, p in plan.items() if p["more"]}
+    assert not random_keys & {k for k, _ in drawn}
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"draw-{uuid.uuid4().hex[:6]}.csv")
+    cli.main(["estimate", "--dsn", env["owner"], "leads", "--by", "region", "--answer", "billing", "--target", "0.05",
+              "--draw", path])
+    out = capsys.readouterr().out
+    assert "by region" in out and "understates" not in out and "overstates 'billing'" in out
+    assert "label leads --csv" in out and "--stratified region" in out
+    team = {str(i): t for i, _, t, _, _ in rows}
+    with open(path, newline="") as f:
+        sheet = list(csv.DictReader(f))
+    assert set(sheet[0]) == {"key", "region", "body", "label"} and all(s["label"] == "" for s in sheet)
+    for s in sheet:
+        s["label"] = team[s["key"]]
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(sheet[0]))
+        w.writeheader()
+        w.writerows(sheet)
+    ledger.import_labels(env["owner"], "leads", csv_path=path, stratified="region")
+    with psycopg.connect(env["owner"]) as c:
+        kinds = dict(c.execute("SELECT sampling, count(*) FROM docket.label WHERE decision_id = %s GROUP BY 1",
+                               (d["id"],)).fetchall())
+        after = {g["g"]: g["n"] for g in groups.estimate_by(c, "leads", "region", "billing")["groups"]}
+        tier = groups.estimate_by(c, "leads", "tier", "billing")
+    assert kinds == {"random": 240, "stratified": len(sheet)}
+    assert after == {g: by[g]["n"] + sum(s["region"] == g for s in sheet) for g in ("north", "south")}
+    assert sum(g["n"] for g in tier["groups"]) == 240          # other columns' groups and plain estimates ignore them
+    assert ledger.estimate(env["owner"], "leads", "billing")[0]["labels"] == 240
+
+    # How a row was chosen outlives re-labelling: by hand it stays drawn within regions; drawn again within tiers it
+    # belongs to both; a row drawn at random stays random.
+    key, rkey = sheet[0]["key"], sorted(random_keys)[0]
+    manual = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"manual-{uuid.uuid4().hex[:6]}.csv")
+    with open(manual, "w", newline="") as f:
+        f.write(f"key,label\n{key},{team[key]}\n{rkey},{team[rkey]}\n")
+    ledger.import_labels(env["owner"], "leads", csv_path=manual)
+    ledger.import_labels(env["owner"], "leads", csv_path=manual, stratified="tier")
+    with psycopg.connect(env["owner"]) as c:
+        got = dict((k, (s, st)) for k, s, st in c.execute(
+            "SELECT row_key, sampling, strata FROM docket.label WHERE decision_id = %s AND row_key = ANY(%s)",
+            (d["id"], [key, rkey])))
+        with pytest.raises(psycopg.errors.CheckViolation):
+            c.execute("UPDATE docket.label SET sampling = 'stratified' WHERE decision_id = %s AND row_key = %s",
+                      (d["id"], rkey))
+    assert got == {key: ("stratified", ["region", "tier"]), rkey: ("random", None)}
+
+
+def test_estimate_by_an_unknown_column_says_so(env):
+    from pgdocket import cli
+    with pytest.raises(SystemExit) as e:
+        cli.main(["estimate", "--dsn", env["owner"], "leads", "--by", "regoin", "--answer", "billing"])
+    assert "regoin" in str(e.value) and "columns of the source table" in str(e.value)

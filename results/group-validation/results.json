@@ -1,0 +1,2536 @@
+{
+  "rows": 2000,
+  "groupings": {
+    "region": {
+      "sizes": {
+        "Midwest": 252,
+        "Northeast": 336,
+        "South": 984,
+        "West": 420,
+        "other or unknown": 8
+      },
+      "answers": {
+        "debt collection": {
+          "truth": {
+            "Midwest": 0.1111111111111111,
+            "Northeast": 0.10714285714285714,
+            "South": 0.11890243902439024,
+            "West": 0.1357142857142857,
+            "other or unknown": 0.125
+          },
+          "models": {
+            "Jev, 20 rows per request": {
+              "bias": {
+                "Midwest": -0.03571428571428571,
+                "Northeast": -0.023809523809523808,
+                "South": -0.028455284552845517,
+                "West": -0.02619047619047618,
+                "other or unknown": 0.0
+              },
+              "disagree": {
+                "Midwest": 0.0992063492063492,
+                "Northeast": 0.08333333333333333,
+                "South": 0.08536585365853659,
+                "West": 0.07857142857142857,
+                "other or unknown": 0.0
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 1.0,
+                    "own_draws": 19,
+                    "pooled": 1.0,
+                    "half_width": 0.10050479262150099,
+                    "labels_only_half_width": 0.11048171208652802
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 0.9761904761904762,
+                    "own_draws": 84,
+                    "pooled": 1.0,
+                    "half_width": 0.07537725277942982,
+                    "labels_only_half_width": 0.08548750420044608
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.964,
+                    "own_draws": 500,
+                    "pooled": 0.996,
+                    "half_width": 0.03893071999091387,
+                    "labels_only_half_width": 0.04492372139945805
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.9919354838709677,
+                    "own_draws": 372,
+                    "pooled": 1.0,
+                    "half_width": 0.0617582816836376,
+                    "labels_only_half_width": 0.07606284105478321
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.894,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 1.0,
+                    "own_draws": 359,
+                    "pooled": 1.0,
+                    "half_width": 0.059583632727723504,
+                    "labels_only_half_width": 0.063553302404877
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 0.9937238493723849,
+                    "own_draws": 478,
+                    "pooled": 1.0,
+                    "half_width": 0.04756792616803412,
+                    "labels_only_half_width": 0.052359389906932494
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.994,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.028894064907380154,
+                    "labels_only_half_width": 0.03199452497258378
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.984,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.044839320221537075,
+                    "labels_only_half_width": 0.05170862018490763
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.65,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1798.0,
+                    "labels_p90": 1975.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 701.16,
+                    "labels_p90": 847.1,
+                    "group_coverage": 0.992,
+                    "reached": 0.33
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1125.75,
+                    "labels_p90": 1300.0,
+                    "group_coverage": 0.9925,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 670.59,
+                    "labels_p90": 814.1000000000001,
+                    "group_coverage": 0.9825,
+                    "reached": 0.3
+                  }
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "bias": {
+                "Midwest": -0.01984126984126984,
+                "Northeast": -0.011904761904761904,
+                "South": -0.01524390243902439,
+                "West": -0.0023809523809523725,
+                "other or unknown": 0.0
+              },
+              "disagree": {
+                "Midwest": 0.08333333333333333,
+                "Northeast": 0.07738095238095238,
+                "South": 0.08028455284552846,
+                "West": 0.08333333333333333,
+                "other or unknown": 0.0
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 0.9629629629629629,
+                    "own_draws": 27,
+                    "pooled": 1.0,
+                    "half_width": 0.0894046534668379,
+                    "labels_only_half_width": 0.10482796084858267
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 0.9764705882352941,
+                    "own_draws": 85,
+                    "pooled": 1.0,
+                    "half_width": 0.07233141910529756,
+                    "labels_only_half_width": 0.0864590916796977
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.974,
+                    "own_draws": 500,
+                    "pooled": 0.998,
+                    "half_width": 0.03806116845494525,
+                    "labels_only_half_width": 0.04504567452741312
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.9916897506925207,
+                    "own_draws": 361,
+                    "pooled": 1.0,
+                    "half_width": 0.06105547493913051,
+                    "labels_only_half_width": 0.07615738170843842
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.98,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 1.0,
+                    "own_draws": 360,
+                    "pooled": 1.0,
+                    "half_width": 0.057048413803182416,
+                    "labels_only_half_width": 0.06401278161721963
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 1.0,
+                    "own_draws": 474,
+                    "pooled": 1.0,
+                    "half_width": 0.04664188044954196,
+                    "labels_only_half_width": 0.05240725908949798
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.994,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.028349807433155447,
+                    "labels_only_half_width": 0.032030929846829294
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.996,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.04501966361822466,
+                    "labels_only_half_width": 0.052089947514314915
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.942,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1786.25,
+                    "labels_p90": 1975.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 650.7,
+                    "labels_p90": 825.6,
+                    "group_coverage": 0.99,
+                    "reached": 0.25
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1067.75,
+                    "labels_p90": 1252.5000000000002,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 625.79,
+                    "labels_p90": 743.7000000000003,
+                    "group_coverage": 0.99,
+                    "reached": 0.19
+                  }
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "bias": {
+                "Midwest": 0.16666666666666669,
+                "Northeast": 0.13392857142857145,
+                "South": 0.13617886178861788,
+                "West": 0.14285714285714288,
+                "other or unknown": 0.0
+              },
+              "disagree": {
+                "Midwest": 0.1984126984126984,
+                "Northeast": 0.19940476190476192,
+                "South": 0.20934959349593496,
+                "West": 0.20476190476190476,
+                "other or unknown": 0.0
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 0.8666666666666667,
+                    "own_draws": 15,
+                    "pooled": 0.994,
+                    "half_width": 0.08821178954004744,
+                    "labels_only_half_width": 0.10008072572198377
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 0.9411764705882353,
+                    "own_draws": 85,
+                    "pooled": 1.0,
+                    "half_width": 0.07923951179199205,
+                    "labels_only_half_width": 0.08620606882074286
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.972,
+                    "own_draws": 500,
+                    "pooled": 0.996,
+                    "half_width": 0.04228701125585641,
+                    "labels_only_half_width": 0.04489309296843962
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.9921875,
+                    "own_draws": 384,
+                    "pooled": 1.0,
+                    "half_width": 0.06999878503231166,
+                    "labels_only_half_width": 0.07675118130397039
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.81,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.1111111111111111,
+                    "rows": 252,
+                    "own": 0.986737400530504,
+                    "own_draws": 377,
+                    "pooled": 1.0,
+                    "half_width": 0.0591440505254295,
+                    "labels_only_half_width": 0.06371867521729374
+                  },
+                  "Northeast": {
+                    "truth": 0.10714285714285714,
+                    "rows": 336,
+                    "own": 0.9978902953586498,
+                    "own_draws": 474,
+                    "pooled": 1.0,
+                    "half_width": 0.0505930443931771,
+                    "labels_only_half_width": 0.05287215352313743
+                  },
+                  "South": {
+                    "truth": 0.11890243902439024,
+                    "rows": 984,
+                    "own": 0.994,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.030508853180732976,
+                    "labels_only_half_width": 0.0318584514008626
+                  },
+                  "West": {
+                    "truth": 0.1357142857142857,
+                    "rows": 420,
+                    "own": 0.986,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.04907275436887605,
+                    "labels_only_half_width": 0.05233208324516798
+                  },
+                  "other or unknown": {
+                    "truth": 0.125,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.578,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1798.75,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 717.15,
+                    "labels_p90": 848.5,
+                    "group_coverage": 0.988,
+                    "reached": 0.28
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1124.25,
+                    "labels_p90": 1277.5000000000002,
+                    "group_coverage": 0.9875,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 700.28,
+                    "labels_p90": 802.1,
+                    "group_coverage": 0.9925,
+                    "reached": 0.21
+                  }
+                }
+              }
+            }
+          },
+          "labels_only_allocation": {
+            "every group": {
+              "across the table": {
+                "labels": 1785.25,
+                "labels_p90": 1975.0,
+                "group_coverage": 1.0,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 824.91,
+                "labels_p90": 971.5,
+                "group_coverage": 0.992,
+                "reached": 1.0
+              }
+            },
+            "groups of 100+ rows": {
+              "across the table": {
+                "labels": 1180.5,
+                "labels_p90": 1377.5000000000002,
+                "group_coverage": 0.9975,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 802.56,
+                "labels_p90": 908.3000000000001,
+                "group_coverage": 0.985,
+                "reached": 1.0
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": {
+            "Midwest": 0.07539682539682539,
+            "Northeast": 0.09226190476190477,
+            "South": 0.054878048780487805,
+            "West": 0.09047619047619047,
+            "other or unknown": 0.0
+          },
+          "models": {
+            "Jev, 20 rows per request": {
+              "bias": {
+                "Midwest": 0.03571428571428571,
+                "Northeast": 0.07440476190476189,
+                "South": 0.051829268292682924,
+                "West": 0.07619047619047618,
+                "other or unknown": 0.0
+              },
+              "disagree": {
+                "Midwest": 0.09126984126984126,
+                "Northeast": 0.11011904761904762,
+                "South": 0.0782520325203252,
+                "West": 0.10476190476190476,
+                "other or unknown": 0.0
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": 0.5,
+                    "own_draws": 2,
+                    "pooled": 0.99,
+                    "half_width": 0.0927633668005437,
+                    "labels_only_half_width": 0.10948805489327487
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 0.9,
+                    "own_draws": 30,
+                    "pooled": 0.998,
+                    "half_width": 0.06965032340749867,
+                    "labels_only_half_width": 0.0849646098408366
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.996875,
+                    "own_draws": 320,
+                    "pooled": 0.994,
+                    "half_width": 0.029549067797638596,
+                    "labels_only_half_width": 0.03367315189146162
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.968421052631579,
+                    "own_draws": 95,
+                    "pooled": 0.992,
+                    "half_width": 0.057951077300060314,
+                    "labels_only_half_width": 0.07054371145090729
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.006,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": 0.9805825242718447,
+                    "own_draws": 103,
+                    "pooled": 1.0,
+                    "half_width": 0.053727249353121606,
+                    "labels_only_half_width": 0.05930052526950554
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 1.0,
+                    "own_draws": 431,
+                    "pooled": 1.0,
+                    "half_width": 0.045065952484214675,
+                    "labels_only_half_width": 0.05012419827263573
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.978,
+                    "own_draws": 500,
+                    "pooled": 0.998,
+                    "half_width": 0.020444521962076242,
+                    "labels_only_half_width": 0.022300182001209885
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.9958677685950413,
+                    "own_draws": 484,
+                    "pooled": 1.0,
+                    "half_width": 0.039002214412516875,
+                    "labels_only_half_width": 0.04369197381925209
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1796.75,
+                    "labels_p90": 1975.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 802.71,
+                    "labels_p90": 979.2,
+                    "group_coverage": 0.99,
+                    "reached": 0.57
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1094.25,
+                    "labels_p90": 1375.0,
+                    "group_coverage": 0.995,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 796.36,
+                    "labels_p90": 966.0000000000001,
+                    "group_coverage": 0.9875,
+                    "reached": 0.56
+                  }
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "bias": {
+                "Midwest": 0.05952380952380952,
+                "Northeast": 0.08035714285714285,
+                "South": 0.061991869918699184,
+                "West": 0.06904761904761904,
+                "other or unknown": 0.125
+              },
+              "disagree": {
+                "Midwest": 0.0992063492063492,
+                "Northeast": 0.11011904761904762,
+                "South": 0.0741869918699187,
+                "West": 0.09285714285714286,
+                "other or unknown": 0.125
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 0.9411764705882353,
+                    "own_draws": 34,
+                    "pooled": 0.998,
+                    "half_width": 0.06811311224551185,
+                    "labels_only_half_width": 0.08314050325331156
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.9941348973607038,
+                    "own_draws": 341,
+                    "pooled": 0.992,
+                    "half_width": 0.02818441528998916,
+                    "labels_only_half_width": 0.03376641584637498
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.9891304347826086,
+                    "own_draws": 92,
+                    "pooled": 1.0,
+                    "half_width": 0.0569498856762281,
+                    "labels_only_half_width": 0.07082538098165547
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.834,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": 1.0,
+                    "own_draws": 104,
+                    "pooled": 1.0,
+                    "half_width": 0.052639357360886936,
+                    "labels_only_half_width": 0.0588867091892484
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 0.9952267303102625,
+                    "own_draws": 419,
+                    "pooled": 1.0,
+                    "half_width": 0.044717061628101476,
+                    "labels_only_half_width": 0.0500453949252275
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.986,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.02004983651208732,
+                    "labels_only_half_width": 0.022480891958632464
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.9979296066252588,
+                    "own_draws": 483,
+                    "pooled": 1.0,
+                    "half_width": 0.03829236316609051,
+                    "labels_only_half_width": 0.04366981777190889
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.602,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1782.25,
+                    "labels_p90": 1975.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 789.27,
+                    "labels_p90": 956.3000000000004,
+                    "group_coverage": 0.984,
+                    "reached": 0.67
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1064.0,
+                    "labels_p90": 1277.5000000000002,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 808.39,
+                    "labels_p90": 949.6000000000001,
+                    "group_coverage": 0.9925,
+                    "reached": 0.53
+                  }
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "bias": {
+                "Midwest": 0.047619047619047616,
+                "Northeast": 0.08928571428571427,
+                "South": 0.08739837398373984,
+                "West": 0.10476190476190476,
+                "other or unknown": 0.5
+              },
+              "disagree": {
+                "Midwest": 0.0873015873015873,
+                "Northeast": 0.14285714285714285,
+                "South": 0.11991869918699187,
+                "West": 0.14761904761904762,
+                "other or unknown": 0.5
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.86,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 0.90625,
+                    "own_draws": 32,
+                    "pooled": 1.0,
+                    "half_width": 0.07493011238891925,
+                    "labels_only_half_width": 0.08447810039733666
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.9913294797687862,
+                    "own_draws": 346,
+                    "pooled": 0.994,
+                    "half_width": 0.031300041818577706,
+                    "labels_only_half_width": 0.03375503634992375
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.98989898989899,
+                    "own_draws": 99,
+                    "pooled": 0.99,
+                    "half_width": 0.06310637291932766,
+                    "labels_only_half_width": 0.07125490392994367
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.506,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "Midwest": {
+                    "truth": 0.07539682539682539,
+                    "rows": 252,
+                    "own": 1.0,
+                    "own_draws": 81,
+                    "pooled": 0.97,
+                    "half_width": 0.05280381694916844,
+                    "labels_only_half_width": 0.05977685436912691
+                  },
+                  "Northeast": {
+                    "truth": 0.09226190476190477,
+                    "rows": 336,
+                    "own": 0.9976689976689976,
+                    "own_draws": 429,
+                    "pooled": 1.0,
+                    "half_width": 0.04691752874520924,
+                    "labels_only_half_width": 0.05011988162765697
+                  },
+                  "South": {
+                    "truth": 0.054878048780487805,
+                    "rows": 984,
+                    "own": 0.986,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.02135833703260203,
+                    "labels_only_half_width": 0.022407419083896925
+                  },
+                  "West": {
+                    "truth": 0.09047619047619047,
+                    "rows": 420,
+                    "own": 0.9979716024340771,
+                    "own_draws": 493,
+                    "pooled": 1.0,
+                    "half_width": 0.04069178475472381,
+                    "labels_only_half_width": 0.04352454421026712
+                  },
+                  "other or unknown": {
+                    "truth": 0.0,
+                    "rows": 8,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.762,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1797.0,
+                    "labels_p90": 1975.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 807.64,
+                    "labels_p90": 1007.7,
+                    "group_coverage": 0.994,
+                    "reached": 0.65
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1073.25,
+                    "labels_p90": 1302.5000000000002,
+                    "group_coverage": 0.995,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 791.5,
+                    "labels_p90": 951.4000000000001,
+                    "group_coverage": 0.9975,
+                    "reached": 0.59
+                  }
+                }
+              }
+            }
+          },
+          "labels_only_allocation": {
+            "every group": {
+              "across the table": {
+                "labels": 1794.25,
+                "labels_p90": 1975.0,
+                "group_coverage": 0.998,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 848.23,
+                "labels_p90": 992.9000000000002,
+                "group_coverage": 0.998,
+                "reached": 1.0
+              }
+            },
+            "groups of 100+ rows": {
+              "across the table": {
+                "labels": 1107.5,
+                "labels_p90": 1302.5000000000002,
+                "group_coverage": 0.9975,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 837.67,
+                "labels_p90": 986.2,
+                "group_coverage": 0.99,
+                "reached": 1.0
+              }
+            }
+          }
+        }
+      },
+      "big": [
+        "Midwest",
+        "Northeast",
+        "South",
+        "West"
+      ]
+    },
+    "year": {
+      "sizes": {
+        "2015": 3,
+        "2016": 10,
+        "2017": 30,
+        "2018": 80,
+        "2019": 119,
+        "2020": 145,
+        "2021": 219,
+        "2022": 386,
+        "2023": 989,
+        "2024": 19
+      },
+      "answers": {
+        "debt collection": {
+          "truth": {
+            "2015": 0.3333333333333333,
+            "2016": 0.3,
+            "2017": 0.23333333333333334,
+            "2018": 0.2,
+            "2019": 0.20168067226890757,
+            "2020": 0.20689655172413793,
+            "2021": 0.1917808219178082,
+            "2022": 0.09067357512953368,
+            "2023": 0.07987866531850354,
+            "2024": 0.10526315789473684
+          },
+          "models": {
+            "Jev, 20 rows per request": {
+              "bias": {
+                "2015": -0.3333333333333333,
+                "2016": -0.09999999999999998,
+                "2017": -0.13333333333333333,
+                "2018": -0.05000000000000002,
+                "2019": -0.050420168067226906,
+                "2020": -0.0482758620689655,
+                "2021": -0.0273972602739726,
+                "2022": -0.018134715025906745,
+                "2023": -0.018200202224469164,
+                "2024": -0.10526315789473684
+              },
+              "disagree": {
+                "2015": 0.3333333333333333,
+                "2016": 0.1,
+                "2017": 0.13333333333333333,
+                "2018": 0.125,
+                "2019": 0.10084033613445378,
+                "2020": 0.10344827586206896,
+                "2021": 0.136986301369863,
+                "2022": 0.07512953367875648,
+                "2023": 0.06673407482305359,
+                "2024": 0.10526315789473684
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.962,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.82,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 1.0,
+                    "own_draws": 3,
+                    "pooled": 1.0,
+                    "half_width": 0.14313737585212738,
+                    "labels_only_half_width": 0.16797786587947106
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 0.9393939393939394,
+                    "own_draws": 33,
+                    "pooled": 1.0,
+                    "half_width": 0.12544826939852596,
+                    "labels_only_half_width": 0.1620137095977663
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.9814814814814815,
+                    "own_draws": 162,
+                    "pooled": 1.0,
+                    "half_width": 0.10768333485626051,
+                    "labels_only_half_width": 0.12395782692355446
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 81,
+                    "pooled": 0.994,
+                    "half_width": 0.06611621606428116,
+                    "labels_only_half_width": 0.07537893071699592
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.983640081799591,
+                    "own_draws": 489,
+                    "pooled": 0.978,
+                    "half_width": 0.03384675363424055,
+                    "labels_only_half_width": 0.038164146810583846
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.002,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.852,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.852,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": 1.0,
+                    "own_draws": 30,
+                    "pooled": 1.0,
+                    "half_width": 0.13079752964675284,
+                    "labels_only_half_width": 0.15006111129687183
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 1.0,
+                    "own_draws": 255,
+                    "pooled": 1.0,
+                    "half_width": 0.10050772463707845,
+                    "labels_only_half_width": 0.11916302674186362
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 0.9928057553956835,
+                    "own_draws": 417,
+                    "pooled": 1.0,
+                    "half_width": 0.09080334617933464,
+                    "labels_only_half_width": 0.10702007950144875
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.9919678714859438,
+                    "own_draws": 498,
+                    "pooled": 1.0,
+                    "half_width": 0.07471183510488778,
+                    "labels_only_half_width": 0.08234669865762444
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 0.9936575052854123,
+                    "own_draws": 473,
+                    "pooled": 1.0,
+                    "half_width": 0.04183274510113025,
+                    "labels_only_half_width": 0.04559737910833733
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.982,
+                    "own_draws": 500,
+                    "pooled": 0.984,
+                    "half_width": 0.0245200611237578,
+                    "labels_only_half_width": 0.026649744584295736
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 1013.91,
+                    "labels_p90": 1127.2,
+                    "group_coverage": 0.996,
+                    "reached": 0.79
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 881.21,
+                    "labels_p90": 979.4000000000001,
+                    "group_coverage": 0.992,
+                    "reached": 0.92
+                  }
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "bias": {
+                "2015": -0.3333333333333333,
+                "2016": 0.0,
+                "2017": -0.13333333333333333,
+                "2018": -0.037500000000000006,
+                "2019": -0.04201680672268909,
+                "2020": 0.0,
+                "2021": -0.0136986301369863,
+                "2022": -0.023316062176165803,
+                "2023": 0.0010111223458038332,
+                "2024": -0.05263157894736842
+              },
+              "disagree": {
+                "2015": 0.3333333333333333,
+                "2016": 0.0,
+                "2017": 0.13333333333333333,
+                "2018": 0.0875,
+                "2019": 0.1092436974789916,
+                "2020": 0.12413793103448276,
+                "2021": 0.1415525114155251,
+                "2022": 0.06994818652849741,
+                "2023": 0.05965621840242669,
+                "2024": 0.05263157894736842
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.618,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 0.8333333333333334,
+                    "own_draws": 6,
+                    "pooled": 1.0,
+                    "half_width": 0.15443104204629884,
+                    "labels_only_half_width": 0.1879111149971344
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 1.0,
+                    "own_draws": 19,
+                    "pooled": 1.0,
+                    "half_width": 0.13288819662789755,
+                    "labels_only_half_width": 0.16624818741780442
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.9807692307692307,
+                    "own_draws": 156,
+                    "pooled": 1.0,
+                    "half_width": 0.1078462459699804,
+                    "labels_only_half_width": 0.1257179302738378
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 0.9852941176470589,
+                    "own_draws": 68,
+                    "pooled": 0.988,
+                    "half_width": 0.06627512164409205,
+                    "labels_only_half_width": 0.0753158766677055
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.9794238683127572,
+                    "own_draws": 486,
+                    "pooled": 0.924,
+                    "half_width": 0.03211452429815933,
+                    "labels_only_half_width": 0.03819900486214242
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.836,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.988,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.726,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": 0.9655172413793104,
+                    "own_draws": 29,
+                    "pooled": 1.0,
+                    "half_width": 0.11859856853031424,
+                    "labels_only_half_width": 0.15114017929797358
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 0.996031746031746,
+                    "own_draws": 252,
+                    "pooled": 1.0,
+                    "half_width": 0.10212561842331744,
+                    "labels_only_half_width": 0.11997191622405354
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 0.9952941176470588,
+                    "own_draws": 425,
+                    "pooled": 1.0,
+                    "half_width": 0.092341845833923,
+                    "labels_only_half_width": 0.1066468274140587
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.98989898989899,
+                    "own_draws": 495,
+                    "pooled": 1.0,
+                    "half_width": 0.07523954197680949,
+                    "labels_only_half_width": 0.08296200228296735
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 0.9978586723768736,
+                    "own_draws": 467,
+                    "pooled": 1.0,
+                    "half_width": 0.04142060601540363,
+                    "labels_only_half_width": 0.045488612807125677
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.998,
+                    "own_draws": 500,
+                    "pooled": 0.986,
+                    "half_width": 0.02360492254060255,
+                    "labels_only_half_width": 0.026654560923360972
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.594,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 1005.03,
+                    "labels_p90": 1143.0,
+                    "group_coverage": 0.998,
+                    "reached": 0.84
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1999.75,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 890.11,
+                    "labels_p90": 1006.2000000000002,
+                    "group_coverage": 0.998,
+                    "reached": 0.83
+                  }
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "bias": {
+                "2015": 0.3333333333333333,
+                "2016": 0.0,
+                "2017": 0.09999999999999998,
+                "2018": 0.1375,
+                "2019": 0.1512605042016807,
+                "2020": 0.0827586206896552,
+                "2021": 0.1324200913242009,
+                "2022": 0.1295336787564767,
+                "2023": 0.1557128412537917,
+                "2024": 0.15789473684210525
+              },
+              "disagree": {
+                "2015": 0.3333333333333333,
+                "2016": 0.0,
+                "2017": 0.3,
+                "2018": 0.2375,
+                "2019": 0.2689075630252101,
+                "2020": 0.19310344827586207,
+                "2021": 0.2511415525114155,
+                "2022": 0.18134715025906736,
+                "2023": 0.19413549039433772,
+                "2024": 0.15789473684210525
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.788,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.994,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 0.8333333333333334,
+                    "own_draws": 6,
+                    "pooled": 1.0,
+                    "half_width": 0.1579047857021998,
+                    "labels_only_half_width": 0.17594240472482833
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 1.0,
+                    "own_draws": 24,
+                    "pooled": 0.962,
+                    "half_width": 0.141226519310637,
+                    "labels_only_half_width": 0.16096220663381075
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.9608938547486033,
+                    "own_draws": 179,
+                    "pooled": 1.0,
+                    "half_width": 0.1160362669383584,
+                    "labels_only_half_width": 0.12635966248216224
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 0.9625,
+                    "own_draws": 80,
+                    "pooled": 0.998,
+                    "half_width": 0.06838095690506782,
+                    "labels_only_half_width": 0.07499907711248659
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.991869918699187,
+                    "own_draws": 492,
+                    "pooled": 0.968,
+                    "half_width": 0.03579220764844912,
+                    "labels_only_half_width": 0.03799424577418784
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.3333333333333333,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.51,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.3,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.92,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.23333333333333334,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.2,
+                    "rows": 80,
+                    "own": 0.9393939393939394,
+                    "own_draws": 33,
+                    "pooled": 1.0,
+                    "half_width": 0.13888083670404652,
+                    "labels_only_half_width": 0.15165120465928536
+                  },
+                  "2019": {
+                    "truth": 0.20168067226890757,
+                    "rows": 119,
+                    "own": 0.9923371647509579,
+                    "own_draws": 261,
+                    "pooled": 1.0,
+                    "half_width": 0.11318636546695478,
+                    "labels_only_half_width": 0.11894687178036549
+                  },
+                  "2020": {
+                    "truth": 0.20689655172413793,
+                    "rows": 145,
+                    "own": 0.9951807228915662,
+                    "own_draws": 415,
+                    "pooled": 1.0,
+                    "half_width": 0.09746078277352489,
+                    "labels_only_half_width": 0.10693933355977156
+                  },
+                  "2021": {
+                    "truth": 0.1917808219178082,
+                    "rows": 219,
+                    "own": 0.9979757085020243,
+                    "own_draws": 494,
+                    "pooled": 1.0,
+                    "half_width": 0.07902220283105242,
+                    "labels_only_half_width": 0.0828756500739248
+                  },
+                  "2022": {
+                    "truth": 0.09067357512953368,
+                    "rows": 386,
+                    "own": 0.9978354978354979,
+                    "own_draws": 462,
+                    "pooled": 1.0,
+                    "half_width": 0.043979673969926025,
+                    "labels_only_half_width": 0.04613772508880908
+                  },
+                  "2023": {
+                    "truth": 0.07987866531850354,
+                    "rows": 989,
+                    "own": 0.994,
+                    "own_draws": 500,
+                    "pooled": 0.992,
+                    "half_width": 0.025469847591252787,
+                    "labels_only_half_width": 0.02657389207301981
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 1012.16,
+                    "labels_p90": 1132.7,
+                    "group_coverage": 0.997,
+                    "reached": 0.81
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 877.31,
+                    "labels_p90": 991.1,
+                    "group_coverage": 0.994,
+                    "reached": 0.85
+                  }
+                }
+              }
+            }
+          },
+          "labels_only_allocation": {
+            "every group": {
+              "across the table": {
+                "labels": 2000.0,
+                "labels_p90": 2000.0,
+                "group_coverage": 1.0,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 1049.17,
+                "labels_p90": 1147.4,
+                "group_coverage": 0.999,
+                "reached": 1.0
+              }
+            },
+            "groups of 100+ rows": {
+              "across the table": {
+                "labels": 2000.0,
+                "labels_p90": 2000.0,
+                "group_coverage": 1.0,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 880.19,
+                "labels_p90": 983.4000000000001,
+                "group_coverage": 0.994,
+                "reached": 1.0
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": {
+            "2015": 0.0,
+            "2016": 0.1,
+            "2017": 0.03333333333333333,
+            "2018": 0.1,
+            "2019": 0.09243697478991597,
+            "2020": 0.027586206896551724,
+            "2021": 0.0821917808219178,
+            "2022": 0.06217616580310881,
+            "2023": 0.07381193124368049,
+            "2024": 0.10526315789473684
+          },
+          "models": {
+            "Jev, 20 rows per request": {
+              "bias": {
+                "2015": 0.0,
+                "2016": 0.0,
+                "2017": 0.13333333333333333,
+                "2018": 0.07499999999999998,
+                "2019": 0.0672268907563025,
+                "2020": 0.05517241379310345,
+                "2021": 0.0228310502283105,
+                "2022": 0.07253886010362695,
+                "2023": 0.05763397371081899,
+                "2024": 0.05263157894736842
+              },
+              "disagree": {
+                "2015": 0.0,
+                "2016": 0.0,
+                "2017": 0.13333333333333333,
+                "2018": 0.1,
+                "2019": 0.06722689075630252,
+                "2020": 0.08275862068965517,
+                "2021": 0.0867579908675799,
+                "2022": 0.09844559585492228,
+                "2023": 0.09201213346814964,
+                "2024": 0.05263157894736842
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.002,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.784,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": 1.0,
+                    "own_draws": 2,
+                    "pooled": 0.902,
+                    "half_width": 0.08554090192379618,
+                    "labels_only_half_width": 0.09543857232331557
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 2,
+                    "pooled": 0.998,
+                    "half_width": 0.06409436568703969,
+                    "labels_only_half_width": 0.07155975750181064
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.9850107066381156,
+                    "own_draws": 467,
+                    "pooled": 0.996,
+                    "half_width": 0.0321137755928691,
+                    "labels_only_half_width": 0.036611163039149214
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.602,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.992,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": 0.9868421052631579,
+                    "own_draws": 76,
+                    "pooled": 0.986,
+                    "half_width": 0.060133978266195647,
+                    "labels_only_half_width": 0.06701030848477173
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 258,
+                    "pooled": 1.0,
+                    "half_width": 0.037623755703593845,
+                    "labels_only_half_width": 0.041400384074254955
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.988,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.023428148403203997,
+                    "labels_only_half_width": 0.025763332553969613
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1999.75,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 1011.72,
+                    "labels_p90": 1127.2,
+                    "group_coverage": 0.996,
+                    "reached": 0.78
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1998.5,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 889.63,
+                    "labels_p90": 1045.6000000000001,
+                    "group_coverage": 0.99,
+                    "reached": 0.85
+                  }
+                }
+              }
+            },
+            "Jev, 1 row per request": {
+              "bias": {
+                "2015": 0.0,
+                "2016": 0.0,
+                "2017": 0.13333333333333333,
+                "2018": 0.0875,
+                "2019": 0.11764705882352941,
+                "2020": 0.08275862068965517,
+                "2021": 0.0410958904109589,
+                "2022": 0.06735751295336787,
+                "2023": 0.06066734074823052,
+                "2024": 0.05263157894736842
+              },
+              "disagree": {
+                "2015": 0.0,
+                "2016": 0.0,
+                "2017": 0.13333333333333333,
+                "2018": 0.0875,
+                "2019": 0.11764705882352941,
+                "2020": 0.09655172413793103,
+                "2021": 0.0867579908675799,
+                "2022": 0.08290155440414508,
+                "2023": 0.08493427704752275,
+                "2024": 0.05263157894736842
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.79,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.998,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.988,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 4,
+                    "pooled": 1.0,
+                    "half_width": 0.05805707851932216,
+                    "labels_only_half_width": 0.07368793627952674
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.9957356076759062,
+                    "own_draws": 469,
+                    "pooled": 0.99,
+                    "half_width": 0.03127255857543493,
+                    "labels_only_half_width": 0.03692314439405712
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.996,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.64,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.996,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": 1.0,
+                    "own_draws": 70,
+                    "pooled": 1.0,
+                    "half_width": 0.05879675321017937,
+                    "labels_only_half_width": 0.06714224495913092
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 263,
+                    "pooled": 1.0,
+                    "half_width": 0.0359484501271923,
+                    "labels_only_half_width": 0.0408291120036333
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.982,
+                    "own_draws": 500,
+                    "pooled": 1.0,
+                    "half_width": 0.022911341652581272,
+                    "labels_only_half_width": 0.025675028791892342
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.994,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 2000.0,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 990.18,
+                    "labels_p90": 1139.9,
+                    "group_coverage": 0.999,
+                    "reached": 0.69
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1999.25,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 844.63,
+                    "labels_p90": 996.6,
+                    "group_coverage": 0.998,
+                    "reached": 0.74
+                  }
+                }
+              }
+            },
+            "Laya, 1 row per request": {
+              "bias": {
+                "2015": 0.0,
+                "2016": 0.30000000000000004,
+                "2017": 0.16666666666666669,
+                "2018": 0.13749999999999998,
+                "2019": 0.15126050420168066,
+                "2020": 0.09655172413793103,
+                "2021": 0.0821917808219178,
+                "2022": 0.09844559585492227,
+                "2023": 0.06673407482305357,
+                "2024": 0.15789473684210525
+              },
+              "disagree": {
+                "2015": 0.0,
+                "2016": 0.3,
+                "2017": 0.16666666666666666,
+                "2018": 0.1625,
+                "2019": 0.15126050420168066,
+                "2020": 0.1103448275862069,
+                "2021": 0.1278538812785388,
+                "2022": 0.14507772020725387,
+                "2023": 0.11324570273003033,
+                "2024": 0.15789473684210525
+              },
+              "flagged_400": [],
+              "coverage": {
+                "400": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.978,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 5,
+                    "pooled": 0.998,
+                    "half_width": 0.06638030438946876,
+                    "labels_only_half_width": 0.07288125985710696
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.9873949579831933,
+                    "own_draws": 476,
+                    "pooled": 0.902,
+                    "half_width": 0.03361598226696596,
+                    "labels_only_half_width": 0.036890606516913234
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                },
+                "800": {
+                  "2015": {
+                    "truth": 0.0,
+                    "rows": 3,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2016": {
+                    "truth": 0.1,
+                    "rows": 10,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.972,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2017": {
+                    "truth": 0.03333333333333333,
+                    "rows": 30,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.998,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2018": {
+                    "truth": 0.1,
+                    "rows": 80,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2019": {
+                    "truth": 0.09243697478991597,
+                    "rows": 119,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2020": {
+                    "truth": 0.027586206896551724,
+                    "rows": 145,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 1.0,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  },
+                  "2021": {
+                    "truth": 0.0821917808219178,
+                    "rows": 219,
+                    "own": 1.0,
+                    "own_draws": 63,
+                    "pooled": 1.0,
+                    "half_width": 0.061328087049041274,
+                    "labels_only_half_width": 0.06736561910727261
+                  },
+                  "2022": {
+                    "truth": 0.06217616580310881,
+                    "rows": 386,
+                    "own": 1.0,
+                    "own_draws": 242,
+                    "pooled": 1.0,
+                    "half_width": 0.03928160563202936,
+                    "labels_only_half_width": 0.040830963857416955
+                  },
+                  "2023": {
+                    "truth": 0.07381193124368049,
+                    "rows": 989,
+                    "own": 0.986,
+                    "own_draws": 500,
+                    "pooled": 0.956,
+                    "half_width": 0.024118684194773435,
+                    "labels_only_half_width": 0.025734872279001078
+                  },
+                  "2024": {
+                    "truth": 0.10526315789473684,
+                    "rows": 19,
+                    "own": null,
+                    "own_draws": 0,
+                    "pooled": 0.994,
+                    "half_width": null,
+                    "labels_only_half_width": null
+                  }
+                }
+              },
+              "allocation": {
+                "every group": {
+                  "across the table": {
+                    "labels": 1999.75,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 1011.2,
+                    "labels_p90": 1149.4,
+                    "group_coverage": 0.993,
+                    "reached": 0.84
+                  }
+                },
+                "groups of 100+ rows": {
+                  "across the table": {
+                    "labels": 1999.25,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0
+                  },
+                  "within groups": {
+                    "labels": 872.05,
+                    "labels_p90": 1030.4,
+                    "group_coverage": 0.998,
+                    "reached": 0.83
+                  }
+                }
+              }
+            }
+          },
+          "labels_only_allocation": {
+            "every group": {
+              "across the table": {
+                "labels": 2000.0,
+                "labels_p90": 2000.0,
+                "group_coverage": 1.0,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 1021.15,
+                "labels_p90": 1147.0,
+                "group_coverage": 0.999,
+                "reached": 1.0
+              }
+            },
+            "groups of 100+ rows": {
+              "across the table": {
+                "labels": 1999.25,
+                "labels_p90": 2000.0,
+                "group_coverage": 1.0,
+                "reached": 1.0
+              },
+              "within groups": {
+                "labels": 887.8,
+                "labels_p90": 1035.4,
+                "group_coverage": 0.994,
+                "reached": 1.0
+              }
+            }
+          }
+        }
+      },
+      "big": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023"
+      ]
+    }
+  },
+  "trials": 500
+}

@@ -2,7 +2,7 @@
 
 Every source pgdocket builds on, applies or measures itself against, grouped by the feature it shaped. Each entry says where it is used. Titles and authors of arXiv papers were checked against arXiv's metadata when they were added (most on 2026-10-27); venues are given where the paper or its arXiv record states one.
 
-[At a glance](#at-a-glance) · [Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Other backends](#other-backends) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
+[At a glance](#at-a-glance) · [Built on](#built-on) · [Data](#data) · [Thresholds and calibration](#thresholds-and-calibration) · [Counts](#counts-with-error-bars) · [Shares by group](#shares-by-group) · [Review planning](#review-planning) · [Recall targets](#recall-targets) · [Comparing versions](#comparing-versions) · [Drift checks](#drift-checks) · [Audits](#audits) · [Rows that steer the model](#rows-that-steer-the-model) · [Other backends](#other-backends) · [Jev in applied studies](#jev-in-applied-studies) · [Landscape](#landscape)
 
 ## At a glance
 
@@ -12,6 +12,7 @@ The work behind each feature; details and links in the sections below.
 | --- | --- |
 | [Thresholds with guarantees](#thresholds-and-calibration) (`check`, `calibrate`) | One-sided Clopper–Pearson bounds with fixed-sequence testing (Learn then Test: Angelopoulos, Bates, Candès, Jordan & Lei, 2021). Per-answer guarantees after class-conditional conformal prediction (Ding et al., 2023). Temperature scaling (Guo et al., 2017) and Platt scaling. |
 | [Counts with error bars](#counts-with-error-bars) (`estimate`) | Prediction-powered inference (Angelopoulos, Bates, Fannjiang, Jordan & Zrnic, 2023) and PPI++ (Angelopoulos, Duchi & Zrnic, 2023). |
+| [Shares by group](#shares-by-group) (`estimate --by`) | PPI++ within each group, with labels allocated across groups as in stratified PPI (Fisch et al., 2024) and in allocating human oversight across segments (Ye, Lyu & Tao, 2026); subgroups need their own correction (Mozer, 2026). Related: Multiple-PPI (Cowen-Breen et al., 2026), ABae (Kang et al., 2021). |
 | [Review planning](#review-planning) (`plan`) | Probably approximately correct labels (Candès, Ilyas & Zrnic, 2025). |
 | [Recall targets](#recall-targets) (`calibrate --recall-target`) | SUPG (Kang et al., 2020) and BARGAIN (Zeighami, Shankar & Parameswaran, 2026). |
 | [Comparing versions](#comparing-versions) (`compare`) | An exact sign test on the disagreements (Dixon & Mood, 1946) and the bootstrap (Efron, 1979). |
@@ -30,7 +31,7 @@ The work behind each feature; details and links in the sections below.
 
 ## Data
 
-- **CFPB Consumer Complaint Database.** [consumerfinance.gov](https://www.consumerfinance.gov/data-research/consumer-complaints/). The bureau stopped publishing narratives in August 2026 ([American Banker](https://americanbanker.com/news/cfpb-will-no-longer-publish-consumer-complaint-narratives), [Sheppard Mullin](https://www.sheppard.com/insights/blogs/cfpb-stops-publishing-consumer-complaint-narratives-and-visualizations)). The 2,000 narratives used here come from a [CC0 mirror on Hugging Face](https://huggingface.co/datasets/BEE-spoke-data/consumer-finance-complaints). Used in Phase 0 ([findings](docs/phase0/FINDINGS-jev-1.13.md)), `check`, recall targets, drift and audits.
+- **CFPB Consumer Complaint Database.** [consumerfinance.gov](https://www.consumerfinance.gov/data-research/consumer-complaints/). The bureau stopped publishing narratives in August 2026 ([American Banker](https://americanbanker.com/news/cfpb-will-no-longer-publish-consumer-complaint-narratives), [Sheppard Mullin](https://www.sheppard.com/insights/blogs/cfpb-stops-publishing-consumer-complaint-narratives-and-visualizations)). The 2,000 narratives used here come from a [CC0 mirror on Hugging Face](https://huggingface.co/datasets/BEE-spoke-data/consumer-finance-complaints). Used in Phase 0 ([findings](docs/phase0/FINDINGS-jev-1.13.md)), `check`, recall targets, drift and audits; the consumer's state, from the same source shard, groups them by region for [shares by group](docs/phase1/groups.md).
 - **Kubernetes issues.** Public issues of [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes), with the SIG and kind labels its maintainers applied, fetched with the GitHub CLI (`jevbench.ghissues`). Used in the [triage study](docs/phase1/kubernetes-triage.md) and every Phase 1 evaluation.
 
 ## Thresholds and calibration
@@ -62,6 +63,19 @@ The work behind each feature; details and links in the sections below.
 - Emmenegger, N., Stahler, E. & Podimata, C. (2026). *Prediction-Powered Inference Across Many Tasks for AI Evaluation & Social Science Research.* [arXiv:2605.29249](https://arxiv.org/abs/2605.29249).
 - Kawano, S., Li, Z. R. & Parker, P. A. (2026). *Prediction-Powered Smoothing and Validation for Disaggregated AI Evaluation.* [arXiv:2609.20758](https://arxiv.org/abs/2609.20758). A candidate for accuracy per segment.
 - *Reducing Human Effort to Validate LLM Relevance Judgements via Stratified Sampling* (book chapter). [Springer](https://www.springerprofessional.de/en/reducing-human-effort-to-validate-llm-relevance-judgements-via-s/52210330). Prompted the stratified-labels experiment, which was not adopted ([results](results/stratified-labels/report.md)).
+
+## Shares by group
+
+*`estimate --by`, `--target`, `--draw` ([shares by group](docs/phase1/groups.md)). Stratified PPI (Fisch et al., 2024) and the subgroup caveat (Mozer, 2026) are listed under [Counts](#counts-with-error-bars).*
+
+- Ye, Z., Lyu, J. & Tao, R. (2026). *Allocating Human Oversight in AI-Enabled Analytics.* [arXiv:2604.12497](https://arxiv.org/abs/2604.12497). Labels allocated across segments by each one's rectification difficulty (a Neyman square-root rule), with tuned PPI: the allocation `--target` plans.
+- Cowen-Breen, C., Agarwal, A., Bates, S., Cohen, W. W., Eisenstein, J., Globerson, A. & Fisch, A. (2026). *Multiple-Prediction-Powered Inference.* ICLR 2026. [arXiv:2603.27414](https://arxiv.org/abs/2603.27414). A budget split across predictors of different cost and gold labels; not built (pgdocket judges every row with one model).
+- Brawand, N., Leclerc, N., Ngo, A., Peterson, M., Vishwanath, S., Alhussein, L. & Wellner, B. (2026). *Active Multiple-Prediction-Powered Inference.* [arXiv:2605.08429](https://arxiv.org/abs/2605.08429). Routing each row to a predictor by difficulty; not built.
+- Angelopoulos, A. N., Eisenstein, J., Berant, J., Agarwal, A. & Fisch, A. (2025). *Cost-Optimal Active AI Model Evaluation.* [arXiv:2506.07949](https://arxiv.org/abs/2506.07949). Splitting a budget between a weak and a strong rater.
+- Ma, V. L. & Candès, E. J. (2026). *Optimized Labeling Resource Allocation for Prediction-Assisted Inference via OPAL.* [arXiv:2606.03211](https://arxiv.org/abs/2606.03211). Learned labelling policies for active inference; not tested.
+- Kang, D., Guibas, J., Bailis, P., Hashimoto, T., Sun, Y. & Zaharia, M. (2021). *Accelerating Approximate Aggregation Queries with Expensive Predicates* (ABae). PVLDB 14(11), 2341–2354. [arXiv:2108.06313](https://arxiv.org/abs/2108.06313). Proxy-stratified sampling for aggregates, GROUP BY included.
+- Russo, M., Liu, C., Sudhir, S., Vitagliano, G., Cafarella, M., Kraska, T. & Madden, S. (2026). *Abacus: A Cost-Based Optimizer for Semantic Operator Systems.* PVLDB 19(5), 1060–1073. [arXiv:2505.14661](https://arxiv.org/abs/2505.14661). Model choice per operator in Palimpzest, for cost and quality.
+- Hui, C., Lu, W., Gao, Y., Xiong, L., Wang, Y. & Chen, Y. (2026). *LLM-Driven Online Aggregation for Unstructured Text Analytics* (OLLA). DASFAA 2026. [arXiv:2603.08443](https://arxiv.org/abs/2603.08443). Stratified sampling for semantic aggregates.
 
 ## Review planning
 

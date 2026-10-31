@@ -4,6 +4,20 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-10-31
 
+### Added (shares by group, #25)
+- **`pgdocket estimate NAME --by COL --answer A`**: the share of an answer for each value of a source column, each group corrected with its own labels (PPI++ within the group). An all-groups line weights the groups by size. A group is flagged when the model's error there differs from the other groups' (a step-down z-test, Bonferroni across groups).
+- **`--target SHARE`**: how many more labels each group needs for ± SHARE.
+  - **The rule.** A pilot of 30 first; then z² × the per-label variance PPI++ leaves / target², at least 10 labelled rows with and without the answer, and never more than the group's rows (the share is then exact).
+  - **The comparison.** It says how many labels drawn across the table would do the same, and which group sets that.
+- **`--draw CSV`** writes those rows, drawn at random within each group, blind. **`pgdocket label --csv FILE --stratified COL`** imports them.
+  - **Data model.** Migration `010` adds the `stratified` sampling and `docket.label.strata`; such labels count for `--by COL` only.
+  - **Re-labelling.** How a row was chosen outlives re-labelling (`docket.label_sampling`): a row drawn at random stays random, one drawn within groups stays so and collects every column it was drawn for.
+- **Validation** (`jevbench groupvalidate`, no API calls) on 2,000 CFPB complaints by US region and by year, with the stored Jev and Laya answers:
+  - **Within groups.** Labels drawn within groups brought every group to ± 5 points with 24–64 % fewer labels than labels drawn across the table. The final intervals held 98–100 % either way.
+  - **The model mattered less.** It saved up to 22 % of labels against labels alone, and almost none for a rarer answer, where the floor of 10 labelled rows each way set the cost.
+  - **One correction for all groups** covered the four regions, where the models' errors were alike, but failed in small groups (0–94 % coverage).
+  - Write-up: `docs/phase1/groups.md`.
+
 ### Added (steering on Laya, #24 and #4)
 - **The steering experiment on Laya** (`jevbench steer --backend http://laya:8000/v1/systemone --model laya`): 5,100 judgments, no API cost, in `results/steer-k8s-laya`.
   - **Text appended to a long issue never reached it.** Laya keeps the first ~300 tokens of a row and drops the rest without a warning. No appended attack steered any of the 234 issues longer than 1,200 characters. On the 66 shorter ones, a counterfeit policy steered 24.2 % (Jev: 98.7 % of all issues).
@@ -14,6 +28,7 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 - **Reported upstream** as [NandhaKishorM/laya#1425](https://github.com/NandhaKishorM/laya/issues/1425), with a runnable reproduction: with several rows in one state, Laya answers every question from the whole state.
 
 ### Changed
+- CI also compiles the package on Python 3.10, the oldest version it supports; the tests run on 3.12. A Python 3.12-only f-string had slipped into the new module and was caught by hand.
 - `jevbench steer` reports a backend that certifies nothing by what reaches the reviewers (steered, with and without `--untrusted`), instead of tables of zeros under `auto`.
 
 ### Fixed

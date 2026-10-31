@@ -8,7 +8,7 @@
   pgdocket worker     judge queued rows and keep the ledger current
   pgdocket label      import human labels (from a column or a key,label CSV)
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
-  pgdocket estimate   how many rows truly have each answer, with a confidence interval
+  pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
@@ -114,6 +114,8 @@ def main(argv=None):
     lb.add_argument("--positive", help="yes/no decisions: the label value that means yes")
     lb.add_argument("--random", action="store_true",
                     help="with --csv: the rows were drawn at random (e.g. by pgdocket check --export-sample)")
+    lb.add_argument("--stratified", metavar="COL",
+                    help="with --csv: the rows were drawn at random within each value of COL (pgdocket estimate --by COL --draw)")
     ca = sub.add_parser("calibrate", help="fit a calibrator and a guaranteed threshold")
     dsn_arg(ca)
     ca.add_argument("name")
@@ -134,6 +136,11 @@ def main(argv=None):
     es.add_argument("--where", help="SQL condition on the source table, e.g. \"created_at >= '2026-07-01'\"")
     es.add_argument("--level", type=float, default=0.95)
     es.add_argument("--include-manual", action="store_true", help="also use labels not drawn at random (intervals may be biased)")
+    es.add_argument("--by", metavar="COL", help="a share per value of this source column, each group corrected with its own labels")
+    es.add_argument("--target", type=float, metavar="SHARE",
+                    help="with --by: how many more labels each group needs for an interval of ± SHARE (e.g. 0.02)")
+    es.add_argument("--draw", metavar="CSV", help="with --by --target: write those rows to label, drawn at random within each group")
+    es.add_argument("--seed", default="1", help="with --draw")
     pl = sub.add_parser("plan", help="how much review keeps the column's error ≤ ε (95 %% confidence)")
     dsn_arg(pl)
     pl.add_argument("name")
@@ -267,9 +274,12 @@ def _ledger_command(a):
                         concurrency=a.concurrency, max_usd=a.max_usd, poll=a.poll).run(once=a.once)
         print(json.dumps(totals))
     elif a.cmd == "label":
+        if a.stratified and (a.from_column or a.random):
+            sys.exit("--stratified goes with --csv, for a file from pgdocket estimate --by COL --draw")
         n = ledger.import_labels(a.dsn, a.name, column=a.from_column, csv_path=a.csv, sample=a.sample, seed=a.seed,
-                                 positive=a.positive, random=a.random)
-        kind = "random sample" if (a.sample or a.random) else ("whole column" if a.from_column else "manual")
+                                 positive=a.positive, random=a.random, stratified=a.stratified)
+        kind = (f"drawn within {a.stratified} groups" if a.stratified else "random sample" if (a.sample or a.random)
+                else ("whole column" if a.from_column else "manual"))
         print(f"{n} labels imported for {a.name} ({kind})")
     elif a.cmd == "calibrate":
         try:
@@ -289,7 +299,11 @@ def _ledger_command(a):
         if a.harden:
             print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for erase-and-check; until the worker has "
                   "checked a row, `auto` is false for it")
+    elif a.cmd == "estimate" and a.by:
+        _estimate_by(a, ledger)
     elif a.cmd == "estimate":
+        if a.target or a.draw:
+            sys.exit("--target and --draw plan labels per group: add --by COL")
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
         lvl = f"{100 * a.level:.0f} %"
         print(f"{a.name}: how many judged rows truly have each answer ({lvl} intervals)"
@@ -365,6 +379,26 @@ def _ledger_command(a):
         for r in rows:
             print(f"{r['name']:<24} v{r['version']}  judged {r['judged']:>8,}  queued {r['queued']:>6,}  errors {r['errors']:>4,}  "
                   f"labels {r['labels']:>5,}  tokens {r['tokens']:>12,}  {'calibrated' if r['calibrated'] else 'not calibrated'}")
+
+
+def _estimate_by(a, ledger):
+    from . import groups
+    if a.draw and not a.target:
+        sys.exit("--draw writes the labels a --target needs: add --target")
+    if a.include_manual:
+        sys.exit("--by uses labels drawn at random (from the table or within its groups) only")
+    import psycopg
+    with ledger.connect(a.dsn) as conn:
+        try:
+            r = groups.estimate_by(conn, a.name, a.by, a.answer, a.where, a.level, a.target)
+        except psycopg.errors.UndefinedColumn as e:
+            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--by and --where name columns of the source table)")
+        print(groups.render(r))
+        if a.draw:
+            d, rows = groups.draw(conn, a.name, a.by, r["plan"], a.where, a.seed)
+            n = groups.export(conn, d, a.by, rows, a.draw)
+            print(f"{n} rows to label written to {a.draw}, blind (no AI answer). Fill in `label`, then:\n"
+                  f"  pgdocket label {a.name} --csv {a.draw} --stratified {a.by}")
 
 
 def _plan(a, ledger):

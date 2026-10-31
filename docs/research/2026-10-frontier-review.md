@@ -164,6 +164,21 @@ A fifth round, on a question every earlier one took for granted: do pgdocket's n
   - **Order averaging as a per-backend option.**
   - **Cascades** (local model first, Jev for the rest) need a first stage that certifies something, and zero-shot Laya doesn't on these tasks.
 
+## Update, 31 October 2026
+
+A sixth sweep, on spending human labels where a query's result needs them: how mistakes on single rows reach a GROUP BY result.
+- **The literature.**
+  - **Across models.** Multiple-PPI (Cowen-Breen et al., ICLR 2026, [arXiv:2603.27414](https://arxiv.org/abs/2603.27414)) splits a budget across predictors of different cost and gold labels. Its active version routes each row to a predictor (Brawand et al., [arXiv:2605.08429](https://arxiv.org/abs/2605.08429)).
+  - **Across segments.** Allocating human oversight in AI-enabled analytics (Ye, Lyu & Tao, [arXiv:2604.12497](https://arxiv.org/abs/2604.12497)) gives each segment labels by its rectification difficulty: a Neyman rule within tuned PPI.
+  - **Subgroups.** Mozer ([arXiv:2603.19160](https://arxiv.org/abs/2603.19160)) shows PPI is the survey difference estimator and warns that prediction error differing by subgroup breaks a pooled correction.
+  - **Systems.** ABae (Kang et al., PVLDB 2021) does proxy-stratified sampling for aggregates. Abacus (Palimpzest), Cortex AISQL and OLLA choose models or samples for cost and quality, without an interval per group from the user's labels.
+- **Built** (#25, [groups.md](../phase1/groups.md)): `estimate --by COL` corrects each group with its own labels, flags groups whose model error differs, and `--target --draw` plans and draws each group's labels.
+- **Measured** on 2,000 CFPB complaints by region and year, with the stored Jev and Laya answers:
+  - **Allocation.** Labels drawn within groups brought every group to ± 5 points with 24–64 % fewer labels than random labels across the table; intervals held 98–100 %.
+  - **The model.** It saved at most 22 %: what it buys is agreement with people within each group. For rare answers the floor of 10 labelled rows each way sets the cost.
+  - **One correction for all groups** worked across the four regions, where errors were alike, and failed in small groups.
+- **Not built.** Weights and join fan-out as each row's influence on the result; judging a sample of rows instead of all; choosing a cheaper model per row (Multiple-PPI).
+
 ## What this means for the release
 
 The per-answer report is a small change, and it fixes the most important gap this review found. Without it, `auto` can mislead a team about specific answers. I recommend adding it before 0.1.0a2. Review planning, recall targets, drift alarms and stratified counts are new features for after the release.

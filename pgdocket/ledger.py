@@ -60,14 +60,17 @@ def _decision(conn, name):
     return {"id": r[0], "source": r[1], "key": r[2], "version": r[3], "spec": r[4]}
 
 
-def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", positive=None, random=False):
+def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", positive=None, random=False,
+                  stratified=None):
     """Copy human labels into docket.label, from a column of the source table or from a key,label CSV.
 
     Labels record how they were chosen: `--sample N` from a column is a uniform random sample ('random');
     a whole column is 'all'; a CSV is 'manual' unless the caller says it was drawn at random (`random=True`,
     e.g. a file from `pgdocket check --export-sample`). Rows an audit drew get 'audit' (#23): they are used only by
-    `pgdocket audit`. Only 'random' labels feed `estimate` by default.
-    Sampling records how a row was chosen, so re-labelling a row that was drawn at random keeps it 'random'.
+    `pgdocket audit`. Only 'random' labels feed `estimate` by default. A CSV from `estimate --by COL --draw` is
+    'stratified' (`stratified=COL`, #25): drawn at random within COL's groups, it counts for `estimate --by COL` only.
+    Sampling records how a row was chosen, so re-labelling a row drawn at random keeps it 'random', and one drawn within
+    groups keeps it 'stratified' (docket.label_sampling).
     Labels may name an option of any version not yet retired (e.g. one only a shadow version has).
     For yes/no decisions, labels are stored as 'yes' / 'no' (`positive` is the value that means yes).
     """
@@ -90,7 +93,9 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
                 WHERE s.{col} IS NOT NULL{cond}
                 ORDER BY md5(s.{key}::text || %(seed)s) {limit}
                 ON CONFLICT (decision_id, row_key) DO UPDATE SET label = EXCLUDED.label, source = EXCLUDED.source,
-                    sampling = CASE WHEN docket.label.sampling = 'random' THEN 'random' ELSE EXCLUDED.sampling END, labeled_at = now()""").format(
+                    (sampling, strata) = (SELECT x.sampling, x.strata FROM docket.label_sampling(
+                        docket.label.sampling, docket.label.strata, EXCLUDED.sampling, EXCLUDED.strata) x),
+                    labeled_at = now()""").format(
                 key=sql.Identifier(d["key"]), col=col, value=value, table=sql.SQL(d["source"]), cond=cond,
                 limit=sql.SQL("LIMIT {}").format(sql.Literal(int(sample))) if sample else sql.SQL(""))
             cur = conn.execute(q, {"did": d["id"], "src": f"column:{column}", "seed": ":" + str(seed), "names": names,
@@ -109,12 +114,17 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
                     label = "yes" if label == str(positive) else "no"
                 elif label not in names:
                     continue
-                kind = "audit" if r["key"] in audited else "random" if random else "manual"
-                rows.append((d["id"], r["key"], label, "csv:" + os.path.basename(csv_path), kind))
+                kind = ("stratified" if stratified else "audit" if r["key"] in audited else "random" if random
+                        else "manual")
+                rows.append((d["id"], r["key"], label, "csv:" + os.path.basename(csv_path), kind,
+                             [stratified] if stratified else None))
         with conn.cursor() as cur:
-            cur.executemany("INSERT INTO docket.label (decision_id, row_key, label, source, sampling) VALUES (%s, %s, %s, %s, %s) "
-                            "ON CONFLICT (decision_id, row_key) DO UPDATE SET label = EXCLUDED.label, "
-                            "source = EXCLUDED.source, sampling = CASE WHEN docket.label.sampling = 'random' THEN 'random' ELSE EXCLUDED.sampling END, labeled_at = now()", rows)
+            cur.executemany("INSERT INTO docket.label (decision_id, row_key, label, source, sampling, strata) "
+                            "VALUES (%s, %s, %s, %s, %s, %s) "
+                            "ON CONFLICT (decision_id, row_key) DO UPDATE SET label = EXCLUDED.label, source = EXCLUDED.source, "
+                            "(sampling, strata) = (SELECT x.sampling, x.strata FROM docket.label_sampling("
+                            "docket.label.sampling, docket.label.strata, EXCLUDED.sampling, EXCLUDED.strata) x), "
+                            "labeled_at = now()", rows)
         return len(rows)
 
 

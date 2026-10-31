@@ -24,6 +24,16 @@ jobs:
         env:
           PYTHONPATH: harness:.
 
+  oldest-python:
+    name: Package compiles on Python 3.10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"                # the oldest pyproject.toml supports; tests run on 3.12
+      - run: python -m compileall -q pgdocket
+
   compose-config:
     name: Docker Compose file is valid
     runs-on: ubuntu-latest

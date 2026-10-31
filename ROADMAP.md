@@ -52,9 +52,9 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] Precision threshold with a guarantee (fixed-sequence testing, Clopper–Pearson) in `check` and `calibrate`
 - [x] Recall targets for yes/no decisions: auto-yes, review band, auto-no (#21). Adaptive labelling as in BARGAIN (SIGMOD 2026) is a later step
 - [x] `docket.estimate()` / `pgdocket estimate`: PPI++ in SQL, with a reliability flag and refusal when labels in scope can't support an interval (#14)
-- [ ] Review-budget planner: labels needed for a target CI width or guarantee
+- [x] Review-budget planner: labels needed for a target CI width, per group (`estimate --by --target`, #25); for a guarantee, `pgdocket plan` (#20)
 - [x] **Coverage-test suite** (simulation) in CI for the threshold guarantee and the count intervals
-- [ ] Stratified label sampling (rare answers estimable with fewer labels); stratified PPI is the next candidate. Uncertainty-guided labelling was tested and broke coverage (#18)
+- [x] Stratified label sampling within the groups of a source column (`--draw`, `label --stratified`, migration 010, #25): 24–64 % fewer labels than random labels for every group to reach ± 5 points ([write-up](docs/phase1/groups.md)). Stratifying by the model's answer certified less and was not adopted; uncertainty-guided labelling broke coverage (#18)
 
 **Exit:** all coverage tests pass at their stated rates.
 
@@ -91,3 +91,4 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - Gateway mode: `/v1/systemone`-compatible proxy so pg-jev's `jev.api_url` gets a persistent cross-session cache and ledger
 - Cascades through stuntd/Laya (local-first, escalate uncertain rows). Zero-shot Laya certifies too little on our tasks for this to pay; a Laya fine-tuned on the ledger's labels might
 - dbt package; minimal review web UI
+- Query-aware labels beyond GROUP BY: weight each row by its influence on the result (a weighted sum, or how often a join uses it); judge only a sample of rows when a statistic is all that's wanted; choose a cheaper model for some rows (Multiple-PPI, ICLR 2026)

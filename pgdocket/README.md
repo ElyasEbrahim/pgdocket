@@ -159,6 +159,17 @@ SELECT answer, model_count, estimate, ci_low, ci_high, reliable FROM docket.esti
 - **No labelled example of an answer means no interval.** Nothing measures how often the model is wrong there.
 - **Validation:** coverage tests run in CI, and on 500 real Kubernetes issues the intervals held 98–100 % when reliable and were 30–50 % narrower than labels alone. See [docs/phase1/counts.md](../docs/phase1/counts.md).
 
+## Shares by group
+
+`--by COL` gives the share of an answer for each value of a source column, such as "debt collection, by region". Each group is corrected with its own labels, because a model can be wrong more often in some groups than in others; a group whose model error differs from the rest is flagged. `--target` says how many more labels each group needs for its interval to be ± that share, and `--draw` writes those rows, drawn at random within each group.
+
+```bash
+pgdocket estimate complaints --by region --answer "debt collection" --target 0.05 --draw next.csv
+pgdocket label complaints --csv next.csv --stratified region     # once people have filled in `label`
+```
+
+Labels imported with `--stratified region` count for `--by region` only: they are a random sample of their group, not of the table. On 2,000 CFPB complaints, drawing labels within groups needed 24–64 % fewer than drawing them across the table for every group to reach ± 5 points. See [docs/phase1/groups.md](../docs/phase1/groups.md).
+
 # Planning human review
 
 `pgdocket plan` answers *how many rows must people check so that at most ε of this column is wrong?* It keeps the model's answer where it's most confident and sends the rest to people, with a 95 % guarantee on the whole column (probably approximately correct labels).
