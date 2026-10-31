@@ -153,6 +153,7 @@ A fifth round, on a question every earlier one took for granted: do pgdocket's n
   - **Per answer.** On CFPB, *credit reporting* passed 90 % on its own threshold: 36.4 % of complaints automatically, where no single threshold reached even 70 %.
   - **Order.** Laya is deterministic but twice as order-sensitive as Jev (14.2 % of answers change across three orders, against 7.4 % including Jev's noise). Averaging the orders gained it 1.6 points.
   - **Batches.** In a multi-row request Laya answers every question from the whole request, so pg-jev's 20-row batches give answers near chance.
+  - **Steering** (31 October, [steering.md](../phase1/steering.md#another-backend-laya)). An issue's author steered Laya far less than Jev, mostly because Laya reads only the first ~300 tokens of a row: no appended attack steered a long issue. Written first, a counterfeit policy steered 21.3 %. `--untrusted` never reached the model, because Laya cut the instructions to make room for ten described options.
 - **Adopted.**
   - `check` now says when more labels can't help, and points to per-answer guarantees when those work.
   - TypeSafe's key goes only to TypeSafe; pgdocket had been sending it to any backend.

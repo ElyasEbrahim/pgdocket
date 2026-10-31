@@ -1,6 +1,6 @@
 # Rows that steer the model
 
-*2026-10-27 · issue #24 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md)*
+*2026-10-27 · issue #24 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md); on Laya, [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md)*
 
 pgdocket marks answers `auto`, safe to act on without review, and the rows it judges are often written by outsiders: customers write tickets, anyone can open a GitHub issue, applicants write their own letters. Text in a row can try to steer the model. In September and October 2026, four groups showed that Jev can be steered this way:
 - **Datadog Security Labs.** A counterfeit policy planted in the judged text cut Jev's recall on prompt-injection benchmarks from 83 % to 3.9 %.
@@ -73,6 +73,27 @@ pgdocket calibrate triage --harden               # auto only after erase-and-che
 
 `check --steer N` runs the same four single-paragraph attacks on N labelled rows of your table, aimed at random wrong answers. It reports how many were steered and accepted, and what erase-and-check caught and flagged for nothing. It takes about 20 calls per row. In a hardened decision, the view's `erase_check` column says `passed` or `flagged`.
 
+## Another backend: Laya
+
+*2026-10-31 · [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md) · [Laya against Jev](backends.md)*
+
+The same 300 issues, attacks and targets, judged by Laya 0.4.16 (open weights, run locally, no API cost) instead of Jev. One attack was added: the policy as the first paragraph of the body. On clean text Laya was right 48.3 % of the time (Jev 91.7 %). No threshold reaches 90 % precision, so `auto` accepts nothing and every answer, steered or not, would go to a reviewer.
+
+| what the author adds | sent to the author's SIG: Jev | Laya, all issues | Laya, issues up to 1,200 characters (66) | Laya, longer issues (234) |
+| --- | ---: | ---: | ---: | ---: |
+| a counterfeit routing policy, appended | 98.7 % | 5.3 % | 24.2 % | 0.0 % |
+| a misleading claim, appended | 72.3 % | 4.7 % | 21.2 % | 0.0 % |
+| a plain instruction, appended | 15.0 % | 2.3 % | 10.6 % | 0.0 % |
+| "ignore all previous instructions…", appended | 1.0 % | 4.0 % | 18.2 % | 0.0 % |
+| the policy as the first paragraph | – | 21.3 % | 33.3 % | 17.9 % |
+| the policy, first and last | 98.7 % | 22.3 % | 37.9 % | 17.9 % |
+| the claim, first and last | 62.7 % | 28.0 % | 42.4 % | 23.9 % |
+
+- **Laya never read text appended to a long issue.** It keeps the first window of what it is sent, about 300 tokens of the row here, and drops the rest without a warning. No appended attack steered a single long issue. That accidental defence is gone the moment an attacker writes first: the policy as the first paragraph steered 17.9 % of long issues. The same cut hides the end of every honest issue from Laya.
+- **Where Laya reads the attack, it is steered less than Jev, and differently.** On short issues the counterfeit policy steered 24.2 % (Jev: 98.7 % of all issues). "Ignore all previous instructions" steered 18.2 % of short issues, more than it ever did on Jev. Steering worked mostly where Laya was unsure. The clean answers of steered issues had a median top-two gap of 0.12–0.23, against 0.26–0.31 for the rest: the link Wu & Lim report for Jev.
+- **`--untrusted` can't reach Laya here.** Laya fits the instructions into whatever room the options leave in a 192-token head. With ten described options, the model saw only "choice question: For the record `rows[0]`: Which Kubernetes SIG (special interest group)". The distrust sentence pgdocket appends was cut every time, and answers with and without it were identical on every issue.
+- **On Laya, what protects a pgdocket decision is the threshold.** Nothing was `auto`, so a steered answer would get the same review as every other. A backend accurate enough to certify answers would make these numbers matter: run `check --steer` against it, and don't assume `--untrusted` reaches the model.
+
 ## Not adopted
 
 - **Pattern filters.** Regular expressions for instruction-like text caught every instruction-style attack in our run, but we wrote them knowing the attacks, so that proves nothing. They missed the claim entirely, and any rewording gets past them. They also fired on 1.3 % of clean issues.
@@ -80,7 +101,7 @@ pgdocket calibrate triage --harden               # auto only after erase-and-che
 
 ## Limits
 
-- **One task and one model.** These are Kubernetes routing with jev-1.14. Run `check --steer` on your own decision.
+- **One task, two models.** These are Kubernetes routing with jev-1.14 and, zero-shot, Laya 0.4.16. Run `check --steer` on your own decision.
 - **Fixed attacks.** The attacks are fixed templates, not an attacker who adapts after seeing the answers. Check Point's adaptive attackers broke every configuration they tried.
 - **Gaps in erase-and-check.** It only covers injections confined to one piece. A payload spread across the text, or misleading content repeated in every paragraph, gets past it: a claim written twice got 7.3 % of issues through both defences.
 - **What the guarantee covers.** The precision guarantee covers all rows above the threshold. Hardening removes some of them; on this task the rows left were more precise (94.7 % vs 93.7 %), but that is measured, not guaranteed. Calibrating with every label checked would make it so.

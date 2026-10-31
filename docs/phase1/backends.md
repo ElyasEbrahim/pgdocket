@@ -34,7 +34,9 @@ Agreement and calibration come with confidence intervals in the [comparison](../
 4. **Never send Laya more than one row per request.** In a request with several rows, Laya answers every question from the whole request. A storage issue and a networking issue sent together both came back "storage", in either order. pg-jev sends 20 rows per request by default, which on Laya gives the rows of a request nearly the same answer: of 20 issues sent together, 16 came back *testing*, against five different answers when judged one by one. Routing accuracy fell from 38 % to 12 %, about chance for 10 options. pgdocket judges one row per request, and `check --batch-test` catches this ("Judge one row per request. Sending 20 rows per request changed 76.0 % of answers"). An [issue for Laya](upstream-laya-shared-state.md) is drafted.
 5. **Laya is deterministic.** None of the 200 rows `check` asked again changed (Jev: 2 of 200), and two full runs of 2,000 complaints gave identical probabilities on every row. Across three runs, Jev changed the top answer on 4.8 % of them. A re-judged answer from Laya is the same answer, and in the order test below every change comes from the order alone.
 6. **No API cost, about 20× slower here.** laya-serve runs one inference at a time: 0.3–0.5 s per row on this CPU, so a million rows would take 4–6 days. Hosted Jev judged about 40 rows a second, at $24–43 per million rows.
-7. **A fine-tuned Laya is the real candidate.** Laya's own README says its base checkpoints score near chance zero-shot on its typed-decisions benchmark, and that a checkpoint fine-tuned on that benchmark's training split reached 0.766 there. pgdocket's ledger already holds the labels a fine-tune needs, and `check` would show a fine-tuned model's guarantees before it serves anything. Not built.
+7. **Laya reads only part of what it is sent.** It fits the question and options into a 192-token head and the row into what is left of 512 tokens, keeping the start and dropping the rest without a warning. With ten described options it saw "Which Kubernetes SIG (special interest group)", not the rest of the question, and about 300 tokens of each issue. 78 % of the 300 recent issues in the steering test were longer than that.
+8. **An issue's author steered Laya less than Jev, mostly by accident.** Text appended to a long issue never reached Laya, so no appended attack steered a single long issue (Jev: a counterfeit policy steered 98.7 %). Written as the first paragraph, the policy steered 21.3 % of issues. `--untrusted` can't help on Laya with these options: its sentence is cut with the end of the question ([details](steering.md#another-backend-laya)).
+9. **A fine-tuned Laya is the real candidate.** Laya's own README says its base checkpoints score near chance zero-shot on its typed-decisions benchmark, and that a checkpoint fine-tuned on that benchmark's training split reached 0.766 there. pgdocket's ledger already holds the labels a fine-tune needs, and `check` would show a fine-tuned model's guarantees before it serves anything. Not built.
 
 ## Phase 0: the six experiments on 2,000 CFPB complaints
 
@@ -69,7 +71,6 @@ The experiments issue #4 named, run through pg-jev with one row per request ([La
 - **One sample per task** (500 rows; 2,000 in Phase 0), on one machine. Timings depend on the hardware: a GPU, or Laya's own batch endpoint (one state per row), would be much faster.
 - **Jev's six-experiment Phase 0 run sent 20 rows per request;** Laya's sent one, because 20 breaks it. Jev's one-row run covers `choice_base` only.
 - **Laya changes fast.** These are version 0.4.16, October 2026.
-- **Steering (#24) was not measured on Laya** in this round.
 
 ## Reproduce
 
@@ -83,6 +84,8 @@ docker compose run --rm --entrypoint python bench -m pgdocket.cli check \
   --out results/check-laya-k8s-sig
 docker compose run --rm bench run --backend laya --api-url http://laya:8000/v1/systemone --model laya \
   --batch-size 1 --analyze                           # the six Phase 0 experiments
+docker compose run --rm bench steer --backend http://laya:8000/v1/systemone --model laya \
+  --out results/steer-k8s-laya                       # steering, about 5,100 judgments
 docker compose run --rm --no-deps bench backends     # the comparison, from the stored reports
 docker compose --profile laya rm -sf laya && docker volume rm docket-phase0_laya-cache   # remove Laya and its weights
 ```

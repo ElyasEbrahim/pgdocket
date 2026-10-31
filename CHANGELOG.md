@@ -2,6 +2,21 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-10-31
+
+### Added (steering on Laya, #24 and #4)
+- **The steering experiment on Laya** (`jevbench steer --backend http://laya:8000/v1/systemone --model laya`): 5,100 judgments, no API cost, in `results/steer-k8s-laya`.
+  - **Text appended to a long issue never reached it.** Laya keeps the first ~300 tokens of a row and drops the rest without a warning. No appended attack steered any of the 234 issues longer than 1,200 characters. On the 66 shorter ones, a counterfeit policy steered 24.2 % (Jev: 98.7 % of all issues).
+  - **Written first, attacks got through:** the policy as the first paragraph steered 21.3 % of issues, a claim written first and last 28.0 %.
+  - **`--untrusted` doesn't reach Laya** with ten described options. Laya fits the instructions into what the options leave of a 192-token head, so the question was cut after "Which Kubernetes SIG (special interest group)", and the sentence with it. Answers were identical with and without it.
+  - **Nothing was `auto`.** Laya was right on 48.3 % of the issues, so no threshold could be certified and every steered answer would have gone to review.
+
+### Changed
+- `jevbench steer` reports a backend that certifies nothing by what reaches the reviewers (steered, with and without `--untrusted`), instead of tables of zeros under `auto`.
+
+### Fixed
+- `jevbench steer`: for the policy-first attack, the pattern filter checked the issue's last paragraph instead of the planted one.
+
 ## 2026-10-30
 
 ### Added (another backend, #4)

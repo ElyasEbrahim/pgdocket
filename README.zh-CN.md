@@ -73,7 +73,7 @@ pgdocket check --table public.tickets --key id --text subject,body \
    - `calibrate --harden` 让一行只有在通过“擦除并检查”（erase-and-check）之后才会被标为 `auto`：去掉任意一段文字，答案都不能改变。它拦下了所有本会被 `auto` 采用的被操纵行，包括上述那句话挡不住的误导性说法。代价是 7% 的正常自动采用行会被转交人工复核。
    - 两者一起使用时，我们尝试的每种攻击最多只让 0.3% 的 issue 通过，唯一的例外是写了两遍的误导性说法（7.3%）；自动采用的比例从 95% 降到 86%（[详情](docs/phase1/steering.md)，英文）。
 7. **随处可运行。** *已实现，并在 PostgreSQL 14–18 上以非超级用户身份测试通过。* 纯 SQL 加一个外部 worker，不需要不受信任的扩展。尚未在 Supabase、Neon、RDS 上实际测试。
-8. **任意后端。** *已实现。* pgdocket 使用 `/v1/systemone` API，因此既可以接 TypeSafe 的 Jev，也可以接你自己运行的模型；TypeSafe 的密钥只会发给 TypeSafe。在同样的已标注数据上，Laya（开放权重、本地运行、没有 API 费用）在 Kubernetes 分派任务上只有 38% 的答案正确，而 Jev 为 88.8%。保证依然成立：pgdocket 会把 Laya 的所有答案都交给人工复核，而不是承诺一个它达不到的精确率。用 2,000 条 CFPB 标注校准后，Laya 的概率与 Jev 的同样可靠（[详情](docs/phase1/backends.md)，英文）。
+8. **任意后端。** *已实现。* pgdocket 使用 `/v1/systemone` API，因此既可以接 TypeSafe 的 Jev，也可以接你自己运行的模型；TypeSafe 的密钥只会发给 TypeSafe。在同样的已标注数据上，Laya（开放权重、本地运行、没有 API 费用）在 Kubernetes 分派任务上只有 38% 的答案正确，而 Jev 为 88.8%。保证依然成立：pgdocket 会把 Laya 的所有答案都交给人工复核，而不是承诺一个它达不到的精确率。用 2,000 条 CFPB 标注校准后，Laya 的概率与 Jev 的同样可靠。issue 作者操纵 Laya 远比操纵 Jev 难，主要是因为 Laya 只读取长 issue 的开头部分；但若把伪造的分派规则写在开头，仍能操纵 21% 的 issue，而 `--untrusted` 的那句话根本到不了模型（[详情](docs/phase1/backends.md)，英文）。
 
 架构与 SQL 草图：[REPORT.md §4](REPORT.md#4-the-recommended-project-docket)。已做出的架构决策：[docs/adr/](docs/adr/)。
 
