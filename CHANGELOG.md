@@ -11,6 +11,8 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
   - **`--untrusted` doesn't reach Laya** with ten described options. Laya fits the instructions into what the options leave of a 192-token head, so the question was cut after "Which Kubernetes SIG (special interest group)", and the sentence with it. Answers were identical with and without it.
   - **Nothing was `auto`.** Laya was right on 48.3 % of the issues, so no threshold could be certified and every steered answer would have gone to review.
 
+- **Reported upstream** as [NandhaKishorM/laya#1425](https://github.com/NandhaKishorM/laya/issues/1425), with a runnable reproduction: with several rows in one state, Laya answers every question from the whole state.
+
 ### Changed
 - `jevbench steer` reports a backend that certifies nothing by what reaches the reviewers (steered, with and without `--untrusted`), instead of tables of zeros under `auto`.
 

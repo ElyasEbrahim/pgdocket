@@ -1,30 +1,64 @@
-# Draft issue for NandhaKishorM/laya: questions about `rows[i]` in a shared state all get one answer
+# Reported to Laya: with several rows in one state, every question gets the answer for the whole state
 
-*Draft, not posted. Found while comparing Laya with Jev (#4, [backends.md](backends.md)).*
+*Posted on 2026-10-31 as [NandhaKishorM/laya#1425](https://github.com/NandhaKishorM/laya/issues/1425). Found while comparing Laya with Jev (#4, [backends.md](backends.md)). The text below is what was posted.*
 
 ---
 
-**Title:** laya-serve: in a multi-row state, every question gets the answer for the whole state
+### What happened
 
-**Version:** laya 0.4.16 (`laya[serve]`), CPU, `"model": "laya"` (the English checkpoint).
+Jev clients such as [pg-jev](https://github.com/realZachi/pg-jev) send several records in one request: one `state` with `rows`, and one question per record whose instructions point at it (``For the record `rows[3]`: …``). TypeSafe's Jev answers each question about its own row. Laya answers every question from the whole state, so the rows of a request get the same answer, or nearly. I expected each question to be answered about the row it names.
 
-Jev clients such as [pg-jev](https://github.com/realZachi/pg-jev) send several records in one request: one `state` with `rows`, and one question per record whose instructions point at it (`For the record rows[3]: …`). Jev answers each question about its own row. laya-serve answers every question in the request from the whole state, so the rows of a request get the same answer, or nearly.
+### Steps to reproduce
 
-**Reproduce.** Two Kubernetes-style issues, one about storage (A) and one about networking (B), with the question "Which Kubernetes SIG should handle this issue?" and ten options (SIGs, each with a one-line description):
+```python
+import laya
 
-| request | answer for `rows[0]` | answer for `rows[1]` |
-| --- | --- | --- |
-| A alone | storage (0.946) | – |
-| B alone | network (0.647) | – |
-| A and B together | storage (0.493) | storage (0.495) |
-| B and A together | storage (0.669) | storage (0.673) |
+agent = laya.load("convaiinnovations/laya")
+A = {"title": "PersistentVolume stuck in Terminating after CSI driver upgrade",
+     "body": "After upgrading the CSI driver, PVCs and PersistentVolumes stay in Terminating; the volume attachment never detaches."}
+B = {"title": "kube-proxy drops Service traffic when an EndpointSlice changes",
+     "body": "With IPVS mode, Service ClusterIP connections are reset whenever endpoints change; DNS lookups also time out."}
+criteria = {"storage": "volumes, persistent storage, CSI drivers",
+            "network": "Services, kube-proxy, DNS, network policy",
+            "node": "kubelet, container runtime, node lifecycle"}
 
-Each question's `instructions` is `For the record \`rows[i]\`: Which Kubernetes SIG (special interest group) should handle this issue?`, with the same `criteria` for both.
 
-In one request of 20 Kubernetes issues, 16 came back *testing* and 4 *api-machinery*; judged one per request, the same issues got five different answers.
+def question(i):
+    return {"type": "choice", "criteria": criteria,
+            "instructions": f"For the record `rows[{i}]`: Which Kubernetes SIG should handle this issue?"}
 
-**Impact.** On 100 labelled Kubernetes issues (10 options), sending 20 rows per request instead of one changed 76 % of the answers, and accuracy fell from 38 % to 12 %. pg-jev sends 20 rows per request by default, so pg-jev with laya-serve gives answers near chance, with no error or warning. On a yes/no question, 53 % of answers changed.
 
-**Possible fixes.**
+for name, rows in (("A alone", [A]), ("B alone", [B]), ("A, B", [A, B]), ("B, A", [B, A])):
+    out = agent.system_one({"rows": rows}, {f"r{i}": question(i) for i in range(len(rows))})
+    answers = [out["answers"][f"r{i}"] for i in range(len(rows))]
+    print(f"{name:8}", [(a["choice"], round(a["probabilities"][a["choice"]], 3)) for a in answers])
+```
+
+Output (CPU):
+
+```
+A alone  [('storage', 0.956)]
+B alone  [('network', 0.784)]
+A, B     [('storage', 0.829), ('storage', 0.831)]
+B, A     [('storage', 0.846), ('storage', 0.838)]
+```
+
+The networking issue B is answered *storage* whenever it shares a state with A, in either order. The same happens through `laya-serve` on `/v1/systemone` with `"model": "laya"`.
+
+### Impact
+
+On 100 labelled Kubernetes issues (ten SIG options with descriptions), sending 20 rows per request instead of one changed 76 % of the answers, and accuracy fell from 38 % to 12 %. In one request of 20 issues, 16 came back *testing*. pg-jev sends 20 rows per request by default, so pg-jev with laya-serve gives answers near chance, with no error or warning. On a yes/no question, 53 % of answers changed.
+
+### Possible fixes
+
 - Judge each question against its own row when the instructions reference `rows[i]`: split a multi-row state into one state per row, as `/v1/systemone/batch` already does for a `states` array.
-- Or refuse such requests with a 422, or document the limitation in the Jev-compatibility notes, so clients send one row per request or use `/v1/systemone/batch`.
+- Or refuse such requests with a 422, or document the limitation in the Jev-compatibility notes, so that clients send one row per request or use `/v1/systemone/batch`.
+
+### Environment
+
+- Laya version: 0.4.16 (`laya[serve]`, checkpoint `convaiinnovations/laya`)
+- Python version: 3.11.17
+- Operating system: Linux (Docker on macOS, aarch64)
+- Device or backend: CPU
+
+Found while comparing Laya with TypeSafe's Jev on the same labelled rows; the full results are [here](https://github.com/ElyasEbrahim/pgdocket/blob/master/docs/phase1/backends.md).
