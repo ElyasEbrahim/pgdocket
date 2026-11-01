@@ -184,6 +184,23 @@ pgdocket label texts --csv next.csv         # the file marks the rows drawn by w
 - **`--target --draw` draws rows by weight instead.** This is sequential Poisson sampling: rows are ranked by a permanent random number over their weight, and heavy rows are certain to be drawn. Later estimates find that sample again from the labels; keep the same `--seed` for draws and estimates.
 - **Measured** on 2,000 CFPB texts standing for 21,980 complaints: drawing by weight reached ± 2 points with 112–192 labels, 53–94 % fewer than texts drawn at random. See [docs/phase1/weights.md](../docs/phase1/weights.md).
 
+## Several models
+
+`--with V` estimates a share from the active version's answers, version V's answers and the labels drawn at random, all at once (Multiple-PPI's estimator). With `--target` and `--label-cost`, it also gives the cheapest mix: how many labels, and how many rows each version should judge.
+
+```bash
+pgdocket backfill complaints --version 2 --sample 20000              # v2 judges the first 20,000 rows of a shared order
+pgdocket estimate complaints --answer "debt collection" --with 2 --target 0.02 --label-cost 1 --draw next.csv
+pgdocket label complaints --csv next.csv --random
+```
+
+- **A model needn't judge every row to estimate a share.** A random sample a few hundred times the labels does as well. For 100 million rows that cut the cost of ± 2 points by 68–93 % on CFPB answers.
+- **A second model pays only when it is far cheaper than the first and adds to it.** The plan keeps it only then.
+- **Costs per row** come from the ledger's tokens at TypeSafe's price. Set a price for a free backend's hardware with `--cost V=USD`.
+- **Nesting.** `backfill --sample` and `--draw` take prefixes of one shared random order (labelled rows first), so labels sit inside every version's sample.
+
+See [docs/phase1/models.md](../docs/phase1/models.md).
+
 # Planning human review
 
 `pgdocket plan` answers *how many rows must people check so that at most ε of this column is wrong?* It keeps the model's answer where it's most confident and sends the rest to people, with a 95 % guarantee on the whole column (probably approximately correct labels).

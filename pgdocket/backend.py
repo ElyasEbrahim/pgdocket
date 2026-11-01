@@ -43,14 +43,24 @@ def build_question(kind, question, options, i, untrusted=False):
     raise ValueError("kind must be 'noul' or 'choice'")
 
 
+def is_typesafe(url):
+    """Whether a backend URL is TypeSafe's: the only host with a per-token price, and the only one given its key."""
+    host = (urlsplit(KNOWN.get(url, url)).hostname or "").lower()
+    return host == "typesafe.ai" or host.endswith(".typesafe.ai")
+
+
+def price_per_token(url):
+    """USD per input token at a backend URL: TypeSafe's list price, nothing for anything else."""
+    return USD_PER_INPUT_TOKEN if is_typesafe(url) else 0.0
+
+
 class Backend:
     def __init__(self, url, api_key=None, model="jev-1.14.0", concurrency=16, timeout=60.0):
         self.url = KNOWN.get(url, url)
         parts = urlsplit(self.url)
         self.scheme, self.host, self.port = parts.scheme, parts.hostname, parts.port
         self.path = parts.path or "/"
-        host = (self.host or "").lower()
-        self.typesafe = host == "typesafe.ai" or host.endswith(".typesafe.ai")
+        self.typesafe = is_typesafe(self.url)
         if not api_key and self.typesafe:
             raise BackendError("no API key for %s: set TYPESAFE_API_KEY" % self.url)
         # `api_key` is TypeSafe's: a decision pointed at any other server (Laya, stuntd, a proxy) must never receive it

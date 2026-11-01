@@ -2,6 +2,26 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-01
+
+### Added (several models and the cheapest mix, #27)
+- **`pgdocket estimate NAME --answer A --with V[,V]`**: one share from the active version's answers, the named versions' answers and the labels drawn at random.
+  - **The estimator** is Multiple-PPI's: generalised least squares across the patterns of which sources a row has. With one model on every row, it is the regression estimator that PPI++ approximates.
+  - **Its covariance.** The labels' relation to the models is a regression on the labelled rows, with half a disagreement added each way, and the models' covariances come from every row they judged.
+  - **Which versions count.** A version is used only if the labelled rows it judged hold 10 with and 10 without the answer, and a version that repeats another adds nothing.
+  - **The comparison.** It also reports each version with the labels alone, and the labels alone.
+- **`--target SHARE --label-cost USD [--cost V=USD]`**: the cheapest mix for ± SHARE.
+  - **What it gives.** How many labels, and how many rows each version should judge, from multifidelity Monte Carlo's nested sample sizes, capped at the table's rows. It is compared with judging every row and with labels alone.
+  - **Costs per row** are each version's tokens at its backend's price. A free backend costs nothing unless `--cost` gives one, and work already done counts as paid for.
+  - **`--draw CSV`** writes the next labels in the shared order, blind, for `label --random`.
+- **`pgdocket backfill NAME --version V --sample N [--seed S]`**: the version judges only the first N rows of a shared random order, labelled rows first. Versions' samples and the labels then nest.
+- **Validation** (`jevbench multivalidate`, no API calls): the 2,000 CFPB complaints with Jev (one row and 20 rows per request), Laya and the labels.
+  - **Cost.** On 100 million rows, the cheapest mix for ± 2 points cost 68–93 % less than judging every row with Jev, and 32–63 % less than labels alone. On a million rows judging a sample saved 1–11 %: labels dominate.
+  - **Coverage.** The combined estimate held 91–100 % on 200,000 resampled complaints, against 90–95 % for PPI++. Plans carried out held 93–98 % at the target width.
+  - **A second model** pays only when far cheaper than the first. Batched Jev qualifies. Laya would need to cost under $18–71 per million rows, and takes 93 hours of this machine per million.
+  - **Caught in testing:** covariances measured on different rows implied a correlation above 1, and intervals held 44 %. The regression-based covariance fixed it.
+  - Write-up: `docs/phase1/models.md`.
+
 ## 2026-10-31
 
 ### Added (weighted shares and join fan-out, #26)

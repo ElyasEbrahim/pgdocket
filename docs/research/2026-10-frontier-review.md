@@ -180,7 +180,10 @@ A sixth sweep, on spending human labels where a query's result needs them: how m
 - **Then built** (#26, [weights.md](../phase1/weights.md)): weights and join fan-out as each row's influence on the result.
   - **The literature.** A join's output is not sampled by sampling its input (Chaudhuri, Motwani & Narasayya, SIGMOD 1999). Sampling in proportion to size (Hansen & Hurwitz, 1943) is the remedy, and sequential Poisson sampling (Ohlsson, 1998) makes it nest across rounds. PPI with nonuniform samples (Kluger et al., [arXiv:2501.18577](https://arxiv.org/abs/2501.18577)) and BaS for joins over unstructured data (Zhu et al., [arXiv:2603.16153](https://arxiv.org/abs/2603.16153)) are the nearest recent work.
   - **Measured** on the 2,000 CFPB texts and the 21,980 complaints in the source shard that carry them: drawing by weight took 53–94 % fewer labels than texts at random, and came within 13 % fewer to 67 % more of drawing the complaints themselves. The texts' own share held the weighted truth in 4 % of draws; copies counted as labelled rows, in 46 %.
-- **Not built.** Judging a sample of rows instead of all; choosing a cheaper model per row (Multiple-PPI).
+- **Then built** (#27, [models.md](../phase1/models.md)): several models and labels in one estimate, and the cheapest mix of them.
+  - **The literature.** Multiple-PPI's estimator (Cowen-Breen et al., ICLR 2026) combines whatever samples exist. Multifidelity Monte Carlo (Peherstorfer, Willcox & Gunzburger, SIAM J. Sci. Comput. 2016) gives nested sample sizes in closed form and the rule for which models are worth their cost. Its one-model case is double sampling (Neyman, 1938).
+  - **Measured** on the 2,000 CFPB complaints with Jev (one row per request and 20), Laya and the labels. On 100 million rows, a random sample judged instead of every row cut the cost of ± 2 points by 68–93 %. The combined estimate held 91–100 %, against 90–95 % for PPI++. A second model pays only when far cheaper than the first: Laya would need to cost under $18–71 per million rows, which on this CPU is 93 hours.
+- **Not built.** Routing rows to models one by one (Active Multiple-PPI).
 
 ## What this means for the release
 

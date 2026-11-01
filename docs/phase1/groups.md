@@ -57,7 +57,7 @@ With Jev 1.13 one row per request; the other predictors are in the report.
 
 ## How this relates to recent work
 
-- **Multiple-PPI** (Cowen-Breen et al., ICLR 2026) splits a budget across several predictors of different cost and gold labels. As the budget grows, it moves from one cheap model to combinations. pgdocket judges every row with one model and spends the budget on labels. Choosing which model judges which rows is that paper's question, not built here.
+- **Multiple-PPI** (Cowen-Breen et al., ICLR 2026) splits a budget across several predictors of different cost and gold labels. As the budget grows, it moves from one cheap model to combinations. pgdocket judges every row with one model and spends the budget on labels. Choosing which model judges which rows is that paper's question, built since as `estimate --with` ([several models](models.md)).
 - **Allocating human oversight** (Ye, Lyu & Tao, 2026) allocates labels across many AI-assisted segments with PPI. Its Neyman square-root rule uses each segment's rectification difficulty, with an upper-confidence-bound policy while the difficulties are unknown. The pilot-then-plan rounds here are the simple two-stage version, with the intervals checked by simulation.
 - **ABae** (Kang et al., 2021) stratifies by a cheap proxy to answer aggregates with expensive predicates, including GROUP BY. It samples the expensive predicate; pgdocket's expensive step is the human label.
 - **Semantic query engines** choose models per operator for cost and quality: Abacus in Palimpzest (Russo et al., 2026), Cortex AISQL's proxy-then-oracle cascades (Liskowski et al., 2026), and online aggregation with stratified sampling (OLLA, Hui et al., 2026). They report quality on benchmarks, not an interval for each group of a user's query from their own labels.
@@ -68,9 +68,7 @@ With Jev 1.13 one row per request; the other predictors are in the report.
 - **A group that only just reaches the floor by chance is less reliable than stated.** With 400 labels drawn across the table, 2020 (145 complaints) reached 10 debt-collection labels in only 31–35 of 500 draws. Its intervals in those draws held 86–90 % of the time: the draws that got there had more positives. Planning each group's labels up front avoids this.
 - **Normal intervals**, as in `estimate`. Tiny groups are labelled whole and reported exactly.
 - **Built since:** weighted queries, and rows counted several times by a join (`--weight`, #26): rows drawn by weight. See [weighted shares](weights.md).
-- **Not built.**
-  - Choosing a cheaper model for some rows (Multiple-PPI).
-  - Judging only a sample of rows when the statistic alone is wanted.
+- **Built since:** several models and labels in one estimate, judging a sample of rows instead of all, and the cheapest mix of them (`--with`, `backfill --sample`, #27). See [several models](models.md).
 
 ## Reproduce
 

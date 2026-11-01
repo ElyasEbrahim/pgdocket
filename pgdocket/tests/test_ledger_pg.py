@@ -877,3 +877,85 @@ def test_estimate_weight_reads_rows_drawn_by_weight_back(env, capsys):
     with pytest.raises(SystemExit) as e:
         cli.main(["estimate", "--dsn", env["owner"], "cases", "--weight", "amout", "--answer", "billing"])
     assert "amout" in str(e.value) and "--weight" in str(e.value)
+
+
+def test_estimate_with_two_versions_reads_nested_samples_from_the_ledger(env, capsys):
+    """A cheap model on every row and a second version on a sample, with labels inside it (#27): `backfill --sample`
+    takes the shared order, labelled rows first; the SQL sums are those `multi.pattern_stats` computes from the rows;
+    `estimate --with` reports the estimate and the cheapest mix, and `--draw` writes the next labels in the order."""
+    import numpy as np
+
+    from pgdocket import cli, groups, multi
+    from pgdocket.tests.fakes import FakeSystemOne
+    rng = np.random.default_rng(27)
+    teams, N = ["billing", "technical", "sales"], 1200
+    team = rng.choice(teams, N, p=[0.3, 0.5, 0.2])
+    said = np.where(rng.random(N) < 0.8, team, rng.choice(teams, N))
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.claims (id int PRIMARY KEY, body text, team text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.claims VALUES (%s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i])) for i in range(N)])
+    ledger.create(env["owner"], "claims", "shop.claims", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)            # v1 judges every row
+    ledger.import_labels(env["owner"], "claims", column="team", sample=150, seed="4")
+    v2, _ = ledger.revise(env["owner"], "claims", model="fake-2")
+    FakeSystemOne.answer_override = {"s": "b"}               # v2 calls sales tickets billing
+    try:
+        cli.main(["backfill", "--dsn", env["owner"], "claims", "--version", str(v2), "--sample", "400"])
+        assert "400 rows queued for v2" in capsys.readouterr().out
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    finally:
+        FakeSystemOne.answer_override = {}
+    with psycopg.connect(env["owner"]) as c:
+        d = groups.decision(c, "claims")
+        rows = c.execute(
+            "SELECT s.id::text, CASE WHEN l.sampling = 'random' THEN (l.label = 'billing')::int END, "
+            "(j1.value = 'billing')::int, (j2.value = 'billing')::int FROM shop.claims s "
+            "LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.id::text "
+            "LEFT JOIN docket.current c1 ON c1.decision_id = %(d)s AND c1.version = 1 AND c1.row_key = s.id::text "
+            "LEFT JOIN docket.judgment j1 ON j1.id = c1.judgment_id "
+            "LEFT JOIN docket.current c2 ON c2.decision_id = %(d)s AND c2.version = %(v)s AND c2.row_key = s.id::text "
+            "LEFT JOIN docket.judgment j2 ON j2.id = c2.judgment_id", {"d": d["id"], "v": v2}).fetchall()
+        got, n = multi.ledger_stats(c, d, [1, v2], "billing")
+        r = multi.estimate_with(c, "claims", "billing", [v2], target=0.05, label_cost=0.5)
+    col = lambda i: [np.nan if x[i] is None else x[i] for x in rows]
+    want = multi.pattern_stats(["labels", "v1", f"v{v2}"], [col(1), col(2), col(3)])
+    key = lambda p: p["mask"]
+    assert n == N and sorted(got["patterns"], key=key) == sorted(want["patterns"], key=key)
+    labelled = {x[0] for x in rows if x[1] is not None}
+    sample = {x[0] for x in rows if x[3] is not None}
+    assert len(labelled) == 150 and len(sample) == 400 and labelled <= sample              # labels inside the sample
+    truth = float(np.mean(team == "billing"))
+    est = r["estimate"]
+    assert est["reliable"] and est["ci"][0] <= truth <= est["ci"][1] and est["used"] == ["labels", "v1", f"v{v2}"]
+    assert {v["version"]: v["rows"] for v in r["versions"]} == {1: N, v2: 400}
+    assert r["plan"][0]["cost"] <= min(p["cost"] for p in r["plan"])
+
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"next-{uuid.uuid4().hex[:6]}.csv")
+    cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", str(v2),
+              "--target", "0.03", "--label-cost", "0.5", "--draw", path])
+    out = capsys.readouterr().out
+    assert "estimate, every source together" in out and "the cheapest mix for ±3.0 points" in out
+    assert f"label claims --csv {path} --random" in out
+    with open(path, newline="") as f:
+        sheet = list(csv.DictReader(f))
+    assert sheet and {s["drawn"] for s in sheet} == {"at random"} and not {s["key"] for s in sheet} & labelled
+    with psycopg.connect(env["owner"]) as c:
+        first = [k for (k,) in c.execute("SELECT s.id::text FROM shop.claims s LEFT JOIN docket.label l "
+                                         "ON l.decision_id = %s AND l.row_key = s.id::text AND l.sampling = 'random' "
+                                         "WHERE l.row_key IS NULL ORDER BY md5(s.id::text || ':j:1') LIMIT %s",
+                                         (d["id"], len(sheet)))]
+    assert [s["key"] for s in sheet] == first                     # the next in the order: inside every later sample
+    for s in sheet:
+        s["label"] = str(team[int(s["key"]) - 1])
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(sheet[0]))
+        w.writeheader()
+        w.writerows(sheet)
+    ledger.import_labels(env["owner"], "claims", csv_path=path, random=True)
+    assert ledger.estimate(env["owner"], "claims", "billing")[0]["labels"] == 150 + len(sheet)
+
+    with pytest.raises(SystemExit) as e:
+        cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", str(v2), "--by", "team"])
+    assert "doesn't combine with --by" in str(e.value)

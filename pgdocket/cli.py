@@ -9,7 +9,7 @@
   pgdocket label      import human labels (from a column or a key,label CSV)
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
   pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group;
-                      --weight: a share of a sum, or of a join's rows
+                      --weight: a share of a sum, or of a join's rows; --with: several models and labels together
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
@@ -141,6 +141,13 @@ def main(argv=None):
     es.add_argument("--weight", metavar="EXPR",
                     help="count each row by this SQL expression on the source row s: a column to sum, or how often a join "
                          "uses the row, e.g. \"(SELECT count(*) FROM orders o WHERE o.ticket_id = s.id)\"")
+    es.add_argument("--with", dest="with_", metavar="V[,V]",
+                    help="also use these versions' answers (e.g. a cheaper or a better model): one estimate from them all")
+    es.add_argument("--label-cost", type=float, metavar="USD",
+                    help="with --with --target: what one label costs, to find the cheapest mix of labels and models")
+    es.add_argument("--cost", action="append", default=[], metavar="V=USD",
+                    help="with --label-cost: a version's cost per row (default: its tokens at its backend's price; free "
+                         "backends 0), e.g. 3=0.00005 for the hardware a local model runs on")
     es.add_argument("--target", type=float, metavar="SHARE",
                     help="with --by or --weight: how many more labels each group needs for an interval of ± SHARE (e.g. 0.02)")
     es.add_argument("--draw", metavar="CSV",
@@ -210,6 +217,10 @@ def main(argv=None):
     dsn_arg(bf)
     bf.add_argument("name")
     bf.add_argument("--version", type=int, help="default: every version that isn't retired")
+    bf.add_argument("--sample", type=int, metavar="N",
+                    help="judge only the first N rows of a shared random order (labelled rows first), as estimate "
+                         "--with plans: versions' samples and the labels then nest")
+    bf.add_argument("--seed", default="1", help="with --sample: the order; the same for every version and the labels")
     pr = sub.add_parser("promote", help="make a shadow version active")
     dsn_arg(pr)
     pr.add_argument("name")
@@ -305,6 +316,8 @@ def _ledger_command(a):
         if a.harden:
             print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for erase-and-check; until the worker has "
                   "checked a row, `auto` is false for it")
+    elif a.cmd == "estimate" and a.with_:
+        _estimate_with(a, ledger)
     elif a.cmd == "estimate" and (a.by or a.weight):
         _estimate_by(a, ledger)
     elif a.cmd == "estimate":
@@ -349,6 +362,14 @@ def _ledger_command(a):
               f"every row is queued for v{ver}; when the worker is done: pgdocket compare {a.name} {ver} --sample 200")
     elif a.cmd == "compare":
         _compare(a, ledger)
+    elif a.cmd == "backfill" and a.sample:
+        from . import groups, multi
+        with ledger.connect(a.dsn) as conn:
+            d = groups.decision(conn, a.name)
+            v = a.version or conn.execute("SELECT active_version FROM docket.decision WHERE id = %s", (d["id"],)).fetchone()[0]
+            n = multi.backfill_sample(conn, d, v, a.sample, a.seed)
+        print(f"{n:,} rows queued for v{v}: with what it judged already, the first {a.sample:,} of the order "
+              f"(seed {a.seed})")
     elif a.cmd == "backfill":
         n = ledger.backfill(a.dsn, a.name, a.version)
         print(f"{n:,} rows queued")
@@ -385,6 +406,38 @@ def _ledger_command(a):
         for r in rows:
             print(f"{r['name']:<24} v{r['version']}  judged {r['judged']:>8,}  queued {r['queued']:>6,}  errors {r['errors']:>4,}  "
                   f"labels {r['labels']:>5,}  tokens {r['tokens']:>12,}  {'calibrated' if r['calibrated'] else 'not calibrated'}")
+
+
+def _estimate_with(a, ledger):
+    from . import groups, multi
+    if a.by or a.weight:
+        sys.exit("--with doesn't combine with --by or --weight yet: estimate the whole scope (--where narrows it)")
+    if a.draw and not (a.target and a.label_cost is not None):
+        sys.exit("--draw writes the labels the cheapest mix needs: add --target and --label-cost")
+    try:
+        wanted = [int(v) for v in a.with_.split(",") if v.strip()]
+        costs = {int(k): float(v) for k, v in (c.split("=", 1) for c in a.cost)}
+    except ValueError:
+        sys.exit("--with takes version numbers (2 or 2,3) and --cost takes V=USD (3=0.00005)")
+    import psycopg
+    with ledger.connect(a.dsn) as conn:
+        try:
+            r = multi.estimate_with(conn, a.name, a.answer, wanted, a.where, a.level, a.target, a.label_cost, costs)
+        except psycopg.Error as e:
+            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--where names columns of the source table)")
+        print(multi.render(r))
+        if r["plan"]:
+            best = r["plan"][0]
+            for n, m in best["more_rows"].items():
+                if m:
+                    print(f"  pgdocket backfill {a.name} --version {n[1:]} --sample {best['rows'][n]}"
+                          + (f" --seed {a.seed}" if a.seed != "1" else ""))
+            if a.draw and best["more_labels"]:
+                d = groups.decision(conn, a.name)
+                keys = multi.draw_labels(conn, d, best["more_labels"], a.where, a.seed)
+                n = groups.export(conn, d, None, [(k, None, "at random") for k in keys], a.draw)
+                print(f"{n} rows to label written to {a.draw}, blind (no AI answer): the next in the shared order. "
+                      f"Fill in `label`, then:\n  pgdocket label {a.name} --csv {a.draw} --random")
 
 
 def _estimate_by(a, ledger):

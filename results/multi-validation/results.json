@@ -1,0 +1,1836 @@
+{
+  "rows": 2000,
+  "cost": {
+    "Jev, 1 row per request": 2.3705451e-05,
+    "Jev, 20 rows per request": 1.3192851000000001e-05,
+    "Laya": 0.0
+  },
+  "seconds": {
+    "Jev, 1 row per request": 0.030441974878311157,
+    "Jev, 20 rows per request": 0.0017626127004623413,
+    "Laya": 0.33612355506420133
+  },
+  "trials": 300,
+  "answers": {
+    "credit reporting": {
+      "share": 0.624,
+      "rho": {
+        "Jev, 1 row per request": 0.7080434813166411,
+        "Jev, 20 rows per request": 0.6620747497002999,
+        "Laya": 0.566035052255192
+      },
+      "agree": {
+        "Jev, 1 row per request|Jev, 20 rows per request": 0.7844788066934552,
+        "Jev, 1 row per request|Laya": 0.6513271547827675,
+        "Jev, 20 rows per request|Laya": 0.5871914946904168
+      },
+      "coverage": {
+        "150 labels, 3,000 rows judged": {
+          "ppi": {
+            "coverage": 0.91,
+            "half_width": 0.055685672210286266,
+            "draws": 300
+          },
+          "jev sample": {
+            "coverage": 0.92,
+            "half_width": 0.05656593008123212,
+            "draws": 300
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.91,
+            "half_width": 0.05454087065393877,
+            "draws": 300
+          },
+          "independent samples": {
+            "coverage": 0.9133333333333333,
+            "half_width": 0.07752942843710892,
+            "draws": 300
+          }
+        },
+        "400 labels, 20,000 rows judged": {
+          "ppi": {
+            "coverage": 0.9433333333333334,
+            "half_width": 0.03394467169326109,
+            "draws": 300
+          },
+          "jev sample": {
+            "coverage": 0.9433333333333334,
+            "half_width": 0.03415231988585264,
+            "draws": 300
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.95,
+            "half_width": 0.033266536879747795,
+            "draws": 300
+          },
+          "independent samples": {
+            "coverage": 0.9366666666666666,
+            "half_width": 0.04596638217985711,
+            "draws": 300
+          }
+        }
+      },
+      "plans": {
+        "10000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 316.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 316.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 563.5,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "10000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 1267.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 1267.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 2254.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "10000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 5068.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1267,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 5068.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1267,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 9016.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "1000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1135,
+            "rows": {
+              "jev": 116827
+            },
+            "cost": 286.519436723977,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1135,
+            "more_rows": {
+              "jev": 116827
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1125,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 304.955451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1125,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 563.5,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "1000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1130,
+            "rows": {
+              "jev": 232525
+            },
+            "cost": 1135.512109993775,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1130,
+            "more_rows": {
+              "jev": 232525
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1125,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 1148.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1125,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 2254.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "1000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1127,
+            "rows": {
+              "jev": 463919
+            },
+            "cost": 4518.997409122469,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1127,
+            "more_rows": {
+              "jev": 463919
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1125,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 4523.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1125,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 9016.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "100000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1135,
+            "rows": {
+              "jev": 116827
+            },
+            "cost": 286.519436723977,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1135,
+            "more_rows": {
+              "jev": 116827
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1124,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2651.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1124,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 563.5,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "100000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1130,
+            "rows": {
+              "jev": 232525
+            },
+            "cost": 1135.512109993775,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1130,
+            "more_rows": {
+              "jev": 232525
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1124,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 3494.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1124,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 2254.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        },
+        "100000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 1127,
+            "rows": {
+              "jev": 463919
+            },
+            "cost": 4518.997409122469,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1127,
+            "more_rows": {
+              "jev": 463919
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 1124,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 6866.5451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 1124,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 2254,
+            "rows": {},
+            "cost": 9016.0,
+            "models": [],
+            "more_labels": 2254,
+            "more_rows": {}
+          }
+        }
+      },
+      "delivered": {
+        "plan": {
+          "kind": "models on samples",
+          "labels": 1130,
+          "rows": {
+            "jev": 200000
+          },
+          "cost": 1134.7410902,
+          "models": [
+            "jev"
+          ],
+          "more_labels": 1130,
+          "more_rows": {
+            "jev": 200000
+          }
+        },
+        "coverage": 0.95,
+        "half_width": 0.02002940233801682,
+        "within_target": 0.97,
+        "draws": 100
+      },
+      "worth": {
+        "Jev, 20 rows per request": 0.00016498395351292007,
+        "Laya": 4.197827157068504e-05
+      }
+    },
+    "debt collection": {
+      "share": 0.1195,
+      "rho": {
+        "Jev, 1 row per request": 0.6005202004312078,
+        "Jev, 20 rows per request": 0.5567118723167706,
+        "Laya": 0.39660563794657405
+      },
+      "agree": {
+        "Jev, 1 row per request|Jev, 20 rows per request": 0.7148477680967531,
+        "Jev, 1 row per request|Laya": 0.4880975308491941,
+        "Jev, 20 rows per request|Laya": 0.428651019093454
+      },
+      "coverage": {
+        "150 labels, 3,000 rows judged": {
+          "ppi": {
+            "coverage": 0.9421768707482994,
+            "half_width": 0.04191910437595622,
+            "draws": 294
+          },
+          "jev sample": {
+            "coverage": 0.9489795918367347,
+            "half_width": 0.04273805933056643,
+            "draws": 294
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.9455782312925171,
+            "half_width": 0.041885034440832164,
+            "draws": 294
+          },
+          "independent samples": {
+            "coverage": 0.95578231292517,
+            "half_width": 0.05231377931177642,
+            "draws": 294
+          }
+        },
+        "400 labels, 20,000 rows judged": {
+          "ppi": {
+            "coverage": 0.95,
+            "half_width": 0.02531071936234086,
+            "draws": 300
+          },
+          "jev sample": {
+            "coverage": 0.95,
+            "half_width": 0.025489592062355158,
+            "draws": 300
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.95,
+            "half_width": 0.025137627676141458,
+            "draws": 300
+          },
+          "independent samples": {
+            "coverage": 0.94,
+            "half_width": 0.03177483449624107,
+            "draws": 300
+          }
+        }
+      },
+      "plans": {
+        "10000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 167.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 167.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 252.75,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "10000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 671.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 671.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 1011.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "10000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 2684.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 671,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 2684.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 671,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 4044.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "1000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 651,
+            "rows": {
+              "jev": 50194
+            },
+            "cost": 163.939871407494,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 651,
+            "more_rows": {
+              "jev": 50194
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 185.455451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 252.75,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "1000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 649,
+            "rows": {
+              "jev": 100024
+            },
+            "cost": 651.371114030824,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 649,
+            "more_rows": {
+              "jev": 100024
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 670.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 1011.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "1000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 648,
+            "rows": {
+              "jev": 199682
+            },
+            "cost": 2596.733551866582,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 648,
+            "more_rows": {
+              "jev": 199682
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 2611.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 4044.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "100000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 651,
+            "rows": {
+              "jev": 50194
+            },
+            "cost": 163.939871407494,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 651,
+            "more_rows": {
+              "jev": 50194
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2532.2951000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 252.75,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "100000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 649,
+            "rows": {
+              "jev": 100024
+            },
+            "cost": 651.371114030824,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 649,
+            "more_rows": {
+              "jev": 100024
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 3017.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 1011.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        },
+        "100000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 648,
+            "rows": {
+              "jev": 199682
+            },
+            "cost": 2596.733551866582,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 648,
+            "more_rows": {
+              "jev": 199682
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 647,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 4958.5451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 647,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 1011,
+            "rows": {},
+            "cost": 4044.0,
+            "models": [],
+            "more_labels": 1011,
+            "more_rows": {}
+          }
+        }
+      },
+      "delivered": {
+        "plan": {
+          "kind": "models on samples",
+          "labels": 647,
+          "rows": {
+            "jev": 99741
+          },
+          "cost": 649.364405388191,
+          "models": [
+            "jev"
+          ],
+          "more_labels": 647,
+          "more_rows": {
+            "jev": 99741
+          }
+        },
+        "coverage": 0.93,
+        "half_width": 0.01999035340761072,
+        "within_target": 0.8,
+        "draws": 100
+      },
+      "worth": {
+        "Jev, 20 rows per request": 0.0001449212420599564,
+        "Laya": 1.833866754546236e-05
+      }
+    },
+    "credit card": {
+      "share": 0.071,
+      "rho": {
+        "Jev, 1 row per request": 0.5736686697146525,
+        "Jev, 20 rows per request": 0.5312039855804142,
+        "Laya": 0.4281651171744164
+      },
+      "agree": {
+        "Jev, 1 row per request|Jev, 20 rows per request": 0.7627595191881211,
+        "Jev, 1 row per request|Laya": 0.5291651500304767,
+        "Jev, 20 rows per request|Laya": 0.500172407009008
+      },
+      "coverage": {
+        "150 labels, 3,000 rows judged": {
+          "ppi": {
+            "coverage": 0.9510869565217391,
+            "half_width": 0.03573123825242252,
+            "draws": 184
+          },
+          "jev sample": {
+            "coverage": 0.9510869565217391,
+            "half_width": 0.036815193831711536,
+            "draws": 184
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.9510869565217391,
+            "half_width": 0.03579072629012126,
+            "draws": 184
+          },
+          "independent samples": {
+            "coverage": 0.9945652173913043,
+            "half_width": 0.0447302220480585,
+            "draws": 184
+          }
+        },
+        "400 labels, 20,000 rows judged": {
+          "ppi": {
+            "coverage": 0.9466666666666667,
+            "half_width": 0.02070246788961147,
+            "draws": 300
+          },
+          "jev sample": {
+            "coverage": 0.9566666666666667,
+            "half_width": 0.020955451667476113,
+            "draws": 300
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.9533333333333334,
+            "half_width": 0.020523816537640814,
+            "draws": 300
+          },
+          "independent samples": {
+            "coverage": 0.95,
+            "half_width": 0.02533284859006638,
+            "draws": 300
+          }
+        }
+      },
+      "plans": {
+        "10000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 108.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 108.98705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 158.5,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "10000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 435.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 435.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 634.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "10000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 1740.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 435,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 1740.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 435,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 2536.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "1000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 428,
+            "rows": {
+              "jev": 30776
+            },
+            "cost": 107.729558959976,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 428,
+            "more_rows": {
+              "jev": 30776
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 426,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 130.205451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 426,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 158.5,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "1000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 427,
+            "rows": {
+              "jev": 61342
+            },
+            "cost": 428.454139775242,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 427,
+            "more_rows": {
+              "jev": 61342
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 426,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 449.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 426,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 634.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "1000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 426,
+            "rows": {
+              "jev": 122475
+            },
+            "cost": 1706.903325111225,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 426,
+            "more_rows": {
+              "jev": 122475
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 426,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 1727.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 426,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 2536.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "100000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 428,
+            "rows": {
+              "jev": 30776
+            },
+            "cost": 107.729558959976,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 428,
+            "more_rows": {
+              "jev": 30776
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 425,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2476.7951000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 425,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 158.5,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "100000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 427,
+            "rows": {
+              "jev": 61342
+            },
+            "cost": 428.454139775242,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 427,
+            "more_rows": {
+              "jev": 61342
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 425,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2795.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 425,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 634.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        },
+        "100000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 426,
+            "rows": {
+              "jev": 122475
+            },
+            "cost": 1706.903325111225,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 426,
+            "more_rows": {
+              "jev": 122475
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 425,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 4070.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 425,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 634,
+            "rows": {},
+            "cost": 2536.0,
+            "models": [],
+            "more_labels": 634,
+            "more_rows": {}
+          }
+        }
+      },
+      "delivered": {
+        "plan": {
+          "kind": "models on samples",
+          "labels": 425,
+          "rows": {
+            "jev": 61087
+          },
+          "cost": 426.448094885237,
+          "models": [
+            "jev"
+          ],
+          "more_labels": 425,
+          "more_rows": {
+            "jev": 61087
+          }
+        },
+        "coverage": 0.96,
+        "half_width": 0.02008307449901135,
+        "within_target": 0.73,
+        "draws": 100
+      },
+      "worth": {
+        "Jev, 20 rows per request": 0.00014257085322281002,
+        "Laya": 2.981271411603068e-05
+      }
+    },
+    "mortgage": {
+      "share": 0.055,
+      "rho": {
+        "Jev, 1 row per request": 0.8810115013681525,
+        "Jev, 20 rows per request": 0.8015396076637883,
+        "Laya": 0.7622056885278307
+      },
+      "agree": {
+        "Jev, 1 row per request|Jev, 20 rows per request": 0.8798591922773382,
+        "Jev, 1 row per request|Laya": 0.795840249125203,
+        "Jev, 20 rows per request|Laya": 0.7558511277679504
+      },
+      "coverage": {
+        "150 labels, 3,000 rows judged": {
+          "ppi": {
+            "coverage": 0.9484536082474226,
+            "half_width": 0.020000092890212835,
+            "draws": 97
+          },
+          "jev sample": {
+            "coverage": 0.9896907216494846,
+            "half_width": 0.02257454057264917,
+            "draws": 97
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 1.0,
+            "half_width": 0.02089159714035414,
+            "draws": 97
+          },
+          "independent samples": {
+            "coverage": 0.9896907216494846,
+            "half_width": 0.043285412489492706,
+            "draws": 97
+          }
+        },
+        "400 labels, 20,000 rows judged": {
+          "ppi": {
+            "coverage": 0.8966666666666666,
+            "half_width": 0.01108215424119553,
+            "draws": 300
+          },
+          "jev sample": {
+            "coverage": 0.9466666666666667,
+            "half_width": 0.011648654470484795,
+            "draws": 300
+          },
+          "jev sample + laya everywhere": {
+            "coverage": 0.94,
+            "half_width": 0.011061950000111374,
+            "draws": 300
+          },
+          "independent samples": {
+            "coverage": 0.9133333333333333,
+            "half_width": 0.02243727799091696,
+            "draws": 300
+          }
+        }
+      },
+      "plans": {
+        "10000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 45.73705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 45.73705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 125.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "10000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 182.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 182.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 500.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "10000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 728.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 10000
+            },
+            "cost": 728.23705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 10000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 2000.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "1000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 33551
+            },
+            "cost": 45.942633343901,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 33551
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 69.205451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 125.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "1000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 67102
+            },
+            "cost": 182.885266687802,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 67102
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 205.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 500.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "1000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 134204
+            },
+            "cost": 729.770533375604,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 134204
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 1000000
+            },
+            "cost": 751.705451,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 1000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 2000.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "100000000|0.25": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 33551
+            },
+            "cost": 45.942633343901,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 33551
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2416.0451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 125.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "100000000|1.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 67102
+            },
+            "cost": 182.885266687802,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 67102
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 2552.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 500.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        },
+        "100000000|4.0": {
+          "best": {
+            "kind": "models on samples",
+            "labels": 182,
+            "rows": {
+              "jev-20": 134204
+            },
+            "cost": 729.770533375604,
+            "models": [
+              "jev-20"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev-20": 134204
+            }
+          },
+          "every_row": {
+            "kind": "every row",
+            "labels": 182,
+            "rows": {
+              "jev": 100000000
+            },
+            "cost": 3098.5451000000003,
+            "models": [
+              "jev"
+            ],
+            "more_labels": 182,
+            "more_rows": {
+              "jev": 100000000
+            }
+          },
+          "labels_alone": {
+            "kind": "labels alone",
+            "labels": 500,
+            "rows": {},
+            "cost": 2000.0,
+            "models": [],
+            "more_labels": 500,
+            "more_rows": {}
+          }
+        }
+      },
+      "delivered": {
+        "plan": {
+          "kind": "models on samples",
+          "labels": 181,
+          "rows": {
+            "jev-20": 66738
+          },
+          "cost": 181.880464490038,
+          "models": [
+            "jev-20"
+          ],
+          "more_labels": 181,
+          "more_rows": {
+            "jev-20": 66738
+          }
+        },
+        "coverage": 0.98,
+        "half_width": 0.022491707205557872,
+        "within_target": 0.3,
+        "draws": 50
+      },
+      "worth": {
+        "Jev, 20 rows per request": 0.00011389807146238894,
+        "Laya": 7.054397607075256e-05
+      }
+    }
+  }
+}

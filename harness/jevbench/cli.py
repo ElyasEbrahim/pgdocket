@@ -107,6 +107,7 @@ def main(argv=None):
     sub.add_parser("backends")
     sub.add_parser("groupvalidate")
     sub.add_parser("weightvalidate")
+    sub.add_parser("multivalidate")
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
@@ -202,6 +203,9 @@ def main(argv=None):
     elif args.cmd == "weightvalidate":
         from . import weightvalidate
         print("report:", weightvalidate.run() + "/report.md")
+    elif args.cmd == "multivalidate":
+        from . import multivalidate
+        print("report:", multivalidate.run() + "/report.md")
     elif args.cmd == "steer":
         from . import steer
         print("report:", steer.run(args.max_usd, backend=args.backend, model=args.model, out=args.out) + "/report.md")
