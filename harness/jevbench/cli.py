@@ -108,6 +108,9 @@ def main(argv=None):
     sub.add_parser("groupvalidate")
     sub.add_parser("weightvalidate")
     sub.add_parser("multivalidate")
+    mg = sub.add_parser("multigroupvalidate")
+    mg.add_argument("--trials", type=int, default=300)
+    mg.add_argument("--runs", type=int, default=100)
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
@@ -206,6 +209,9 @@ def main(argv=None):
     elif args.cmd == "multivalidate":
         from . import multivalidate
         print("report:", multivalidate.run() + "/report.md")
+    elif args.cmd == "multigroupvalidate":
+        from . import multigroupvalidate
+        print("report:", multigroupvalidate.run(args.trials, args.runs) + "/report.md")
     elif args.cmd == "steer":
         from . import steer
         print("report:", steer.run(args.max_usd, backend=args.backend, model=args.model, out=args.out) + "/report.md")

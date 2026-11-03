@@ -957,5 +957,99 @@ def test_estimate_with_two_versions_reads_nested_samples_from_the_ledger(env, ca
     assert ledger.estimate(env["owner"], "claims", "billing")[0]["labels"] == 150 + len(sheet)
 
     with pytest.raises(SystemExit) as e:
-        cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", str(v2), "--by", "team"])
-    assert "doesn't combine with --by" in str(e.value)
+        cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", str(v2), "--weight", "1"])
+    assert "doesn't combine with --weight" in str(e.value)
+
+
+def test_estimate_with_by_group_queues_each_groups_sample_and_draws_its_labels(env, capsys):
+    """--with and --by together (#28): each group from its own labels and versions' samples. `--queue` has a version
+    judge the first rows of each group's shared order, `--draw` writes the next labels in each group (a pilot where a
+    group has too few), and once they are labelled (`label --stratified`) every group's labels lie inside its sample.
+    The SQL sums by group are those `multi.pattern_stats` computes from the rows."""
+    import numpy as np
+
+    from pgdocket import cli, groups, multi
+    from pgdocket.tests.fakes import FakeSystemOne
+    rng = np.random.default_rng(28)
+    teams, N = ["billing", "technical", "sales"], 1200
+    site = rng.choice(["north", "south", "west"], N, p=[0.5, 0.35, 0.15])
+    team = rng.choice(teams, N, p=[0.3, 0.5, 0.2])
+    said = np.where(rng.random(N) < 0.8, team, rng.choice(teams, N))
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.tix (id int PRIMARY KEY, body text, team text, site text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.tix VALUES (%s, %s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i]), str(site[i])) for i in range(N)])
+    FakeSystemOne.answer_override = {"s": "b"}               # v1, the active version, calls sales tickets billing
+    try:
+        ledger.create(env["owner"], "tix", "shop.tix", "id", ["body"], _spec(env["url"]))
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    finally:
+        FakeSystemOne.answer_override = {}
+    ledger.import_labels(env["owner"], "tix", column="team", sample=100, seed="4")
+    v2, _ = ledger.revise(env["owner"], "tix", model="fake-2")
+    cli.main(["backfill", "--dsn", env["owner"], "tix", "--version", str(v2), "--sample", "300"])
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    capsys.readouterr()
+    with psycopg.connect(env["owner"]) as c:
+        d = groups.decision(c, "tix")
+        r = multi.estimate_with(c, "tix", "billing", [v2], target=0.08, label_cost=0.5, costs={v2: 0.01}, by="site")
+    plans = {x["g"]: x["plan"][0] for x in r["groups"]}
+    assert set(plans) == {"north", "south", "west"} and plans["west"]["kind"] == "pilot"
+    assert plans["north"]["models"][0] == f"v{v2}" and plans["north"]["rows"][f"v{v2}"] < 600   # v2 on a sample
+    more = sum(p["more_rows"].get(f"v{v2}", 0) for p in plans.values())
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"next-{uuid.uuid4().hex[:6]}.csv")
+    cli.main(["estimate", "--dsn", env["owner"], "tix", "--answer", "billing", "--with", str(v2), "--by", "site",
+              "--target", "0.08", "--label-cost", "0.5", "--cost", f"{v2}=0.01", "--queue", "--draw", path])
+    out = capsys.readouterr().out
+    assert "by site" in out and "the cheapest mix for ±8.0 points in every group" in out and "pilot" in out
+    assert f"{more:,} rows queued: v{v2}'s sample in each site" in out and more > 0
+    assert f"label tix --csv {path} --stratified site" in out
+    with open(path, newline="") as f:
+        sheet = list(csv.DictReader(f))
+    assert {s["drawn"] for s in sheet} == {"at random"}
+    assert {g: sum(s["site"] == g for s in sheet) for g in plans} == {g: p["more_labels"] for g, p in plans.items()}
+    with psycopg.connect(env["owner"]) as c:
+        for g in plans:                                       # the next rows of each group's order
+            first = [k for (k,) in c.execute(
+                "SELECT s.id::text FROM shop.tix s LEFT JOIN docket.label l ON l.decision_id = %s "
+                "AND l.row_key = s.id::text WHERE s.site = %s AND l.row_key IS NULL ORDER BY md5(s.id::text || ':j:1') "
+                "LIMIT %s", (d["id"], g, plans[g]["more_labels"]))]
+            assert [s["key"] for s in sheet if s["site"] == g] == first
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    for s in sheet:
+        s["label"] = str(team[int(s["key"]) - 1])
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(sheet[0]))
+        w.writeheader()
+        w.writerows(sheet)
+    ledger.import_labels(env["owner"], "tix", csv_path=path, stratified="site")
+
+    with psycopg.connect(env["owner"]) as c:
+        rows = c.execute(
+            "SELECT s.id::text, s.site, CASE WHEN l.sampling = 'random' OR (l.sampling = 'stratified' AND "
+            "'site' = ANY(l.strata)) THEN (l.label = 'billing')::int END, (j1.value = 'billing')::int, "
+            "(j2.value = 'billing')::int FROM shop.tix s "
+            "LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.id::text "
+            "LEFT JOIN docket.current c1 ON c1.decision_id = %(d)s AND c1.version = 1 AND c1.row_key = s.id::text "
+            "LEFT JOIN docket.judgment j1 ON j1.id = c1.judgment_id "
+            "LEFT JOIN docket.current c2 ON c2.decision_id = %(d)s AND c2.version = %(v)s AND c2.row_key = s.id::text "
+            "LEFT JOIN docket.judgment j2 ON j2.id = c2.judgment_id", {"d": d["id"], "v": v2}).fetchall()
+        got = multi.ledger_stats(c, d, [1, v2], "billing", by="site")
+        r = multi.estimate_with(c, "tix", "billing", [v2], target=0.08, label_cost=0.5, costs={v2: 0.01}, by="site")
+    key = lambda p: p["mask"]
+    for g, st, n in got:
+        mine = [x for x in rows if x[1] == g]
+        col = lambda i: [np.nan if x[i] is None else x[i] for x in mine]
+        want = multi.pattern_stats(["labels", "v1", f"v{v2}"], [col(2), col(3), col(4)])
+        assert n == len(mine) and sorted(st["patterns"], key=key) == sorted(want["patterns"], key=key)
+        labelled = {x[0] for x in mine if x[2] is not None}
+        assert labelled <= {x[0] for x in mine if x[4] is not None}              # labels inside v2's sample
+        assert len(labelled) >= (groups.PILOT if g == "west" else plans[g]["labels"])
+    for x in r["groups"]:
+        truth = float(np.mean(team[site == x["g"]] == "billing"))
+        e = x["estimate"]
+        assert e["theta"] is not None and e["ci"][0] - 0.02 <= truth <= e["ci"][1] + 0.02
+    whole = float(np.mean(team == "billing"))
+    assert r["overall"]["ci"][0] - 0.02 <= whole <= r["overall"]["ci"][1] + 0.02
+    assert ledger.estimate(env["owner"], "tix", "billing")[0]["labels"] == 100        # plain estimates: random only

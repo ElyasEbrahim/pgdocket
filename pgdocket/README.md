@@ -198,6 +198,17 @@ pgdocket label complaints --csv next.csv --random
 - **A second model pays only when it is far cheaper than the first and adds to it.** The plan keeps it only then.
 - **Costs per row** come from the ledger's tokens at TypeSafe's price. Set a price for a free backend's hardware with `--cost V=USD`.
 - **Nesting.** `backfill --sample` and `--draw` take prefixes of one shared random order (labelled rows first), so labels sit inside every version's sample.
+- **A pilot, then a stop.** With fewer than 30 labels the plan is a pilot of 30. Once the interval is within the target, nothing more is needed.
+
+**By group** (`--with V --by COL`): each group's share from its own labels and each version's answers on its rows, and each group's cheapest mix. `--queue` queues each version's sample in every group, and `--draw` writes the next labels in each group:
+
+```bash
+pgdocket estimate complaints --answer "debt collection" --with 2 --by region --target 0.03 --label-cost 1 --queue --draw next.csv
+pgdocket worker                                                     # v2 judges its sample in each region
+pgdocket label complaints --csv next.csv --stratified region
+```
+
+On the CFPB regions, labels drawn within each region cost 49–67 % less than one design drawn across the table for ± 3 points in every region. Adding Jev on a sample to Laya on every row saved a further 11–24 % for three of four answers.
 
 See [docs/phase1/models.md](../docs/phase1/models.md).
 

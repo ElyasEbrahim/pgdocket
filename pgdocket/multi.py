@@ -275,12 +275,27 @@ def _order(d, seed):
         k=sql.Identifier(d["key"]))
 
 
-def ledger_stats(conn, d, versions, answer, where=None):
-    """One pass over the scope: per pattern of sources (a label drawn at random; each version's current answer), the
-    counts and sums `estimate` takes. Returns (stats, rows in scope)."""
+def _counts(by):
+    """When a label is a sample for this estimate: drawn at random, or, by groups, drawn within this column's groups
+    (#25). Parameter: by."""
+    return sql.SQL("l.sampling = 'random' OR (l.sampling = 'stratified' AND %(by)s = ANY(l.strata))" if by
+                   else "l.sampling = 'random'")
+
+
+def _group(by):
+    from .groups import ALL
+    return sql.SQL("s.{}::text").format(sql.Identifier(by)) if by else sql.SQL("{}::text").format(sql.Literal(ALL))
+
+
+def ledger_stats(conn, d, versions, answer, where=None, by=None):
+    """One pass over the scope: per pattern of sources (a label that counts as a sample; each version's current
+    answer), the counts and sums `estimate` takes. Returns (stats, rows in scope); with `by`, a list of
+    (group, stats, rows) for each value of that source column, in order."""
     from .groups import _cond
     noul = d["spec"]["kind"] == "noul"
-    cols, joins = [sql.SQL("CASE WHEN l.sampling = 'random' THEN (l.label = %(ans)s)::int END AS s0")], []
+    cols = [_group(by) + sql.SQL(" AS g"),
+            sql.SQL("CASE WHEN {} THEN (l.label = %(ans)s)::int END AS s0").format(_counts(by))]
+    joins = []
     for i, v in enumerate(versions, 1):
         c, j = sql.Identifier(f"c{i}"), sql.Identifier(f"j{i}")
         joins.append(sql.SQL(" LEFT JOIN docket.current {c} ON {c}.decision_id = %(d)s AND {c}.version = {v} "
@@ -301,22 +316,59 @@ def ledger_stats(conn, d, versions, answer, where=None):
             LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.{k}::text{joins}
             WHERE {cond}
         )
-        SELECT {code} AS code, count(*), {sums}{prods} FROM src GROUP BY 1""").format(
+        SELECT g, {code} AS code, count(*), {sums}{prods} FROM src GROUP BY 1, 2 ORDER BY 1 NULLS LAST""").format(
         cols=sql.SQL(", ").join(cols), table=sql.SQL(d["source"]), k=sql.Identifier(d["key"]),
         joins=sql.SQL("").join(joins), cond=_cond(where), code=code, sums=sql.SQL(", ").join(sums),
         prods=sql.SQL("").join(sql.SQL(", ") + p for p in prods))
-    rows, pats = 0, []
-    for r in conn.execute(q, {"ans": answer, "d": d["id"]}).fetchall():
-        c, n = int(r[0]), int(r[1])
-        rows += n
+    sources = ["labels"] + [f"v{v}" for v in versions]
+    out = {}
+    for r in conn.execute(q, {"ans": answer, "d": d["id"], "by": by}).fetchall():
+        g, c, n = r[0], int(r[1]), int(r[2])
+        st, rows = out.setdefault(g, ({"sources": sources, "patterns": []}, [0]))
+        rows[0] += n
         mask = tuple(i for i in range(k) if c >> i & 1)
         if not mask:
             continue
-        s = [float(r[2 + i]) for i in range(k)]
-        pr = dict(zip(pairs, (float(x) for x in r[2 + k:])))
-        pats.append({"mask": mask, "n": n, "sum": [s[i] for i in mask], "sq": {i: s[i] for i in mask},
-                     "prod": {p: v for p, v in pr.items() if p[0] in mask and p[1] in mask}})
-    return {"sources": ["labels"] + [f"v{v}" for v in versions], "patterns": pats}, rows
+        sm = [float(r[3 + i]) for i in range(k)]
+        pr = dict(zip(pairs, (float(x) for x in r[3 + k:])))
+        st["patterns"].append({"mask": mask, "n": n, "sum": [sm[i] for i in mask], "sq": {i: sm[i] for i in mask},
+                               "prod": {p: v for p, v in pr.items() if p[0] in mask and p[1] in mask}})
+    groups = [(g, st, rows[0]) for g, (st, rows) in out.items()]
+    if by:
+        return groups
+    return (groups[0][1], groups[0][2]) if groups else ({"sources": sources, "patterns": []}, 0)
+
+
+def queue_samples(conn, d, want, by=None, where=None, seed="1"):
+    """Queue what a plan asks each version to judge: for (group, version, m) in `want`, the first m rows of the group's
+    shared order (rows whose label counts first, then md5(key || ':j:' || seed)) that the version hasn't judged.
+    Samples of different versions and the labels nest. Returns rows queued."""
+    from .groups import _cond
+    total = 0
+    for v in sorted({w[1] for w in want}):
+        mine = [(g, m) for g, ver, m in want if ver == v and m > 0]
+        if not mine:
+            continue
+        q = sql.SQL("""
+            WITH want AS (SELECT * FROM unnest(%(g)s::text[], %(m)s::int[]) AS x(g, m)),
+            cand AS (
+                SELECT s.{k}::text AS k, {grp} AS g,
+                       row_number() OVER (PARTITION BY {grp} ORDER BY coalesce({counts}, false) DESC,
+                                          md5(s.{k}::text || ':j:' || %(seed)s)) AS rn
+                FROM {table} s LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.{k}::text
+                WHERE {cond}
+            )
+            INSERT INTO docket.queue (decision_id, version, row_key)
+            SELECT %(d)s, %(v)s, c.k FROM cand c JOIN want x ON x.g IS NOT DISTINCT FROM c.g
+            WHERE c.rn <= x.m AND NOT EXISTS (SELECT 1 FROM docket.current cur WHERE cur.decision_id = %(d)s
+                                              AND cur.version = %(v)s AND cur.row_key = c.k)
+            ON CONFLICT DO NOTHING""").format(
+            k=sql.Identifier(d["key"]), grp=_group(by), counts=_counts(by), table=sql.SQL(d["source"]),
+            cond=_cond(where))
+        total += conn.execute(q, {"g": [g for g, _ in mine], "m": [int(m) for _, m in mine], "d": d["id"],
+                                  "v": int(v), "seed": str(seed), "by": by}).rowcount
+    conn.execute("SELECT pg_notify('docket', %s)", (str(d["id"]),))
+    return total
 
 
 def version_info(conn, d, wanted, costs=None):
@@ -358,18 +410,28 @@ def backfill_sample(conn, d, version, n, seed="1"):
     return cur.rowcount
 
 
-def draw_labels(conn, d, n, where=None, seed="1"):
-    """The next `n` rows to label in the shared order: rows without a label drawn at random, first in
-    md5(key || ':j:' || seed). With the labels so far they are a random sample of the table, so they import as
-    random (`label --random`), and they come first in every version's sample. Returns [key]."""
+def draw_labels(conn, d, want, by=None, where=None, seed="1"):
+    """The next rows to label in the shared order: for (group, n) in `want`, the first n rows of the group without a
+    label that counts here, in md5(key || ':j:' || seed) order. With the labels so far they are a random sample of the
+    table (import with `label --random`) or, by groups, of their group (`label --stratified COL`), and they come first
+    in every version's sample. Returns [(key, group)]."""
     from .groups import _cond
+    want = [(g, n) for g, n in want if n > 0]
+    if not want:
+        return []
     q = sql.SQL("""
-        SELECT s.{k}::text FROM {table} s
-        LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.{k}::text
-        WHERE ({cond}) AND (l.row_key IS NULL OR l.sampling <> 'random')
-        ORDER BY md5(s.{k}::text || ':j:' || %(seed)s) LIMIT %(n)s""").format(
-        k=sql.Identifier(d["key"]), table=sql.SQL(d["source"]), cond=_cond(where))
-    return [r[0] for r in conn.execute(q, {"d": d["id"], "n": int(n), "seed": str(seed)}).fetchall()]
+        WITH want AS (SELECT * FROM unnest(%(g)s::text[], %(n)s::int[]) AS x(g, n)),
+        cand AS (
+            SELECT s.{k}::text AS k, {grp} AS g,
+                   row_number() OVER (PARTITION BY {grp} ORDER BY md5(s.{k}::text || ':j:' || %(seed)s)) AS rn
+            FROM {table} s LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.{k}::text
+            WHERE ({cond}) AND NOT coalesce({counts}, false)
+        )
+        SELECT c.k, c.g FROM cand c JOIN want x ON x.g IS NOT DISTINCT FROM c.g WHERE c.rn <= x.n
+        ORDER BY c.g NULLS LAST, c.rn""").format(
+        k=sql.Identifier(d["key"]), grp=_group(by), counts=_counts(by), table=sql.SQL(d["source"]), cond=_cond(where))
+    return [(k, g) for k, g in conn.execute(q, {"g": [g for g, _ in want], "n": [int(n) for _, n in want],
+                                                "d": d["id"], "seed": str(seed), "by": by}).fetchall()]
 
 
 def correlation(stats, i):
@@ -378,10 +440,12 @@ def correlation(stats, i):
     return float(cov[0, 1] / math.sqrt(cov[0, 0] * cov[1, 1])) if cov[0, 0] > 0 and cov[1, 1] > 0 else 0.0
 
 
-def estimate_with(conn, name, answer, wanted, where=None, level=0.95, target=None, label_cost=None, costs=None):
+def estimate_with(conn, name, answer, wanted, where=None, level=0.95, target=None, label_cost=None, costs=None,
+                  by=None):
     """`pgdocket estimate NAME --answer A --with V…`: the share from labels and several versions together, the same
     labels with each version alone and alone, and with --target and --label-cost the cheapest mix of labels and
-    rows judged by each version."""
+    rows judged by each version. With `by` (#28), all of it per value of that source column, each group from its own
+    labels and samples, and the whole scope from the groups."""
     from .estimate import norm_ppf
     from .groups import decision
     d = decision(conn, name)
@@ -390,15 +454,24 @@ def estimate_with(conn, name, answer, wanted, where=None, level=0.95, target=Non
     elif answer not in [o["name"] for o in d["spec"]["options"]]:
         raise SystemExit(f"estimate --with needs --answer, one of: {', '.join(o['name'] for o in d['spec']['options'])}")
     vs = version_info(conn, d, wanted, costs)
-    stats, rows = ledger_stats(conn, d, [v["version"] for v in vs], answer, where)
-    r = together(stats, rows, vs, norm_ppf(0.5 + level / 2), target, label_cost)
-    return {**r, "name": name, "answer": answer, "level": level, "where": where}
+    z = norm_ppf(0.5 + level / 2)
+    ids = [v["version"] for v in vs]
+    head = {"name": name, "answer": answer, "level": level, "where": where, "by": by}
+    if not by:
+        stats, rows = ledger_stats(conn, d, ids, answer, where)
+        return {**together(stats, rows, vs, z, target, label_cost), **head}
+    per = [(g, together(st, n, [dict(v) for v in vs], z, target, label_cost))
+           for g, st, n in ledger_stats(conn, d, ids, answer, where, by)]
+    return {**by_groups(per, vs, z, target, label_cost), **head}
 
 
 def together(stats, rows, vs, z, target=None, label_cost=None):
     """What `estimate_with` reports, from the statistics: the estimate from every source, each version with the
     labels, the labels alone, and the cheapest mix for ± `target` when labels have a cost. `vs`: the versions in the
-    order of the statistics' sources, as `version_info` gives them (rows, says and alone are filled in here)."""
+    order of the statistics' sources, as `version_info` gives them (rows, says and alone are filled in here). With
+    fewer than PILOT labels the correlations aren't known yet, and the plan is a pilot (`_pilot`); once the interval
+    is within ± `target` (and has MIN_EACH_SIDE labels each way), nothing more is needed."""
+    from .groups import PILOT
     est = estimate(stats, z, rows)
     for i, v in enumerate(vs, 1):
         n = sum(p["n"] for p in stats["patterns"] if i in p["mask"])
@@ -409,18 +482,91 @@ def together(stats, rows, vs, z, target=None, label_cost=None):
     labels = estimate(_restrict(stats, [LABEL]), z, rows)
     out = {"rows": rows, "versions": vs, "estimate": est, "labels": labels, "plan": None, "target": target,
            "label_cost": label_cost}
-    if target and label_cost is not None:
+    if target and label_cost is not None and rows:
+        if est["labels"] < min(PILOT, rows):
+            out["plan"], out["planned"] = [_pilot(vs, rows, est["labels"], label_cost)], [f"v{v['version']}" for v in vs]
+            return out
         usable = [v for v in vs if v["rho"] is not None and v["rho"] > 0]
-        share = est["theta"] if est["theta"] is not None else (labels["theta"] if labels["theta"] is not None else 0.5)
+        # labels all on one side (a rare answer): the share is about 1 in (labels + 2) (Laplace's rule of succession)
+        share = next((e["theta"] for e in (est, labels) if e["theta"] is not None),
+                     (est["labels_with"] + 1) / (est["labels"] + 2))
         names = [f"v{v['version']}" for v in usable]
         out["plan"] = plan(share, [v["rho"] for v in usable], [v["cost"] for v in usable], label_cost, rows, target, z,
                            names, labelled=est["labels"], judged=[v["rows"] for v in usable])
         out["planned"] = names
+        if est["theta"] is not None and est["reliable"] and z * est["se"] <= target:
+            used = [n for n in est.get("used", []) if n in names]
+            out["plan"].insert(0, {"kind": "met", "labels": est["labels"], "models": used, "more_labels": 0,
+                                   "rows": {n: v["rows"] for n, v in zip(names, usable) if n in used},
+                                   "more_rows": {}, "cost": 0.0})
+    return out
+
+
+def _pilot(vs, rows, labelled, label_cost):
+    """The plan while fewer than PILOT labels count: PILOT of them first, each version judging those rows (its sample
+    starts with them), and the cheapest mix is planned from what they show. When PILOT is every row, every row
+    labelled: exact, and no version needs to judge more."""
+    from .groups import PILOT
+    m0 = min(rows, PILOT)
+    names = [f"v{v['version']}" for v in vs]
+    judge = {} if m0 >= rows else {n: max(v["rows"], m0) for n, v in zip(names, vs)}
+    more = {n: m - v["rows"] for (n, m), v in zip(judge.items(), vs)}
+    cost = label_cost * max(0, m0 - labelled) + sum(v["cost"] * more.get(n, 0) for n, v in zip(names, vs))
+    return {"kind": "exact" if m0 >= rows else "pilot", "labels": m0, "rows": judge, "models": list(judge),
+            "more_labels": max(0, m0 - labelled), "more_rows": more, "cost": cost}
+
+
+def _pick(plans, kind, models=None):
+    """The plan of this kind (and models); or a pilot or exact plan, which every way starts with; or none needed."""
+    if plans and plans[0]["kind"] in ("pilot", "exact", "met"):
+        return plans[0]
+    return next((p for p in plans or [] if p["kind"] == kind and (models is None or p["models"] == models)), None)
+
+
+def by_groups(per, vs, z, target=None, label_cost=None):
+    """What `estimate_with --by` reports, from each group's `together`: the groups; the whole scope as their estimates
+    weighted by their rows (a stratified estimate, when every group has one); the groups where the active version's
+    error differs from the others' (`groups.systematic`); and, with a plan, each group's cheapest mix and the totals,
+    with labels alone in every group and with the active version on every row (`estimate --by`) beside them."""
+    from .groups import systematic
+    gs = [{"g": g, **r} for g, r in per]
+    live = [r for r in gs if r["rows"]]
+    total = sum(r["rows"] for r in live)
+    overall = None
+    if live and all(r["estimate"]["theta"] is not None for r in live):
+        theta = sum(r["rows"] / total * r["estimate"]["theta"] for r in live)
+        se = math.sqrt(sum((r["rows"] / total * r["estimate"]["se"]) ** 2 for r in live))
+        overall = {"theta": theta, "se": se, "ci": (max(0.0, theta - z * se), min(1.0, theta + z * se)),
+                   "rows": total, "reliable": all(r["estimate"]["reliable"] for r in live)}
+    flags = systematic([{"g": r["g"], "reliable": r["estimate"]["reliable"], "est": r["estimate"],
+                         "model_share": r["versions"][0]["says"]}
+                        for r in live if r["estimate"]["theta"] is not None and r["versions"][0]["says"] is not None])
+    out = {"groups": gs, "rows": total, "versions": vs, "overall": overall, "systematic": flags, "target": target,
+           "label_cost": label_cost, "totals": None}
+    if target and label_cost is not None and live:
+        active = f"v{vs[0]['version']}"
+        ways = {"cheapest": lambda ps: ps[0] if ps else None, "labels alone": lambda ps: _pick(ps, "labels alone"),
+                "active": lambda ps: _pick(ps, "every row", [active])}
+        totals = {}
+        for way, pick in ways.items():
+            chosen = [pick(r["plan"]) for r in live]
+            if any(p is None for p in chosen):
+                continue
+            more_rows = {}
+            for p in chosen:
+                for n, m in p["more_rows"].items():
+                    more_rows[n] = more_rows.get(n, 0) + m
+            totals[way] = {"labels": sum(p["labels"] for p in chosen), "more_labels": sum(p["more_labels"] for p in chosen),
+                           "more_rows": more_rows, "cost": sum(p["cost"] for p in chosen),
+                           "pilots": sum(p["kind"] == "pilot" for p in chosen)}
+        out["totals"] = totals
     return out
 
 
 def render(r):
     """Plain-text report for the CLI."""
+    if r.get("by"):
+        return render_by(r)
     pct = lambda x: "–" if x is None else f"{100 * x:.1f} %"
     ci = lambda e: ("exact" if e["exact"] else f"{100 * e['ci'][0]:.1f} – {100 * e['ci'][1]:.1f}") if e["ci"] else "–"
     lvl = f"{100 * r['level']:.0f} %"
@@ -453,8 +599,7 @@ def render(r):
               f"  {'plan':<44} {'labels':>8} " + " ".join(f"{n:>10}" for n in names) + f" {'still costs':>12}"]
         shown, seen = [], set()
         for p in r["plan"]:
-            what = ("labels alone" if not p["models"] else "labels, " + ", ".join(
-                f"{m} on {'every row' if p['rows'][m] >= r['rows'] else 'a sample'}" for m in p["models"]))
+            what = _what(p, r["rows"])
             if what in shown or (p["labels"], round(p["cost"], 2)) in seen:
                 continue                                     # e.g. a free model added where it changes nothing
             shown.append(what)
@@ -464,9 +609,99 @@ def render(r):
                 + f" {'$' + format(p['cost'], ',.2f'):>12}")
             if len(shown) == 5:
                 break
-        best = r["plan"][0]
-        steps = [f"{best['more_labels']:,} more labels"] + [f"{m:,} more rows judged by {n}"
-                                                             for n, m in best["more_rows"].items() if m]
-        L.append("cheapest: " + ", ".join(steps) if best["more_labels"] or any(best["more_rows"].values())
-                 else "cheapest: nothing more; the target is met")
+        L.append(("then plan again: " if r["plan"][0]["kind"] == "pilot" else "cheapest: ") + _steps(r["plan"][0]))
+    return "\n".join(L)
+
+
+def _what(p, rows):
+    """A plan in words."""
+    if p["kind"] == "pilot":
+        return f"pilot: {p['labels']} labels first"
+    if p["kind"] == "exact":
+        return "label every row: exact"
+    if p["kind"] == "met":
+        return "nothing more: the target is met"
+    return "labels alone" if not p["models"] else "labels, " + ", ".join(
+        f"{m} on {'every row' if p['rows'][m] >= rows else 'a sample'}" for m in p["models"])
+
+
+def _steps(t):
+    """What a plan (or the plans' totals) still needs, in words."""
+    steps = [f"{t['more_labels']:,} more labels"] * bool(t["more_labels"]) + [
+        f"{m:,} more rows judged by {n}" for n, m in t["more_rows"].items() if m]
+    return ", ".join(steps) if steps else "nothing more; the target is met"
+
+
+def render_by(r):
+    """Plain-text report for the CLI, by group."""
+    pct = lambda x: "–" if x is None else f"{100 * x:.1f} %"
+    ci = lambda e: ("exact" if e["exact"] else f"{100 * e['ci'][0]:.1f} – {100 * e['ci'][1]:.1f}") if e and e["ci"] else "–"
+    lvl = f"{100 * r['level']:.0f} %"
+    vs, gs = r["versions"], r["groups"]
+    name = lambda g: "(none)" if g is None else str(g)
+    partial = [i for i, v in enumerate(vs) if any(x["versions"][i]["rows"] < x["rows"] for x in gs)]
+    L = [f"{r['name']}: share of rows whose true answer is {r['answer']!r}, by {r['by']}, from labels and {len(vs)} "
+         f"versions ({lvl} intervals){', where ' + r['where'] if r['where'] else ''}; {r['rows']:,} rows",
+         f"{'group':<20} {'rows':>9} {'labels':>7}" + "".join(
+             (f" {'v' + str(v['version']) + ' rows':>9}" if i in partial else "") + f" {'v' + str(v['version']) + ' says':>8}"
+             for i, v in enumerate(vs)) + f" {'estimate':>9} {lvl + ' interval':>16} {'labels alone':>13}"]
+    for x in gs:
+        e = x["estimate"]
+        L.append(f"{name(x['g']):<20.20} {x['rows']:>9,} {e['labels']:>7,}" + "".join(
+            (f" {x['versions'][i]['rows']:>9,}" if i in partial else "") + f" {pct(x['versions'][i]['says']):>8}"
+            for i in range(len(vs))) + f" {pct(e['theta']):>9} {ci(e):>16} {ci(x['labels']):>13}"
+            + ("" if e["reliable"] or e["theta"] is None else "  ⚠"))
+    o = r["overall"]
+    if o and len(gs) > 1:
+        L.append(f"{'all groups':<20} {o['rows']:>9,} {sum(x['estimate']['labels'] for x in gs):>7,}"
+                 + "".join((f" {'':>9}" if i in partial else "") + f" {'':>8}" for i in range(len(vs)))
+                 + f" {pct(o['theta']):>9} {ci({'exact': o['se'] == 0, 'ci': o['ci']}):>16}"
+                 + ("" if o["reliable"] else f" {'':>13}  ⚠"))
+    L.append("versions: " + ", ".join(f"v{v['version']} {v['model'] or ''}".rstrip()
+                                      + (" (active)" if v["status"] == "active" else "") for v in vs)
+             + f"; labels: drawn at random, from the table or within each {r['by']}")
+    left = {}                                                # versions left out → the groups where they were
+    for x in gs:
+        out_ = tuple(f"v{v['version']}" for v in vs if x["estimate"].get("used") and
+                     f"v{v['version']}" not in x["estimate"]["used"])
+        if out_:
+            left.setdefault(out_, []).append(name(x["g"]))
+    if left:
+        L.append("left out: " + "; ".join(f"{' and '.join(m)} in {', '.join(g)}" for m, g in left.items())
+                 + f" (it says the same thing on every row there, or judged fewer than {MIN_EACH_SIDE} labelled rows "
+                 "with and without the answer)")
+    if any(x["estimate"]["theta"] is not None and not x["estimate"]["reliable"] for x in gs):
+        L.append(f"⚠ fewer than {MIN_EACH_SIDE} labelled rows with or without the answer: the interval may be too narrow")
+    if any(x["estimate"]["theta"] is None and x["rows"] for x in gs):
+        L.append("– : too few labels in that group to estimate it (fewer than 2, or all the same)")
+    for f in r["systematic"]:
+        side = "overstates" if f["bias"] > 0 else "understates"
+        L.append(f"! v{vs[0]['version']} {side} {r['answer']!r} by {abs(100 * f['bias']):.1f} points in {f['group']} "
+                 f"(by {100 * f['pooled']:+.1f} in the other groups, z = {f['z']:.1f}): its error differs by {r['by']}, "
+                 "so one correction for every group would be off there. Each group is corrected with its own labels.")
+    t = r["totals"]
+    if t is not None:
+        names = [f"v{v['version']}" for v in vs]
+        per = ", ".join(f"{n} {'free' if not v['cost'] else '$' + format(v['cost'], '.6f')}" for n, v in zip(names, vs))
+        L += ["", f"the cheapest mix for ±{100 * r['target']:.1f} points in every group (a label "
+                  f"${r['label_cost']:,.2f}; per row {per}):",
+              f"{'group':<20} {'plan':<40} {'labels':>8} " + " ".join(f"{n:>9}" for n in names) + f" {'still costs':>12}"]
+        for x in gs:
+            if not x["plan"]:
+                continue
+            p = x["plan"][0]
+            L.append(f"{name(x['g']):<20.20} {_what(p, x['rows']):<40.40} {p['labels']:>8,} " + " ".join(
+                f"{p['rows'][n]:>9,}" if n in p["rows"] else f"{'–':>9}" for n in names)
+                + f" {'$' + format(p['cost'], ',.2f'):>12}")
+        labels = {"cheapest": "in all: each group's cheapest mix", "labels alone": "  labels alone in every group",
+                  "active": f"  labels, {names[0]} on every row (estimate --by)"}
+        for way, tag in labels.items():
+            if way in t:
+                L.append(f"{tag:<61.61} {t[way]['labels']:>8,} " + " ".join(f"{'':>9}" for _ in names)
+                         + f" {'$' + format(t[way]['cost'], ',.2f'):>12}")
+        best = t.get("cheapest")
+        if best:
+            k = best["pilots"]
+            L.append(("cheapest: " + _steps(best)) + (
+                f"; {k} group{'s need' if k > 1 else ' needs'} a pilot first, then plan again" if k else ""))
     return "\n".join(L)

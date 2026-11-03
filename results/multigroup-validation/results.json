@@ -1,0 +1,5408 @@
+{
+  "rows": {
+    "Midwest": 252,
+    "Northeast": 336,
+    "South": 984,
+    "West": 420
+  },
+  "cost": {
+    "Jev, 1 row per request": 2.3705451e-05,
+    "Jev, 20 rows per request": 1.3192851000000001e-05,
+    "Laya, 1 row per request": 0.0
+  },
+  "trials": 300,
+  "runs": 100,
+  "target": 0.03,
+  "setups": {
+    "A": {
+      "active": "Jev, 20 rows per request",
+      "answers": {
+        "credit reporting": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.623015873015873,
+              "rho1": 0.6188823084143449,
+              "rho2": 0.7010812708549882,
+              "bias1": -0.07936507936507942,
+              "bias2": -0.09920634920634919
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.625,
+              "rho1": 0.6697740689762071,
+              "rho2": 0.6915512486002116,
+              "bias1": -0.06845238095238093,
+              "bias2": -0.09226190476190477
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.6686991869918699,
+              "rho1": 0.6356540786526816,
+              "rho2": 0.6966433627227115,
+              "bias1": -0.0467479674796748,
+              "bias2": -0.07520325203252032
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.5238095238095238,
+              "rho1": 0.7103207730661893,
+              "rho2": 0.7284639594789433,
+              "bias1": -0.05714285714285716,
+              "bias2": -0.10714285714285715
+            }
+          ],
+          "whole": {
+            "share": 0.625,
+            "rho1": 0.6604976579533287,
+            "rho2": 0.7075956297701413
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.06857292125216241,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.96,
+                  "half_width": 0.06769476947651155,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.94,
+                  "half_width": 0.06521819505042298,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.96,
+                  "half_width": 0.06419230408276282,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.95,
+                  "half_width": 0.03784625147398713,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.94,
+                  "half_width": 0.07571850668872597,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.07196930394198599,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.07160506461941701,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.06962232741060015,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.041372140523814015,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9333333333333333,
+                  "half_width": 0.09535454441972029,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.0951607083264121,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9366666666666666,
+                  "half_width": 0.0922006319621092,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.09792129939462835,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.053896714187625525,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.96,
+                  "half_width": 0.039371868619104924,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.96,
+                  "half_width": 0.038568108080998344,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.96,
+                  "half_width": 0.037512698173482635,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.96,
+                  "half_width": 0.03657662894328279,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.02169388390686931,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.97,
+                  "half_width": 0.04356442223354275,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.04112105840016474,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.04127771894884854,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.93,
+                  "half_width": 0.04003161236649934,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.94,
+                  "half_width": 0.02379272288311406,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.05487321191613168,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.054863495290322827,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.053208550837242886,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.05650772010390552,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.031092406718117693,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 513,
+                    "rows": {
+                      "v2": 48619,
+                      "v1": 126506
+                    },
+                    "cost": 514.152535322169,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 513,
+                    "more_rows": {
+                      "v2": 48619,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 621,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 621.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 621,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1003,
+                    "rows": {},
+                    "cost": 1003.0,
+                    "models": [],
+                    "more_labels": 1003,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 524,
+                    "rows": {
+                      "v2": 25652,
+                      "v1": 168675
+                    },
+                    "cost": 524.608092229052,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 524,
+                    "more_rows": {
+                      "v2": 25652,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 554,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 554.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 554,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1001,
+                    "rows": {},
+                    "cost": 1001.0,
+                    "models": [],
+                    "more_labels": 1001,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 489,
+                    "rows": {
+                      "v2": 39826,
+                      "v1": 493976
+                    },
+                    "cost": 489.944093291526,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 489,
+                    "more_rows": {
+                      "v2": 39826,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 564,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 564.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 564,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 946,
+                    "rows": {},
+                    "cost": 946.0,
+                    "models": [],
+                    "more_labels": 946,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 502,
+                    "rows": {
+                      "v2": 24294,
+                      "v1": 210843
+                    },
+                    "cost": 502.575900226594,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 502,
+                    "more_rows": {
+                      "v2": 24294,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 529,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 529.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 529,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1065,
+                    "rows": {},
+                    "cost": 1065.0,
+                    "models": [],
+                    "more_labels": 1065,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 2031.280621069341,
+                  "labels": 2028,
+                  "rows": 138391
+                },
+                "active": {
+                  "cost": 2268.0,
+                  "labels": 2268,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 4015.0,
+                  "labels": 4015,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 4051,
+                "rows": 386101,
+                "cost": 4059.8904580040794
+              },
+              "whole": {
+                "cost": 501.875560832685,
+                "labels": 501,
+                "rows": 36935
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 511,
+                    "rows": {
+                      "v2": 48473,
+                      "v1": 12650602
+                    },
+                    "cost": 512.149074326323,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 511,
+                    "more_rows": {
+                      "v2": 48473,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 619,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 619.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 619,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1003,
+                    "rows": {},
+                    "cost": 1003.0,
+                    "models": [],
+                    "more_labels": 1003,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 523,
+                    "rows": {
+                      "v2": 25585,
+                      "v1": 16867470
+                    },
+                    "cost": 523.606503963835,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 523,
+                    "more_rows": {
+                      "v2": 25585,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 552,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 552.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 552,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1001,
+                    "rows": {},
+                    "cost": 1001.0,
+                    "models": [],
+                    "more_labels": 1001,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 488,
+                    "rows": {
+                      "v2": 39795,
+                      "v1": 49397590
+                    },
+                    "cost": 488.943358422545,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 488,
+                    "more_rows": {
+                      "v2": 39795,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 564,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 564.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 564,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 946,
+                    "rows": {},
+                    "cost": 946.0,
+                    "models": [],
+                    "more_labels": 946,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 501,
+                    "rows": {
+                      "v2": 24233,
+                      "v1": 21084337
+                    },
+                    "cost": 501.574454194083,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 501,
+                    "more_rows": {
+                      "v2": 24233,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 528,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 528.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 528,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1065,
+                    "rows": {},
+                    "cost": 1065.0,
+                    "models": [],
+                    "more_labels": 1065,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 2026.273390906786,
+                  "labels": 2023,
+                  "rows": 138086
+                },
+                "active": {
+                  "cost": 2263.0,
+                  "labels": 2263,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 4015.0,
+                  "labels": 4015,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 4039,
+                "rows": 384941,
+                "cost": 4047.690917569116
+              },
+              "whole": {
+                "cost": 501.875181545469,
+                "labels": 501,
+                "rows": 36919
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.28,
+              "labels": 2285.03,
+              "labels_p90": 2512.5,
+              "rows": 138932.6,
+              "cost": 2288.3234599416023,
+              "coverage": 0.94,
+              "half_width": 0.02820526493596863,
+              "within": 0.9975,
+              "coverage_by_region": {
+                "Midwest": 0.91,
+                "Northeast": 0.98,
+                "South": 0.92,
+                "West": 0.95
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.9,
+              "labels": 2595.2,
+              "labels_p90": 2897.2000000000003,
+              "rows": 0.0,
+              "cost": 2595.2,
+              "coverage": 0.96,
+              "half_width": 0.028170415946869514,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.97,
+                "Northeast": 0.98,
+                "South": 0.92,
+                "West": 0.97
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.1111111111111111,
+              "rho1": 0.4250991460112133,
+              "rho2": 0.5456213678419857,
+              "bias1": -0.03571428571428571,
+              "bias2": -0.01984126984126984
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.10714285714285714,
+              "rho1": 0.5222329678670934,
+              "rho2": 0.5760002741227407,
+              "bias1": -0.023809523809523808,
+              "bias2": -0.011904761904761904
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.11890243902439024,
+              "rho1": 0.5519109117571754,
+              "rho2": 0.5961099428402442,
+              "bias1": -0.028455284552845517,
+              "bias2": -0.01524390243902439
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.1357142857142857,
+              "rho1": 0.64016152405604,
+              "rho2": 0.6421603590412573,
+              "bias1": -0.02619047619047618,
+              "bias2": -0.0023809523809523725
+            }
+          ],
+          "whole": {
+            "share": 0.11947791164658635,
+            "rho1": 0.5546541350774392,
+            "rho2": 0.598773046461942
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9903846153846154,
+                  "half_width": 0.05473191131741516,
+                  "draws": 208,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9854368932038835,
+                  "half_width": 0.05333502875124366,
+                  "draws": 206,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9737991266375546,
+                  "half_width": 0.05252644950502668,
+                  "draws": 229,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9849624060150376,
+                  "half_width": 0.05094839214207631,
+                  "draws": 266,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9619047619047619,
+                  "half_width": 0.030241441205905606,
+                  "draws": 105,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9855769230769231,
+                  "half_width": 0.059738445977393854,
+                  "draws": 208,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9805825242718447,
+                  "half_width": 0.05633499558752395,
+                  "draws": 206,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9956331877729258,
+                  "half_width": 0.05634243478117895,
+                  "draws": 229,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.981203007518797,
+                  "half_width": 0.054623693490927605,
+                  "draws": 266,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9619047619047619,
+                  "half_width": 0.03236225343167801,
+                  "draws": 105,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9903846153846154,
+                  "half_width": 0.0662271751260023,
+                  "draws": 208,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9805825242718447,
+                  "half_width": 0.06581274517445292,
+                  "draws": 206,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9737991266375546,
+                  "half_width": 0.06765941489669638,
+                  "draws": 229,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 1.0,
+                  "half_width": 0.06919617869943713,
+                  "draws": 266,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9619047619047619,
+                  "half_width": 0.038928504053028605,
+                  "draws": 105,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.93,
+                  "half_width": 0.02962454694436348,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9133333333333333,
+                  "half_width": 0.028718657511132582,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9666666666666667,
+                  "half_width": 0.028987257177824865,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9366666666666666,
+                  "half_width": 0.02832420878587874,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.94,
+                  "half_width": 0.01670900194241679,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.032207681758725105,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.93,
+                  "half_width": 0.030215298357063797,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.030850492952038996,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9333333333333333,
+                  "half_width": 0.02996462623784248,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.01776877523308461,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.95,
+                  "half_width": 0.035535085101464595,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9366666666666666,
+                  "half_width": 0.03503991164612597,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9666666666666667,
+                  "half_width": 0.036720222392668894,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9266666666666666,
+                  "half_width": 0.03899627713456778,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.96,
+                  "half_width": 0.021275348240749524,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 297,
+                    "rows": {
+                      "v2": 24883,
+                      "v1": 126506
+                    },
+                    "cost": 297.589862737233,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 297,
+                    "more_rows": {
+                      "v2": 24883,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 346,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 346.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 346,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 422,
+                    "rows": {},
+                    "cost": 422.0,
+                    "models": [],
+                    "more_labels": 422,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 274,
+                    "rows": {
+                      "v2": 16694,
+                      "v1": 168675
+                    },
+                    "cost": 274.395738798994,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 274,
+                    "more_rows": {
+                      "v2": 16694,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 298,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 298.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 298,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 409,
+                    "rows": {},
+                    "cost": 409.0,
+                    "models": [],
+                    "more_labels": 409,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 289,
+                    "rows": {
+                      "v2": 16639,
+                      "v1": 493976
+                    },
+                    "cost": 289.394434999189,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 289,
+                    "more_rows": {
+                      "v2": 16639,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 312,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 312.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 312,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 448,
+                    "rows": {},
+                    "cost": 448.0,
+                    "models": [],
+                    "more_labels": 448,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 295,
+                    "rows": {
+                      "v2": 3996,
+                      "v1": 210843
+                    },
+                    "cost": 295.094726982196,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 295,
+                    "more_rows": {
+                      "v2": 3996,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 296,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 296.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 296,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 501,
+                    "rows": {},
+                    "cost": 501.0,
+                    "models": [],
+                    "more_labels": 501,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 1156.474763517612,
+                  "labels": 1155,
+                  "rows": 62212
+                },
+                "active": {
+                  "cost": 1252.0,
+                  "labels": 1252,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1780.0,
+                  "labels": 1780,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2347,
+                "rows": 193675,
+                "cost": 2351.010751269492
+              },
+              "whole": {
+                "cost": 289.395620271739,
+                "labels": 289,
+                "rows": 16689
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 297,
+                    "rows": {
+                      "v2": 24868,
+                      "v1": 12650602
+                    },
+                    "cost": 297.589507155468,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 297,
+                    "more_rows": {
+                      "v2": 24868,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 346,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 346.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 346,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 422,
+                    "rows": {},
+                    "cost": 422.0,
+                    "models": [],
+                    "more_labels": 422,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 274,
+                    "rows": {
+                      "v2": 16683,
+                      "v1": 16867470
+                    },
+                    "cost": 274.395478039033,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 274,
+                    "more_rows": {
+                      "v2": 16683,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 297,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 297.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 297,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 409,
+                    "rows": {},
+                    "cost": 409.0,
+                    "models": [],
+                    "more_labels": 409,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 289,
+                    "rows": {
+                      "v2": 16634,
+                      "v1": 49397590
+                    },
+                    "cost": 289.394316471934,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 289,
+                    "more_rows": {
+                      "v2": 16634,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 311,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 311.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 311,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 448,
+                    "rows": {},
+                    "cost": 448.0,
+                    "models": [],
+                    "more_labels": 448,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 295,
+                    "rows": {
+                      "v2": 3993,
+                      "v1": 21084337
+                    },
+                    "cost": 295.094655865843,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 295,
+                    "more_rows": {
+                      "v2": 3993,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 296,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 296.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 296,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 501,
+                    "rows": {},
+                    "cost": 501.0,
+                    "models": [],
+                    "more_labels": 501,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 1156.473957532278,
+                  "labels": 1155,
+                  "rows": 62178
+                },
+                "active": {
+                  "cost": 1250.0,
+                  "labels": 1250,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1780.0,
+                  "labels": 1780,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2346,
+                "rows": 193559,
+                "cost": 2349.609163417298
+              },
+              "whole": {
+                "cost": 289.395549155386,
+                "labels": 289,
+                "rows": 16686
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.58,
+              "labels": 1436.54,
+              "labels_p90": 1718.0,
+              "rows": 66748.08,
+              "cost": 1438.1222933397837,
+              "coverage": 0.965,
+              "half_width": 0.027309425580325612,
+              "within": 0.9975,
+              "coverage_by_region": {
+                "Midwest": 0.98,
+                "Northeast": 0.97,
+                "South": 0.97,
+                "West": 0.94
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.41,
+              "labels": 1583.85,
+              "labels_p90": 1827.2,
+              "rows": 0.0,
+              "cost": 1583.85,
+              "coverage": 0.95,
+              "half_width": 0.027203092961300444,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.95,
+                "Northeast": 0.95,
+                "South": 0.94,
+                "West": 0.96
+              }
+            }
+          }
+        },
+        "credit card": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.07539682539682539,
+              "rho1": 0.47292279993747616,
+              "rho2": 0.5031199171047792,
+              "bias1": 0.03571428571428571,
+              "bias2": 0.05952380952380952
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.09226190476190477,
+              "rho1": 0.5473072392837444,
+              "rho2": 0.5619104827518323,
+              "bias1": 0.07440476190476189,
+              "bias2": 0.08035714285714285
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.054878048780487805,
+              "rho1": 0.5093033157372796,
+              "rho2": 0.5790548022688804,
+              "bias1": 0.051829268292682924,
+              "bias2": 0.061991869918699184
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.09047619047619047,
+              "rho1": 0.5716263484844107,
+              "rho2": 0.6106156634683215,
+              "bias1": 0.07619047619047618,
+              "bias2": 0.06904761904761904
+            }
+          ],
+          "whole": {
+            "share": 0.071285140562249,
+            "rho1": 0.5310158865867349,
+            "rho2": 0.5747791247397767
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9117647058823529,
+                  "half_width": 0.051985162110138844,
+                  "draws": 68,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9596774193548387,
+                  "half_width": 0.05119013725108825,
+                  "draws": 124,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9,
+                  "half_width": 0.04499895175682745,
+                  "draws": 10,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.96,
+                  "half_width": 0.04937060759971516,
+                  "draws": 125,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9117647058823529,
+                  "half_width": 0.05445196357936153,
+                  "draws": 68,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9596774193548387,
+                  "half_width": 0.053123115702164624,
+                  "draws": 124,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.048776742137097165,
+                  "draws": 10,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.968,
+                  "half_width": 0.052129489767410185,
+                  "draws": 125,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9705882352941176,
+                  "half_width": 0.0630784913816624,
+                  "draws": 68,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9596774193548387,
+                  "half_width": 0.06425207015272147,
+                  "draws": 124,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.06085298482047787,
+                  "draws": 10,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.984,
+                  "half_width": 0.06424368141234037,
+                  "draws": 125,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9333333333333333,
+                  "half_width": 0.025699086971517567,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.026633306296170816,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9482758620689655,
+                  "half_width": 0.021081363942466534,
+                  "draws": 290,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.02577632659450381,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9310344827586207,
+                  "half_width": 0.01301268103591629,
+                  "draws": 290,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.93,
+                  "half_width": 0.02650339169854201,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.95,
+                  "half_width": 0.02747181960471524,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9551724137931035,
+                  "half_width": 0.022377103790506926,
+                  "draws": 290,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.95,
+                  "half_width": 0.02723886248492722,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9482758620689655,
+                  "half_width": 0.01373436869387509,
+                  "draws": 290,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.029853144556233627,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.95,
+                  "half_width": 0.032619724298135463,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9655172413793104,
+                  "half_width": 0.026140282649220185,
+                  "draws": 290,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.03285330791956086,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9448275862068966,
+                  "half_width": 0.016141539798443526,
+                  "draws": 290,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 223,
+                    "rows": {
+                      "v2": 9081,
+                      "v1": 126506
+                    },
+                    "cost": 223.215269200531,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 223,
+                    "more_rows": {
+                      "v2": 9081,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 232,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 232.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 232,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 298,
+                    "rows": {},
+                    "cost": 298.0,
+                    "models": [],
+                    "more_labels": 298,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 245,
+                    "rows": {
+                      "v2": 7741,
+                      "v1": 168675
+                    },
+                    "cost": 245.183503896191,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 245,
+                    "more_rows": {
+                      "v2": 7741,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 251,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 251.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 251,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 358,
+                    "rows": {},
+                    "cost": 358.0,
+                    "models": [],
+                    "more_labels": 358,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 183.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 183.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 222,
+                    "rows": {},
+                    "cost": 222.0,
+                    "models": [],
+                    "more_labels": 222,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 221,
+                    "rows": {
+                      "v2": 12289,
+                      "v1": 210843
+                    },
+                    "cost": 221.291316287339,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 221,
+                    "more_rows": {
+                      "v2": 12289,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 237,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 237.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 237,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 352,
+                    "rows": {},
+                    "cost": 352.0,
+                    "models": [],
+                    "more_labels": 352,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 872.690089384061,
+                  "labels": 872,
+                  "rows": 29111
+                },
+                "active": {
+                  "cost": 903.0,
+                  "labels": 903,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1230.0,
+                  "labels": 1230,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 1760,
+                "rows": 70716,
+                "cost": 1761.0206153079598
+              },
+              "whole": {
+                "cost": 190.248030133813,
+                "labels": 190,
+                "rows": 10463
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 223,
+                    "rows": {
+                      "v2": 9077,
+                      "v1": 12650602
+                    },
+                    "cost": 223.215174378727,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 223,
+                    "more_rows": {
+                      "v2": 9077,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 232,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 232.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 232,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 298,
+                    "rows": {},
+                    "cost": 298.0,
+                    "models": [],
+                    "more_labels": 298,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 245,
+                    "rows": {
+                      "v2": 7736,
+                      "v1": 16867470
+                    },
+                    "cost": 245.183385368936,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 245,
+                    "more_rows": {
+                      "v2": 7736,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 251,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 251.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 251,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 358,
+                    "rows": {},
+                    "cost": 358.0,
+                    "models": [],
+                    "more_labels": 358,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 183.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 183.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 222,
+                    "rows": {},
+                    "cost": 222.0,
+                    "models": [],
+                    "more_labels": 222,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 221,
+                    "rows": {
+                      "v2": 12282,
+                      "v1": 21084337
+                    },
+                    "cost": 221.291150349182,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 221,
+                    "more_rows": {
+                      "v2": 12282,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 237,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 237.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 237,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 352,
+                    "rows": {},
+                    "cost": 352.0,
+                    "models": [],
+                    "more_labels": 352,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 872.689710096845,
+                  "labels": 872,
+                  "rows": 29095
+                },
+                "active": {
+                  "cost": 903.0,
+                  "labels": 903,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1230.0,
+                  "labels": 1230,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 1759,
+                "rows": 70680,
+                "cost": 1760.103480174606
+              },
+              "whole": {
+                "cost": 190.248006428362,
+                "labels": 190,
+                "rows": 10462
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.2,
+              "labels": 1150.04,
+              "labels_p90": 1293.0,
+              "rows": 42157.42,
+              "cost": 1151.0393606540963,
+              "coverage": 0.9275,
+              "half_width": 0.02595210727025106,
+              "within": 0.9925,
+              "coverage_by_region": {
+                "Midwest": 0.94,
+                "Northeast": 0.9,
+                "South": 0.93,
+                "West": 0.94
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 2.9,
+              "labels": 1253.17,
+              "labels_p90": 1441.6000000000001,
+              "rows": 0.0,
+              "cost": 1253.17,
+              "coverage": 0.935,
+              "half_width": 0.02547586130951949,
+              "within": 0.995,
+              "coverage_by_region": {
+                "Midwest": 0.92,
+                "Northeast": 0.95,
+                "South": 0.94,
+                "West": 0.93
+              }
+            }
+          }
+        },
+        "mortgage": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.031746031746031744,
+              "rho1": 0.7367654363821853,
+              "rho2": 0.9408750722807694,
+              "bias1": 0.011904761904761904,
+              "bias2": 0.003968253968253968
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.05952380952380952,
+              "rho1": 0.8097621237356585,
+              "rho2": 0.9456953117370902,
+              "bias1": -0.0029761904761904726,
+              "bias2": -0.005952380952380952
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.04878048780487805,
+              "rho1": 0.8068912002887267,
+              "rho2": 0.8713377052468508,
+              "bias1": 0.002032520325203249,
+              "bias2": 0.002032520325203249
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.08095238095238096,
+              "rho1": 0.8073282104240467,
+              "rho2": 0.8499896123395807,
+              "bias1": 0.011904761904761904,
+              "bias2": 0.021428571428571422
+            }
+          ],
+          "whole": {
+            "share": 0.055220883534136546,
+            "rho1": 0.8014914022235508,
+            "rho2": 0.8809825979882843
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 1.0,
+                  "half_width": 0.019959900196479932,
+                  "draws": 1,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 1.0,
+                  "half_width": 0.02677252429364557,
+                  "draws": 26,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.03205368002588603,
+                  "draws": 9,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9368421052631579,
+                  "half_width": 0.0327979406140971,
+                  "draws": 95,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 1.0,
+                  "half_width": 0.031034577768044438,
+                  "draws": 1,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9230769230769231,
+                  "half_width": 0.03592172128819499,
+                  "draws": 26,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.7777777777777778,
+                  "half_width": 0.03880409105133084,
+                  "draws": 9,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9789473684210527,
+                  "half_width": 0.03829922412728822,
+                  "draws": 95,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.0,
+                  "half_width": 0.06011825187219593,
+                  "draws": 1,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.8846153846153846,
+                  "half_width": 0.062086932374298485,
+                  "draws": 26,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.8888888888888888,
+                  "half_width": 0.06173422172743844,
+                  "draws": 9,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9789473684210527,
+                  "half_width": 0.06296689005874063,
+                  "draws": 95,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 1.0,
+                  "half_width": 0.009325651730786179,
+                  "draws": 114,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9797979797979798,
+                  "half_width": 0.010832065785766022,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.013270120592822666,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.01684003594707059,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9807692307692307,
+                  "half_width": 0.007713215706901176,
+                  "draws": 104,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9473684210526315,
+                  "half_width": 0.015176487434104699,
+                  "draws": 114,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9730639730639731,
+                  "half_width": 0.0164492216079308,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9928571428571429,
+                  "half_width": 0.015472154168156301,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.96,
+                  "half_width": 0.018817398845188744,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9711538461538461,
+                  "half_width": 0.009143304319422915,
+                  "draws": 104,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9824561403508771,
+                  "half_width": 0.022467846278270833,
+                  "draws": 114,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9393939393939394,
+                  "half_width": 0.02696511063565619,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9857142857142858,
+                  "half_width": 0.02519953530981451,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.03051882354707343,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9903846153846154,
+                  "half_width": 0.014877807803985066,
+                  "draws": 104,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 315,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 315.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 315,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 239,
+                    "rows": {},
+                    "cost": 239.0,
+                    "models": [],
+                    "more_labels": 239,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 205,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 205.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 205,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 318,
+                    "rows": {},
+                    "cost": 318.0,
+                    "models": [],
+                    "more_labels": 318,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "active": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1077.0,
+                  "labels": 1077,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2490,
+                "rows": 0,
+                "cost": 2490.0
+              },
+              "whole": {
+                "cost": 182.0,
+                "labels": 182,
+                "rows": 0
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 315,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 315.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 315,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 239,
+                    "rows": {},
+                    "cost": 239.0,
+                    "models": [],
+                    "more_labels": 239,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 205,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 205.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 205,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 318,
+                    "rows": {},
+                    "cost": 318.0,
+                    "models": [],
+                    "more_labels": 318,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "active": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1077.0,
+                  "labels": 1077,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2491,
+                "rows": 0,
+                "cost": 2490.0000000000355
+              },
+              "whole": {
+                "cost": 182.0,
+                "labels": 182,
+                "rows": 0
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.31,
+              "labels": 1116.06,
+              "labels_p90": 1381.9,
+              "rows": 33806.63,
+              "cost": 1116.86140141094,
+              "coverage": 0.9725,
+              "half_width": 0.016691098591803333,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.99,
+                "Northeast": 0.93,
+                "South": 0.98,
+                "West": 0.99
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 2.96,
+              "labels": 1198.77,
+              "labels_p90": 1434.4,
+              "rows": 0.0,
+              "cost": 1198.77,
+              "coverage": 0.975,
+              "half_width": 0.017169666504331625,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.94,
+                "Northeast": 1.0,
+                "South": 0.98,
+                "West": 0.98
+              }
+            }
+          }
+        }
+      }
+    },
+    "B": {
+      "active": "Laya, 1 row per request",
+      "answers": {
+        "credit reporting": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.623015873015873,
+              "rho1": 0.5804069918875746,
+              "rho2": 0.7010812708549882,
+              "bias1": -0.1785714285714286,
+              "bias2": -0.09920634920634919
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.625,
+              "rho1": 0.5676837951830669,
+              "rho2": 0.6915512486002116,
+              "bias1": -0.18154761904761907,
+              "bias2": -0.09226190476190477
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.6686991869918699,
+              "rho1": 0.5335584818535999,
+              "rho2": 0.6966433627227115,
+              "bias1": -0.1951219512195122,
+              "bias2": -0.07520325203252032
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.5238095238095238,
+              "rho1": 0.6111753868860844,
+              "rho2": 0.7284639594789433,
+              "bias1": -0.16666666666666669,
+              "bias2": -0.10714285714285715
+            }
+          ],
+          "whole": {
+            "share": 0.625,
+            "rho1": 0.5658170777802999,
+            "rho2": 0.7075956297701413
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.94,
+                  "half_width": 0.067390490848665,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.94,
+                  "half_width": 0.06800648836879628,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.06656242552638758,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.06753653493393555,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.96,
+                  "half_width": 0.03863369971203847,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.93,
+                  "half_width": 0.07764062230947881,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9266666666666666,
+                  "half_width": 0.07860871644531739,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.95,
+                  "half_width": 0.07838934792375625,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.07881538183594493,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.96,
+                  "half_width": 0.045286434978121064,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.91,
+                  "half_width": 0.09456904963548252,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.93,
+                  "half_width": 0.09490390893738303,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.09233014018771568,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.95,
+                  "half_width": 0.09783667683496965,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.95,
+                  "half_width": 0.05390878323202076,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9666666666666667,
+                  "half_width": 0.03828845485255628,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.03901980276115598,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.94,
+                  "half_width": 0.03794313696821099,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.03827513195997927,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.96,
+                  "half_width": 0.021994704070770914,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9533333333333334,
+                  "half_width": 0.04455494368579631,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.04525066067617301,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.04506793891764504,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.044859034622188716,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9666666666666667,
+                  "half_width": 0.025989105606282148,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.05467004860764149,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.95,
+                  "half_width": 0.05461644693211818,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.93,
+                  "half_width": 0.05325498726907623,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.05652230157247917,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.03109474376743299,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 513,
+                    "rows": {
+                      "v2": 58048,
+                      "v1": 126506
+                    },
+                    "cost": 514.376054019648,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 513,
+                    "more_rows": {
+                      "v2": 58048,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 667,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 667.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 667,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1003,
+                    "rows": {},
+                    "cost": 1003.0,
+                    "models": [],
+                    "more_labels": 1003,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 525,
+                    "rows": {
+                      "v2": 58884,
+                      "v1": 168675
+                    },
+                    "cost": 526.395871776684,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 525,
+                    "more_rows": {
+                      "v2": 58884,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 680,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 680.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 680,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1001,
+                    "rows": {},
+                    "cost": 1001.0,
+                    "models": [],
+                    "more_labels": 1001,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 489,
+                    "rows": {
+                      "v2": 62634,
+                      "v1": 493976
+                    },
+                    "cost": 490.484767217934,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 489,
+                    "more_rows": {
+                      "v2": 62634,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 677,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 677.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 677,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 946,
+                    "rows": {},
+                    "cost": 946.0,
+                    "models": [],
+                    "more_labels": 946,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 503,
+                    "rows": {
+                      "v2": 59662,
+                      "v1": 210843
+                    },
+                    "cost": 504.414314617562,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 503,
+                    "more_rows": {
+                      "v2": 59662,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 669,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 669.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 669,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1065,
+                    "rows": {},
+                    "cost": 1065.0,
+                    "models": [],
+                    "more_labels": 1065,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 2035.671007631828,
+                  "labels": 2030,
+                  "rows": 239228
+                },
+                "active": {
+                  "cost": 2693.0,
+                  "labels": 2693,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 4015.0,
+                  "labels": 4015,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 4051,
+                "rows": 467785,
+                "cost": 4061.9374452678653
+              },
+              "whole": {
+                "cost": 503.467154067841,
+                "labels": 502,
+                "rows": 61891
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 512,
+                    "rows": {
+                      "v2": 57894,
+                      "v1": 12650602
+                    },
+                    "cost": 513.372403380194,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 512,
+                    "more_rows": {
+                      "v2": 57894,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 665,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 665.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 665,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1003,
+                    "rows": {},
+                    "cost": 1003.0,
+                    "models": [],
+                    "more_labels": 1003,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 524,
+                    "rows": {
+                      "v2": 58772,
+                      "v1": 16867470
+                    },
+                    "cost": 525.393216766172,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 524,
+                    "more_rows": {
+                      "v2": 58772,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 679,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 679.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 679,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1001,
+                    "rows": {},
+                    "cost": 1001.0,
+                    "models": [],
+                    "more_labels": 1001,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 489,
+                    "rows": {
+                      "v2": 62600,
+                      "v1": 49397590
+                    },
+                    "cost": 490.4839612326,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 489,
+                    "more_rows": {
+                      "v2": 62600,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 677,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 677.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 677,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 946,
+                    "rows": {},
+                    "cost": 946.0,
+                    "models": [],
+                    "more_labels": 946,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 502,
+                    "rows": {
+                      "v2": 59550,
+                      "v1": 21084337
+                    },
+                    "cost": 503.41165960705,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 502,
+                    "more_rows": {
+                      "v2": 59550,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 667,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 667.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 667,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 1065,
+                    "rows": {},
+                    "cost": 1065.0,
+                    "models": [],
+                    "more_labels": 1065,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 2032.661240986016,
+                  "labels": 2027,
+                  "rows": 238816
+                },
+                "active": {
+                  "cost": 2688.0,
+                  "labels": 2688,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 4015.0,
+                  "labels": 4015,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 4041,
+                "rows": 466549,
+                "cost": 4051.202250383051
+              },
+              "whole": {
+                "cost": 502.466679958821,
+                "labels": 501,
+                "rows": 61871
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.24,
+              "labels": 2321.21,
+              "labels_p90": 2509.9,
+              "rows": 204649.52,
+              "cost": 2326.0613091685336,
+              "coverage": 0.955,
+              "half_width": 0.02800255764790454,
+              "within": 0.9975,
+              "coverage_by_region": {
+                "Midwest": 0.9,
+                "Northeast": 0.98,
+                "South": 0.99,
+                "West": 0.95
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.5,
+              "labels": 2944.28,
+              "labels_p90": 3150.8,
+              "rows": 0.0,
+              "cost": 2944.28,
+              "coverage": 0.96,
+              "half_width": 0.028724073548355822,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.96,
+                "Northeast": 0.97,
+                "South": 0.94,
+                "West": 0.97
+              }
+            }
+          }
+        },
+        "debt collection": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.1111111111111111,
+              "rho1": 0.4573231100672373,
+              "rho2": 0.5456213678419857,
+              "bias1": 0.16666666666666669,
+              "bias2": -0.01984126984126984
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.10714285714285714,
+              "rho1": 0.36717488601157683,
+              "rho2": 0.5760002741227407,
+              "bias1": 0.13392857142857145,
+              "bias2": -0.011904761904761904
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.11890243902439024,
+              "rho1": 0.368464796375338,
+              "rho2": 0.5961099428402442,
+              "bias1": 0.13617886178861788,
+              "bias2": -0.01524390243902439
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.1357142857142857,
+              "rho1": 0.43609557907697377,
+              "rho2": 0.6421603590412573,
+              "bias1": 0.14285714285714288,
+              "bias2": -0.0023809523809523725
+            }
+          ],
+          "whole": {
+            "share": 0.11947791164658635,
+            "rho1": 0.39489714247287416,
+            "rho2": 0.598773046461942
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.968421052631579,
+                  "half_width": 0.053539389123870074,
+                  "draws": 190,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9736842105263158,
+                  "half_width": 0.05331876583778503,
+                  "draws": 190,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9863636363636363,
+                  "half_width": 0.053848955408018685,
+                  "draws": 220,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9701492537313433,
+                  "half_width": 0.053935118825231984,
+                  "draws": 268,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9156626506024096,
+                  "half_width": 0.031329404806709205,
+                  "draws": 83,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9789473684210527,
+                  "half_width": 0.05861927422891253,
+                  "draws": 190,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.968421052631579,
+                  "half_width": 0.06097428979757707,
+                  "draws": 190,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9681818181818181,
+                  "half_width": 0.06187617365178064,
+                  "draws": 220,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9701492537313433,
+                  "half_width": 0.062431977975047084,
+                  "draws": 268,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.927710843373494,
+                  "half_width": 0.035792826763710595,
+                  "draws": 83,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9842105263157894,
+                  "half_width": 0.06620213523803495,
+                  "draws": 190,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9631578947368421,
+                  "half_width": 0.06571603303275131,
+                  "draws": 190,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9818181818181818,
+                  "half_width": 0.06684839158126632,
+                  "draws": 220,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9776119402985075,
+                  "half_width": 0.06953606615619468,
+                  "draws": 268,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9397590361445783,
+                  "half_width": 0.038909842784553006,
+                  "draws": 83,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.94,
+                  "half_width": 0.029057894578362078,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9633333333333334,
+                  "half_width": 0.02863790877756679,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.95,
+                  "half_width": 0.029561349068210317,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.95,
+                  "half_width": 0.030044647128285522,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.017058746208498312,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.03175599357351143,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9366666666666666,
+                  "half_width": 0.0328860463591255,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9433333333333334,
+                  "half_width": 0.03408266338814711,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.94,
+                  "half_width": 0.03520616345015937,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.019648850694716717,
+                  "draws": 300,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.035523095365508475,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.94,
+                  "half_width": 0.0353270777399113,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.03665847417566654,
+                  "draws": 300,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.93,
+                  "half_width": 0.0389729137130711,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.95,
+                  "half_width": 0.02126054766017054,
+                  "draws": 300,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 297,
+                    "rows": {
+                      "v2": 21646,
+                      "v1": 126506
+                    },
+                    "cost": 297.513128192346,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 297,
+                    "more_rows": {
+                      "v2": 21646,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 334,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 334.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 334,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 422,
+                    "rows": {},
+                    "cost": 422.0,
+                    "models": [],
+                    "more_labels": 422,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 274,
+                    "rows": {
+                      "v2": 30515,
+                      "v1": 168675
+                    },
+                    "cost": 274.723371837265,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 274,
+                    "more_rows": {
+                      "v2": 30515,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 354,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 354.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 354,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 409,
+                    "rows": {},
+                    "cost": 409.0,
+                    "models": [],
+                    "more_labels": 409,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 290,
+                    "rows": {
+                      "v2": 34657,
+                      "v1": 493976
+                    },
+                    "cost": 290.821559815307,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 290,
+                    "more_rows": {
+                      "v2": 34657,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 387,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 387.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 387,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 448,
+                    "rows": {},
+                    "cost": 448.0,
+                    "models": [],
+                    "more_labels": 448,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 296,
+                    "rows": {
+                      "v2": 37284,
+                      "v1": 210843
+                    },
+                    "cost": 296.883834035084,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 296,
+                    "more_rows": {
+                      "v2": 37284,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 406,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 406.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 406,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 501,
+                    "rows": {},
+                    "cost": 501.0,
+                    "models": [],
+                    "more_labels": 501,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 1159.941893880002,
+                  "labels": 1157,
+                  "rows": 124102
+                },
+                "active": {
+                  "cost": 1481.0,
+                  "labels": 1481,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1780.0,
+                  "labels": 1780,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2347,
+                "rows": 167689,
+                "cost": 2350.022222872613
+              },
+              "whole": {
+                "cost": 289.790363441791,
+                "labels": 289,
+                "rows": 33341
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 297,
+                    "rows": {
+                      "v2": 21631,
+                      "v1": 12650602
+                    },
+                    "cost": 297.512772610581,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 297,
+                    "more_rows": {
+                      "v2": 21631,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 334,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 334.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 334,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 422,
+                    "rows": {},
+                    "cost": 422.0,
+                    "models": [],
+                    "more_labels": 422,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 274,
+                    "rows": {
+                      "v2": 30506,
+                      "v1": 16867470
+                    },
+                    "cost": 274.723158488206,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 274,
+                    "more_rows": {
+                      "v2": 30506,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 354,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 354.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 354,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 409,
+                    "rows": {},
+                    "cost": 409.0,
+                    "models": [],
+                    "more_labels": 409,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 290,
+                    "rows": {
+                      "v2": 34653,
+                      "v1": 49397590
+                    },
+                    "cost": 290.821464993503,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 290,
+                    "more_rows": {
+                      "v2": 34653,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 387,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 387.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 387,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 448,
+                    "rows": {},
+                    "cost": 448.0,
+                    "models": [],
+                    "more_labels": 448,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 296,
+                    "rows": {
+                      "v2": 37268,
+                      "v1": 21084337
+                    },
+                    "cost": 296.883454747868,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 296,
+                    "more_rows": {
+                      "v2": 37268,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 406,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 406.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 406,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 501,
+                    "rows": {},
+                    "cost": 501.0,
+                    "models": [],
+                    "more_labels": 501,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 1159.940850840158,
+                  "labels": 1157,
+                  "rows": 124058
+                },
+                "active": {
+                  "cost": 1481.0,
+                  "labels": 1481,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1780.0,
+                  "labels": 1780,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2345,
+                "rows": 167573,
+                "cost": 2348.40077152561
+              },
+              "whole": {
+                "cost": 289.790292325438,
+                "labels": 289,
+                "rows": 33338
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.67,
+              "labels": 1461.77,
+              "labels_p90": 1759.4,
+              "rows": 92282.74,
+              "cost": 1463.9576039712158,
+              "coverage": 0.94,
+              "half_width": 0.027385306087308978,
+              "within": 0.995,
+              "coverage_by_region": {
+                "Midwest": 0.94,
+                "Northeast": 0.92,
+                "South": 0.96,
+                "West": 0.94
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.79,
+              "labels": 1732.55,
+              "labels_p90": 1977.0,
+              "rows": 0.0,
+              "cost": 1732.55,
+              "coverage": 0.9425,
+              "half_width": 0.028130383873714183,
+              "within": 0.9925,
+              "coverage_by_region": {
+                "Midwest": 0.94,
+                "Northeast": 0.95,
+                "South": 0.93,
+                "West": 0.95
+              }
+            }
+          }
+        },
+        "credit card": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.07539682539682539,
+              "rho1": 0.5336639192002698,
+              "rho2": 0.5031199171047792,
+              "bias1": 0.047619047619047616,
+              "bias2": 0.05952380952380952
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.09226190476190477,
+              "rho1": 0.4367969668541544,
+              "rho2": 0.5619104827518323,
+              "bias1": 0.08928571428571427,
+              "bias2": 0.08035714285714285
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.054878048780487805,
+              "rho1": 0.3872654696241737,
+              "rho2": 0.5790548022688804,
+              "bias1": 0.08739837398373984,
+              "bias2": 0.061991869918699184
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.09047619047619047,
+              "rho1": 0.4518883455284598,
+              "rho2": 0.6106156634683215,
+              "bias1": 0.10476190476190476,
+              "bias2": 0.06904761904761904
+            }
+          ],
+          "whole": {
+            "share": 0.071285140562249,
+            "rho1": 0.43164056332702955,
+            "rho2": 0.5747791247397767
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9122807017543859,
+                  "half_width": 0.047177802046158894,
+                  "draws": 57,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9632352941176471,
+                  "half_width": 0.050433088589091374,
+                  "draws": 136,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9473684210526315,
+                  "half_width": 0.04565064719511608,
+                  "draws": 19,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9416058394160584,
+                  "half_width": 0.04956279444853639,
+                  "draws": 137,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.0,
+                  "half_width": 0.027744556604978998,
+                  "draws": 1,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9122807017543859,
+                  "half_width": 0.050897614612692585,
+                  "draws": 57,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9705882352941176,
+                  "half_width": 0.05641078509922417,
+                  "draws": 136,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.6842105263157895,
+                  "half_width": 0.054793896210778945,
+                  "draws": 19,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9781021897810219,
+                  "half_width": 0.057014235399132016,
+                  "draws": 137,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 1.0,
+                  "half_width": 0.03086714144093802,
+                  "draws": 1,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9824561403508771,
+                  "half_width": 0.0627793128013957,
+                  "draws": 57,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9779411764705882,
+                  "half_width": 0.06438957736302238,
+                  "draws": 136,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.6842105263157895,
+                  "half_width": 0.06261845960198124,
+                  "draws": 19,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9854014598540146,
+                  "half_width": 0.06441375733280223,
+                  "draws": 137,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 1.0,
+                  "half_width": 0.03513450677426724,
+                  "draws": 1,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 0.9266666666666666,
+                  "half_width": 0.02353855059823444,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9666666666666667,
+                  "half_width": 0.026806408541069474,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9728813559322034,
+                  "half_width": 0.02137885788023198,
+                  "draws": 295,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9466666666666667,
+                  "half_width": 0.025682249087888808,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9559322033898305,
+                  "half_width": 0.013063656432811254,
+                  "draws": 295,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9266666666666666,
+                  "half_width": 0.025128931610126772,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.029645670655329876,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9559322033898305,
+                  "half_width": 0.02413110467202981,
+                  "draws": 295,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9366666666666666,
+                  "half_width": 0.029130935069443625,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9694915254237289,
+                  "half_width": 0.014685803186996636,
+                  "draws": 295,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9133333333333333,
+                  "half_width": 0.029613864709005185,
+                  "draws": 300,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.96,
+                  "half_width": 0.03312254625464148,
+                  "draws": 300,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9525423728813559,
+                  "half_width": 0.02609757180921767,
+                  "draws": 295,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.94,
+                  "half_width": 0.03262765751424927,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9694915254237289,
+                  "half_width": 0.016120955816368618,
+                  "draws": 295,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 213,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 213.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 213,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 213,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 213.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 213,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 298,
+                    "rows": {},
+                    "cost": 298.0,
+                    "models": [],
+                    "more_labels": 298,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 246,
+                    "rows": {
+                      "v2": 21522,
+                      "v1": 168675
+                    },
+                    "cost": 246.510188716422,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 246,
+                    "more_rows": {
+                      "v2": 21522,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 290,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 290.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 290,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 358,
+                    "rows": {},
+                    "cost": 358.0,
+                    "models": [],
+                    "more_labels": 358,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v2": 19763,
+                      "v1": 493976
+                    },
+                    "cost": 183.468490828113,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v2": 19763,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 189,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 189.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 189,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 222,
+                    "rows": {},
+                    "cost": 222.0,
+                    "models": [],
+                    "more_labels": 222,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 221,
+                    "rows": {
+                      "v2": 23529,
+                      "v1": 210843
+                    },
+                    "cost": 221.557765556579,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 221,
+                    "more_rows": {
+                      "v2": 23529,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 280,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 280.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 280,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 352,
+                    "rows": {},
+                    "cost": 352.0,
+                    "models": [],
+                    "more_labels": 352,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 864.5364451011139,
+                  "labels": 863,
+                  "rows": 64814
+                },
+                "active": {
+                  "cost": 972.0,
+                  "labels": 972,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1230.0,
+                  "labels": 1230,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 1684,
+                "rows": 1944,
+                "cost": 1683.383361076229
+              },
+              "whole": {
+                "cost": 190.428310088668,
+                "labels": 190,
+                "rows": 18068
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 213,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 213.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 213,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 213,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 213.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 213,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 298,
+                    "rows": {},
+                    "cost": 298.0,
+                    "models": [],
+                    "more_labels": 298,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 246,
+                    "rows": {
+                      "v2": 21513,
+                      "v1": 16867470
+                    },
+                    "cost": 246.509975367363,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 246,
+                    "more_rows": {
+                      "v2": 21513,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 290,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 290.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 290,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 358,
+                    "rows": {},
+                    "cost": 358.0,
+                    "models": [],
+                    "more_labels": 358,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 183,
+                    "rows": {
+                      "v2": 19763,
+                      "v1": 49397590
+                    },
+                    "cost": 183.468490828113,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 183,
+                    "more_rows": {
+                      "v2": 19763,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 189,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 189.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 189,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 222,
+                    "rows": {},
+                    "cost": 222.0,
+                    "models": [],
+                    "more_labels": 222,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 221,
+                    "rows": {
+                      "v2": 23521,
+                      "v1": 21084337
+                    },
+                    "cost": 221.557575912971,
+                    "models": [
+                      "v2",
+                      "v1"
+                    ],
+                    "more_labels": 221,
+                    "more_rows": {
+                      "v2": 23521,
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 280,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 280.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 280,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 352,
+                    "rows": {},
+                    "cost": 352.0,
+                    "models": [],
+                    "more_labels": 352,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 864.536042108447,
+                  "labels": 863,
+                  "rows": 64797
+                },
+                "active": {
+                  "cost": 972.0,
+                  "labels": 972,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1230.0,
+                  "labels": 1230,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 1683,
+                "rows": 1943,
+                "cost": 1682.2669921908755
+              },
+              "whole": {
+                "cost": 190.428286383217,
+                "labels": 190,
+                "rows": 18067
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.08,
+              "labels": 1169.0,
+              "labels_p90": 1338.9,
+              "rows": 55864.24,
+              "cost": 1170.3242870039721,
+              "coverage": 0.9375,
+              "half_width": 0.0260801685902643,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.98,
+                "Northeast": 0.88,
+                "South": 0.96,
+                "West": 0.93
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.06,
+              "labels": 1302.51,
+              "labels_p90": 1519.8000000000002,
+              "rows": 0.0,
+              "cost": 1302.51,
+              "coverage": 0.9425,
+              "half_width": 0.0260872437101978,
+              "within": 0.995,
+              "coverage_by_region": {
+                "Midwest": 0.95,
+                "Northeast": 0.94,
+                "South": 0.95,
+                "West": 0.93
+              }
+            }
+          }
+        },
+        "mortgage": {
+          "regions": [
+            {
+              "g": "Midwest",
+              "frac": 0.12650602409638553,
+              "share": 0.031746031746031744,
+              "rho1": 0.6477652407593142,
+              "rho2": 0.9408750722807694,
+              "bias1": 0.023809523809523808,
+              "bias2": 0.003968253968253968
+            },
+            {
+              "g": "Northeast",
+              "frac": 0.1686746987951807,
+              "share": 0.05952380952380952,
+              "rho1": 0.8339675955824979,
+              "rho2": 0.9456953117370902,
+              "bias1": -0.005952380952380952,
+              "bias2": -0.005952380952380952
+            },
+            {
+              "g": "South",
+              "frac": 0.4939759036144578,
+              "share": 0.04878048780487805,
+              "rho1": 0.738576806786658,
+              "rho2": 0.8713377052468508,
+              "bias1": 0.008130081300813004,
+              "bias2": 0.002032520325203249
+            },
+            {
+              "g": "West",
+              "frac": 0.21084337349397592,
+              "share": 0.08095238095238096,
+              "rho1": 0.8008825152717667,
+              "rho2": 0.8499896123395807,
+              "bias1": 0.007142857142857145,
+              "bias2": 0.021428571428571422
+            }
+          ],
+          "whole": {
+            "share": 0.055220883534136546,
+            "rho1": 0.7621466265711118,
+            "rho2": 0.8809825979882843
+          },
+          "coverage": {
+            "100 labels in each region, 2,000 judged by the better model": {
+              "with": {
+                "Northeast": {
+                  "coverage": 1.0,
+                  "half_width": 0.027633604794457877,
+                  "draws": 20,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.025676088303915108,
+                  "draws": 2,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.968421052631579,
+                  "half_width": 0.03189042516637435,
+                  "draws": 95,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Northeast": {
+                  "coverage": 1.0,
+                  "half_width": 0.037770607829936055,
+                  "draws": 20,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 1.0,
+                  "half_width": 0.026086823876641976,
+                  "draws": 2,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9789473684210527,
+                  "half_width": 0.038158273639664946,
+                  "draws": 95,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Northeast": {
+                  "coverage": 1.0,
+                  "half_width": 0.06132016724573071,
+                  "draws": 20,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.5,
+                  "half_width": 0.06249189656557419,
+                  "draws": 2,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9789473684210527,
+                  "half_width": 0.06344791030608539,
+                  "draws": 95,
+                  "of": 300
+                }
+              }
+            },
+            "300 labels in each region, 10,000 judged by the better model": {
+              "with": {
+                "Midwest": {
+                  "coverage": 1.0,
+                  "half_width": 0.008665532423932441,
+                  "draws": 135,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9595959595959596,
+                  "half_width": 0.010623613684966131,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9821428571428571,
+                  "half_width": 0.012919338801477899,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.01647569061991826,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.984251968503937,
+                  "half_width": 0.007609973992305569,
+                  "draws": 127,
+                  "of": 300
+                }
+              },
+              "active": {
+                "Midwest": {
+                  "coverage": 0.9407407407407408,
+                  "half_width": 0.016894152247537472,
+                  "draws": 135,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9663299663299664,
+                  "half_width": 0.015856026519747088,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9785714285714285,
+                  "half_width": 0.017222561139302695,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.95,
+                  "half_width": 0.019309712269626626,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9763779527559056,
+                  "half_width": 0.010137262247036382,
+                  "draws": 127,
+                  "of": 300
+                }
+              },
+              "labels": {
+                "Midwest": {
+                  "coverage": 0.9851851851851852,
+                  "half_width": 0.02255397532152104,
+                  "draws": 135,
+                  "of": 300
+                },
+                "Northeast": {
+                  "coverage": 0.9865319865319865,
+                  "half_width": 0.026580190035717117,
+                  "draws": 297,
+                  "of": 300
+                },
+                "South": {
+                  "coverage": 0.9964285714285714,
+                  "half_width": 0.0248169277632197,
+                  "draws": 280,
+                  "of": 300
+                },
+                "West": {
+                  "coverage": 0.9566666666666667,
+                  "half_width": 0.031111520539628585,
+                  "draws": 300,
+                  "of": 300
+                },
+                "all regions": {
+                  "coverage": 0.9921259842519685,
+                  "half_width": 0.01487863576725692,
+                  "draws": 127,
+                  "of": 300
+                }
+              }
+            }
+          },
+          "costs": {
+            "1000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 315,
+                    "rows": {
+                      "v1": 126506
+                    },
+                    "cost": 315.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 315,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 168675
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 239,
+                    "rows": {},
+                    "cost": 239.0,
+                    "models": [],
+                    "more_labels": 239,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 205,
+                    "rows": {
+                      "v1": 493976
+                    },
+                    "cost": 205.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 205,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 210843
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 318,
+                    "rows": {},
+                    "cost": 318.0,
+                    "models": [],
+                    "more_labels": 318,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "active": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1077.0,
+                  "labels": 1077,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2490,
+                "rows": 0,
+                "cost": 2490.0
+              },
+              "whole": {
+                "cost": 182.0,
+                "labels": 182,
+                "rows": 0
+              }
+            },
+            "100000000": {
+              "regions": {
+                "Midwest": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 315,
+                    "rows": {
+                      "v1": 12650602
+                    },
+                    "cost": 315.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 315,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 315,
+                    "rows": {},
+                    "cost": 315.0,
+                    "models": [],
+                    "more_labels": 315,
+                    "more_rows": {}
+                  }
+                },
+                "Northeast": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 168,
+                    "rows": {
+                      "v1": 16867470
+                    },
+                    "cost": 168.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 168,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 239,
+                    "rows": {},
+                    "cost": 239.0,
+                    "models": [],
+                    "more_labels": 239,
+                    "more_rows": {}
+                  }
+                },
+                "South": {
+                  "cheapest": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 205,
+                    "rows": {
+                      "v1": 49397590
+                    },
+                    "cost": 205.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 205,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 205,
+                    "rows": {},
+                    "cost": 205.0,
+                    "models": [],
+                    "more_labels": 205,
+                    "more_rows": {}
+                  }
+                },
+                "West": {
+                  "cheapest": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "active": {
+                    "kind": "models on samples",
+                    "labels": 124,
+                    "rows": {
+                      "v1": 21084337
+                    },
+                    "cost": 124.0,
+                    "models": [
+                      "v1"
+                    ],
+                    "more_labels": 124,
+                    "more_rows": {
+                      "v1": 0
+                    }
+                  },
+                  "labels alone": {
+                    "kind": "labels alone",
+                    "labels": 318,
+                    "rows": {},
+                    "cost": 318.0,
+                    "models": [],
+                    "more_labels": 318,
+                    "more_rows": {}
+                  }
+                }
+              },
+              "totals": {
+                "cheapest": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "active": {
+                  "cost": 812.0,
+                  "labels": 812,
+                  "rows": 0
+                },
+                "labels alone": {
+                  "cost": 1077.0,
+                  "labels": 1077,
+                  "rows": 0
+                }
+              },
+              "across": {
+                "labels": 2491,
+                "rows": 0,
+                "cost": 2490.0000000000355
+              },
+              "whole": {
+                "cost": 182.0,
+                "labels": 182,
+                "rows": 0
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.28,
+              "labels": 1124.81,
+              "labels_p90": 1373.0,
+              "rows": 33915.0,
+              "cost": 1125.6139703706651,
+              "coverage": 0.97,
+              "half_width": 0.016719973762367026,
+              "within": 0.9975,
+              "coverage_by_region": {
+                "Midwest": 0.99,
+                "Northeast": 0.99,
+                "South": 0.96,
+                "West": 0.94
+              }
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.06,
+              "labels": 1168.02,
+              "labels_p90": 1401.2,
+              "rows": 0.0,
+              "cost": 1168.02,
+              "coverage": 0.945,
+              "half_width": 0.0175641789106154,
+              "within": 1.0,
+              "coverage_by_region": {
+                "Midwest": 0.93,
+                "Northeast": 0.93,
+                "South": 0.93,
+                "West": 0.99
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

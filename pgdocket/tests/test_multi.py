@@ -101,3 +101,70 @@ def test_the_plan_caps_at_the_table_and_counts_what_is_done():
     assert free["rows"]["v1"] == 10 ** 6                                 # a free model judges every row
     done = multi.plan(0.3, [0.8], [1e-4], 1.0, 10 ** 6, 0.02, Z, ["v1"], labelled=400, judged=[10 ** 6])[0]
     assert done["rows"]["v1"] == 10 ** 6 and done["more_rows"]["v1"] == 0 and done["cost"] == done["more_labels"]
+
+
+def _versions(cost2=1e-4):
+    return [{"version": 1, "model": "cheap", "backend": "", "status": "active", "judged": 0, "cost": 0.0},
+            {"version": 2, "model": "good", "backend": "", "status": "shadow", "judged": 0, "cost": cost2}]
+
+
+def test_by_group_each_group_from_its_own_samples_and_the_whole_from_the_groups():
+    """--with --by (#28): the cheap model overstates the answer in one group only (its errors elsewhere depend only on
+    the share, the same in a and c). Each group's estimate comes from its own labels inside its own sample of the good
+    model, and holds; the whole scope is the groups' estimates weighted by their rows; the group where the cheap
+    model's error differs is named."""
+    rng = np.random.default_rng(28)
+    sizes, shares = {"a": 6000, "b": 3000, "c": 1000}, {"a": 0.25, "b": 0.4, "c": 0.25}
+    pop = {}
+    for g, N in sizes.items():
+        y, good, cheap = _population(rng, N, shares[g], good=0.93, cheap=0.85)
+        if g == "b":
+            cheap = np.where((y == 0) & (rng.random(N) < 0.3), 1.0, cheap)    # it says yes to 30 % more of b's no
+        pop[g] = (y, good, cheap)
+    truth = {g: float(p[0].mean()) for g, p in pop.items()}
+    whole = sum(sizes[g] * truth[g] for g in sizes) / sum(sizes.values())
+    vs = _versions()
+    hits, overall, flagged = {g: [] for g in sizes}, [], []
+    for _ in range(150):
+        per = []
+        for g, (y, good, cheap) in pop.items():
+            N = len(y)
+            order = rng.permutation(N)
+            lab, sample = np.zeros(N, bool), np.zeros(N, bool)
+            lab[order[:150]], sample[order[:1000]] = True, True
+            st = multi.pattern_stats(["labels", "v1", "v2"], [np.where(lab, y, NAN), cheap, np.where(sample, good, NAN)])
+            per.append((g, multi.together(st, N, [dict(v) for v in vs], Z)))
+        r = multi.by_groups(per, vs, Z)
+        for x in r["groups"]:
+            hits[x["g"]].append(x["estimate"]["ci"][0] <= truth[x["g"]] <= x["estimate"]["ci"][1])
+        o = r["overall"]
+        assert o["theta"] == pytest.approx(sum(x["rows"] * x["estimate"]["theta"] for x in r["groups"]) / 10000)
+        overall.append(o["ci"][0] <= whole <= o["ci"][1])
+        flagged.append([f["group"] for f in r["systematic"]])
+    assert all(np.mean(h) >= 0.9 for h in hits.values()) and np.mean(overall) >= 0.9
+    assert np.mean([f == ["b"] for f in flagged]) >= 0.8
+
+
+def test_by_group_plans_a_pilot_first_labels_a_small_group_whole_and_adds_up():
+    rng = np.random.default_rng(29)
+    vs = _versions()
+    per = []
+    for g, N, n0 in (("big", 20000, 300), ("new", 5000, 12), ("tiny", 20, 4)):
+        y, good, cheap = _population(rng, N)
+        lab, sample = np.zeros(N, bool), np.zeros(N, bool)
+        lab[:n0], sample[:min(N, 2000)] = True, True
+        st = multi.pattern_stats(["labels", "v1", "v2"], [np.where(lab, y, NAN), cheap, np.where(sample, good, NAN)])
+        per.append((g, multi.together(st, N, [dict(v) for v in vs], Z, 0.03, 1.0)))
+    r = multi.by_groups(per, vs, Z, 0.03, 1.0)
+    plans = {x["g"]: x["plan"][0] for x in r["groups"]}
+    assert plans["big"]["kind"] == "models on samples" and plans["big"]["models"][0] == "v2"
+    pilot = plans["new"]                                  # 12 labels: the correlations aren't known yet
+    assert pilot["kind"] == "pilot" and pilot["labels"] == groups.PILOT and pilot["more_labels"] == groups.PILOT - 12
+    assert pilot["rows"] == {"v1": 5000, "v2": 2000} and not any(pilot["more_rows"].values())   # both judged them
+    assert plans["tiny"]["kind"] == "exact" and plans["tiny"]["labels"] == 20 and plans["tiny"]["more_labels"] == 16
+    t = r["totals"]
+    assert t["cheapest"]["cost"] == pytest.approx(sum(p["cost"] for p in plans.values()))
+    assert t["cheapest"]["pilots"] == 1 and t["cheapest"]["more_labels"] == sum(p["more_labels"] for p in plans.values())
+    assert t["cheapest"]["cost"] <= t["active"]["cost"] <= t["labels alone"]["cost"]
+    text = multi.render({**r, "name": "t", "answer": "x", "level": 0.95, "where": None, "by": "site"})
+    assert "pilot: 30 labels first" in text and "label every row: exact" in text and "1 group needs a pilot" in text

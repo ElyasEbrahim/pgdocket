@@ -10,6 +10,7 @@
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
   pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group;
                       --weight: a share of a sum, or of a join's rows; --with: several models and labels together
+                      (with --by, per group), and the cheapest mix of them for a --target
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
@@ -149,9 +150,14 @@ def main(argv=None):
                     help="with --label-cost: a version's cost per row (default: its tokens at its backend's price; free "
                          "backends 0), e.g. 3=0.00005 for the hardware a local model runs on")
     es.add_argument("--target", type=float, metavar="SHARE",
-                    help="with --by or --weight: how many more labels each group needs for an interval of ± SHARE (e.g. 0.02)")
+                    help="with --by or --weight: how many more labels each group needs for an interval of ± SHARE (e.g. "
+                         "0.02); with --with --label-cost: the cheapest mix of labels and rows judged by each version")
     es.add_argument("--draw", metavar="CSV",
-                    help="with --target: write those rows to label (drawn at random within each group; with --weight, by weight)")
+                    help="with --target: write those rows to label (drawn at random within each group; with --weight, by "
+                         "weight; with --with, the next in the shared order)")
+    es.add_argument("--queue", action="store_true",
+                    help="with --with --target --label-cost: queue the rows the cheapest mix has each version judge "
+                         "(with --by, in each group) for the worker")
     es.add_argument("--seed", default="1",
                     help="with --draw; with --weight, also the ranking rows are drawn by, so keep it for later estimates")
     pl = sub.add_parser("plan", help="how much review keeps the column's error ≤ ε (95 %% confidence)")
@@ -321,8 +327,8 @@ def _ledger_command(a):
     elif a.cmd == "estimate" and (a.by or a.weight):
         _estimate_by(a, ledger)
     elif a.cmd == "estimate":
-        if a.target or a.draw:
-            sys.exit("--target and --draw plan labels for a share: add --by COL or --weight EXPR")
+        if a.target or a.draw or a.queue:
+            sys.exit("--target, --draw and --queue plan labels for a share: add --by COL, --weight EXPR or --with V")
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
         lvl = f"{100 * a.level:.0f} %"
         print(f"{a.name}: how many judged rows truly have each answer ({lvl} intervals)"
@@ -410,10 +416,10 @@ def _ledger_command(a):
 
 def _estimate_with(a, ledger):
     from . import groups, multi
-    if a.by or a.weight:
-        sys.exit("--with doesn't combine with --by or --weight yet: estimate the whole scope (--where narrows it)")
-    if a.draw and not (a.target and a.label_cost is not None):
-        sys.exit("--draw writes the labels the cheapest mix needs: add --target and --label-cost")
+    if a.weight:
+        sys.exit("--with doesn't combine with --weight yet: estimate a share of rows (--by and --where narrow it)")
+    if (a.draw or a.queue) and not (a.target and a.label_cost is not None):
+        sys.exit(f"{'--draw' if a.draw else '--queue'} carries out the cheapest mix: add --target and --label-cost")
     try:
         wanted = [int(v) for v in a.with_.split(",") if v.strip()]
         costs = {int(k): float(v) for k, v in (c.split("=", 1) for c in a.cost)}
@@ -422,28 +428,42 @@ def _estimate_with(a, ledger):
     import psycopg
     with ledger.connect(a.dsn) as conn:
         try:
-            r = multi.estimate_with(conn, a.name, a.answer, wanted, a.where, a.level, a.target, a.label_cost, costs)
+            r = multi.estimate_with(conn, a.name, a.answer, wanted, a.where, a.level, a.target, a.label_cost, costs,
+                                    a.by)
         except psycopg.Error as e:
-            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--where names columns of the source table)")
+            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--by and --where name columns of the source table)")
         print(multi.render(r))
-        if r["plan"]:
-            best = r["plan"][0]
-            for n, m in best["more_rows"].items():
-                if m:
-                    print(f"  pgdocket backfill {a.name} --version {n[1:]} --sample {best['rows'][n]}"
-                          + (f" --seed {a.seed}" if a.seed != "1" else ""))
-            if a.draw and best["more_labels"]:
-                d = groups.decision(conn, a.name)
-                keys = multi.draw_labels(conn, d, best["more_labels"], a.where, a.seed)
-                n = groups.export(conn, d, None, [(k, None, "at random") for k in keys], a.draw)
-                print(f"{n} rows to label written to {a.draw}, blind (no AI answer): the next in the shared order. "
-                      f"Fill in `label`, then:\n  pgdocket label {a.name} --csv {a.draw} --random")
+        best = ([(x["g"], x["plan"][0]) for x in r["groups"] if x["plan"]] if a.by else
+                [(groups.ALL, r["plan"][0])] if r["plan"] else [])
+        if not best:
+            return
+        d = groups.decision(conn, a.name)
+        jobs = [(g, int(n[1:]), p["rows"][n]) for g, p in best for n, m in p["more_rows"].items() if m]
+        if jobs and a.queue:
+            n = multi.queue_samples(conn, d, jobs, a.by, a.where, a.seed)
+            print(f"{n:,} rows queued: " + ", ".join(f"v{v}'s sample" for v in sorted({j[1] for j in jobs}))
+                  + (f" in each {a.by}" if a.by else "") + " (the first rows of the shared order). Run the worker, "
+                  "then estimate again.")
+        elif jobs and not (a.by or a.where):
+            for _, v, m in jobs:
+                print(f"  pgdocket backfill {a.name} --version {v} --sample {m}" + (f" --seed {a.seed}" if a.seed != "1" else ""))
+        elif jobs:
+            print("to have the versions judge those rows" + (f" in each {a.by}" if a.by else "") + ": add --queue, "
+                  "then run the worker")
+        if a.draw and any(p["more_labels"] for _, p in best):
+            rows = multi.draw_labels(conn, d, [(g, p["more_labels"]) for g, p in best], a.by, a.where, a.seed)
+            n = groups.export(conn, d, a.by, [(k, g, "at random") for k, g in rows], a.draw)
+            print(f"{n} rows to label written to {a.draw}, blind (no AI answer): the next in the shared order"
+                  + (f" in each {a.by}" if a.by else "") + f". Fill in `label`, then:\n  pgdocket label {a.name} --csv "
+                  f"{a.draw} " + (f"--stratified {a.by}" if a.by else "--random"))
 
 
 def _estimate_by(a, ledger):
     from . import groups
     if a.draw and not a.target:
         sys.exit("--draw writes the labels a --target needs: add --target")
+    if a.queue:
+        sys.exit("--queue has versions judge the rows a --with plan asks for: add --with V and --label-cost")
     if a.include_manual:
         sys.exit("--by and --weight use only labels drawn at random, within groups or by weight")
     import psycopg

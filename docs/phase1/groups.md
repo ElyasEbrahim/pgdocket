@@ -69,6 +69,7 @@ With Jev 1.13 one row per request; the other predictors are in the report.
 - **Normal intervals**, as in `estimate`. Tiny groups are labelled whole and reported exactly.
 - **Built since:** weighted queries, and rows counted several times by a join (`--weight`, #26): rows drawn by weight. See [weighted shares](weights.md).
 - **Built since:** several models and labels in one estimate, judging a sample of rows instead of all, and the cheapest mix of them (`--with`, `backfill --sample`, #27). See [several models](models.md).
+- **Built since:** the same by group (`--with --by`, #28). Each group's cheapest mix of labels and rows judged is queued and drawn within the group. On the CFPB regions, adding Jev on a sample to Laya on every row cut the cost of ± 3 points in every region by 11–24 % for three of four answers. See [several models, by group](models.md#by-group).
 
 ## Reproduce
 

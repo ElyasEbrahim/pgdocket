@@ -2,6 +2,22 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-03
+
+### Added (several models by group, #28)
+- **`pgdocket estimate NAME --answer A --with V --by COL`**: the share in each group of COL, from the group's own labels and each version's answers on its rows.
+  - **Which labels count.** Labels drawn at random from the table, and labels drawn within COL's groups (`label --stratified COL`).
+  - **The whole scope** is the groups' estimates weighted by their rows.
+  - **Flags.** Groups where the active version's error differs from the others' are named, as with `--by`.
+- **`--target --label-cost`** gives each group's cheapest mix of labels and rows judged by each version, and the total. Beside it are labels alone in every group and the active version on every row (`estimate --by`).
+- **Pilots and stops**, with or without `--by`. With fewer than 30 labels, a group's plan is a pilot of 30, each version judging those rows. A group with no more rows than that is labelled whole. Once an interval is within the target, with 10 labels each way, nothing more is needed.
+- **`--queue`** has each version judge what the cheapest mix asks: the first rows of each group's shared order, labelled rows first. **`--draw`** writes the next labels in each group in the same order, for `label --stratified COL`. So in every group the labels lie inside each version's sample.
+- **Validation** (`jevbench multigroupvalidate`, no API calls): the 1,992 CFPB complaints from the four US Census regions, to ± 3 points in every region. The active version (batched Jev, or Laya) is on every row; Jev one row per request judges a sample in each region; labels cost $1.
+  - **Coverage.** On 200,000 resampled complaints, each region's interval held 91–100 %, and the regions together 93–98 %. The intervals were 3–49 % narrower than with the active version alone.
+  - **Cost.** On 100 million rows, drawing within regions cost 49–67 % less than one design drawn across the table. Adding Jev on a sample saved 11–24 % over Laya alone for three answers, and 3–10 % over batched Jev. Mortgage saved nothing: the floor of 10 labels each way sets the count.
+  - **In rounds** (a pilot, then each region's plan until met) the cost was 4–21 % below the same rounds with the active version alone. Final intervals held 92.8–97.2 % at 1.7–2.8 points.
+  - Write-up: `docs/phase1/models.md#by-group`.
+
 ## 2026-11-01
 
 ### Added (several models and the cheapest mix, #27)
