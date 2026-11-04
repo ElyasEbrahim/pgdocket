@@ -108,6 +108,13 @@ def main(argv=None):
     sub.add_parser("groupvalidate")
     sub.add_parser("weightvalidate")
     sub.add_parser("multivalidate")
+    lj = sub.add_parser("livejoin")
+    lj.add_argument("--target", type=float, default=0.02)
+    lj.add_argument("--max-usd", type=float, default=0.10, help="cap on Jev spend for the decision, all runs together")
+    lj.add_argument("--answers", default=",".join(("credit reporting", "debt collection", "credit card")),
+                    help="semicolon-separated if an answer has a comma")
+    lj.add_argument("--setup-only", action="store_true", help="build the tables and judge every text with Laya")
+    lj.add_argument("--report-only", action="store_true", help="no rounds: rewrite the report from the ledger")
     mw = sub.add_parser("multiweightvalidate")
     mw.add_argument("--trials", type=int, default=1000)
     mw.add_argument("--runs", type=int, default=100)
@@ -212,6 +219,12 @@ def main(argv=None):
     elif args.cmd == "multivalidate":
         from . import multivalidate
         print("report:", multivalidate.run() + "/report.md")
+    elif args.cmd == "livejoin":
+        from . import livejoin
+        sep = ";" if ";" in args.answers else ","
+        out = livejoin.run(args.target, args.max_usd, [a.strip() for a in args.answers.split(sep) if a.strip()],
+                           args.setup_only, args.report_only)
+        print("report:", out + "/report.md" if out else "set up")
     elif args.cmd == "multiweightvalidate":
         from . import multiweightvalidate
         print("report:", multiweightvalidate.run(args.trials, args.runs) + "/report.md")

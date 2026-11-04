@@ -252,6 +252,31 @@ The 2,000 CFPB texts judged in Phase 0 stand for the 21,980 complaints in the so
 - **Jev one row per request is barely better than batched Jev here.** Their residual variances per labelled text drawn are 0.032 and 0.036.
 - **Where it pays:** a weaker active version and a common answer, as with Laya on credit reporting. In the unit tests' heavy-tailed table, where the second model is much better, intervals were about 45 % narrower than #26's.
 
+### Live, on the CFPB join
+
+*2026-11-04 · evidence: [results/multiweight-live](../../results/multiweight-live/report.md)*
+
+`jevbench livejoin` runs the workflow above in Postgres, with real calls:
+- **The tables.** The 2,000 texts are in `demo.cfpb_texts`, and the 21,980 complaints that carry them are in `demo.cfpb_complaints`. Each text is counted by `(SELECT count(*) FROM demo.cfpb_complaints c WHERE c.text_id = s.id)`.
+- **The models.** Laya judges every text as the active version: 11 minutes on this machine, 0.34 s a text, for free. Its answers matched its stored Phase 0 answers on every text. Jev 1.14, one row per request, is version 2.
+- **The rounds.** `estimate --with 2 --weight … --target 0.02 --label-cost 1 --queue --draw` ran round after round, as a user would run it: for credit reporting, then debt collection, then credit card. Each answer started from the labels the ones before it left. Drawn texts were labelled with the product their complaint chose.
+
+| share of complaints | truth | estimate | 95 % interval | rounds | labels | texts Jev judged |
+| --- | ---: | ---: | --- | ---: | ---: | ---: |
+| credit reporting | 94.3 % | 95.5 % | 93.9 – 97.1 | 4 | 107 | 107 |
+| debt collection | 1.6 % | 1.3 % | 0.0 – 2.7 | 1 | 107 | 107 |
+| credit card | 2.4 % | 2.4 % | 2.1 – 2.7 | 2 | 386 | 443 |
+
+- **Every interval held the truth.** Jev cost $0.0102 in all.
+- **Jev narrowed the intervals but saved no labels.**
+  - **Narrower:** from the same labels, Laya alone gives ± 1.82 points for credit reporting against ± 1.60 with Jev, and ± 0.30 against ± 0.27 for credit card. For debt collection Jev wasn't used: the labels held fewer than 10 complaints about it.
+  - **No fewer labels:** #26's plan with Laya alone, run round after round on the same ranking and in the same order, takes the same 107 and 386 labels.
+  - **Why:** the heaviest texts are certain to be labelled, so 78–89 % of the weight was known exactly. The pilot and the floor of 5 rows drawn with and without the answer set the label counts.
+  - **Not for want of a better model:** on the texts it judged, Jev was right about credit reporting 89.7 % of the time, and Laya 74.8 %.
+- **Checked.** The labelled texts and the texts Jev judged are each the first texts of the ranking. Each estimate, recomputed outside the database from the same texts, matches the SQL one.
+- **Found and fixed.** `label` reported a file drawn by weight as "manual". The ledger had stored the rows as drawn by weight all along.
+- **Upgraded in place.** The development database's ledger, at migration 004 with a decision of three versions, 91 labels and a calibration, upgraded to 011 with its data in place.
+
 ## How this relates to other work
 
 - **Multiple-PPI** (Cowen-Breen et al., ICLR 2026) chooses which subsets of models to query on how many samples, and combines them with the minimum-variance linear estimator. pgdocket uses that estimator for whatever samples exist, and the nested special case for planning.
@@ -278,4 +303,6 @@ The 2,000 CFPB texts judged in Phase 0 stand for the 21,980 complaints in the so
 docker compose run --rm --no-deps bench multivalidate        # needs the stored Phase 0 and Laya runs (no API calls)
 docker compose run --rm --no-deps bench multigroupvalidate   # by region: also needs the source shard in data/raw/hf (jevbench fetch)
 docker compose run --rm --no-deps bench multiweightvalidate  # weighted: the same shard
+docker compose --profile laya up -d --wait laya              # live: Laya, then real Jev calls capped at $0.10;
+docker compose run --rm bench livejoin --max-usd 0.10        # it resumes from the ledger
 ```

@@ -218,7 +218,7 @@ pgdocket worker                                                     # v2 judges 
 pgdocket label complaints --csv next.csv                            # the file marks the rows drawn by weight
 ```
 
-On the CFPB join, the intervals held 93.8–99.4 %. For credit reporting, the second version cut the cost of ± 2 points by 10–19 %. For the rare answers, where the floor of labels sets the count, it saved little or nothing.
+On the CFPB join, the intervals held 93.8–99.4 %. On a million texts with that join's fan-out, the second version cut the cost of ± 2 points by 10–19 % for credit reporting. For the rare answers, where the floor of labels sets the count, it saved little or nothing. Run live on the 2,000-text join itself (`jevbench livejoin`), every interval held and Jev cost $0.01, but it saved no labels: the heaviest texts are certain to be labelled anyway.
 
 See [docs/phase1/models.md](../docs/phase1/models.md).
 

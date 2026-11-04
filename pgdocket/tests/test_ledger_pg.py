@@ -1108,7 +1108,8 @@ def test_estimate_with_weight_runs_v_and_the_labels_down_one_ranking_by_weight(e
             w = csv.DictWriter(f, fieldnames=list(sheet[0]))
             w.writeheader()
             w.writerows(sheet)
-        ledger.import_labels(env["owner"], "texts", csv_path=path)
+        cli.main(["label", "--dsn", env["owner"], "texts", "--csv", path])
+        assert f"{len(sheet)} labels imported for texts (drawn by weight)" in capsys.readouterr().out
     assert kinds[0] == "pilot" and f"labels, v{v2}" in kinds and kinds[-1] == "nothing more"
     with psycopg.connect(env["owner"]) as c:
         d = groups.decision(c, "texts")
@@ -1148,3 +1149,15 @@ def test_estimate_with_weight_runs_v_and_the_labels_down_one_ranking_by_weight(e
     e = r["groups"][0]["est"]
     assert e["used"] == ["labels", "v1", f"v{v2}"] and e["ci"][0] - 0.02 <= truth <= e["ci"][1] + 0.02
     assert e["labels"] < N / 2                                   # far from labelling every text
+
+    import math
+    with psycopg.connect(env["owner"], autocommit=True) as c:    # a plan's "every row": V's cut-off at ∞
+        queued = multiweight.queue(c, d, v2, [(groups.ALL, math.inf)], weight="copies")
+    assert queued == N - got["vjudged"]
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    with psycopg.connect(env["owner"]) as c:
+        every = multiweight.ledger_sums(c, d, v2, "billing", weight="copies")[0]
+        r = multiweight.estimate_with(c, "texts", "billing", [v2], "copies")
+    assert every["vjudged"] == N and math.isinf(every["xi1"]) and every["run"]["D"] == 0     # V a census: no 1 − π
+    e = r["groups"][0]["est"]
+    assert e["used"] == ["labels", "v1", f"v{v2}"] and e["ci"][0] - 0.02 <= truth <= e["ci"][1] + 0.02

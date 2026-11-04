@@ -305,6 +305,13 @@ def _ledger_command(a):
                                  positive=a.positive, random=a.random, stratified=a.stratified)
         kind = (f"drawn within {a.stratified} groups" if a.stratified else "random sample" if (a.sample or a.random)
                 else ("whole column" if a.from_column else "manual"))
+        if a.csv:                                     # rows the file marks drawn by weight are stored as such (#26)
+            import csv
+            with open(a.csv, newline="") as f:
+                weighted = sum((r.get("drawn") or "").strip() == "by weight" and bool((r.get("label") or "").strip())
+                               for r in csv.DictReader(f))
+            if weighted:
+                kind = "drawn by weight" if weighted >= n else f"{weighted:,} drawn by weight, the rest {kind}"
         print(f"{n} labels imported for {a.name} ({kind})")
     elif a.cmd == "calibrate":
         try:

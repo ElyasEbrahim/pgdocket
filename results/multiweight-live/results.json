@@ -1,0 +1,166 @@
+{
+  "runs": [
+    {
+      "answer": "credit reporting",
+      "target": 0.02,
+      "truth": 0.9434940855323021,
+      "complaints_own_product": 0.9440400363967243,
+      "laya_says": 0.6909918107370336,
+      "theta": 0.9548593973112964,
+      "se": 0.008146092298351174,
+      "ci": [
+        0.938893349778917,
+        0.9708254448436758
+      ],
+      "held": true,
+      "reliable": true,
+      "used": [
+        "labels",
+        "v1",
+        "v2"
+      ],
+      "labels": 107,
+      "drawn": 62,
+      "certain": 45,
+      "exact_share": 0.7755232029117379,
+      "jev_texts": 107,
+      "jev_right": 0.897196261682243,
+      "laya_right_there": 0.7476635514018691,
+      "plan": "met",
+      "laya_alone": {
+        "labels": 107,
+        "rounds": 4,
+        "half_width": 0.018178276902311684,
+        "held": true
+      },
+      "render": "cfpb_join: share of the weight ((SELECT count(*) FROM demo.cfpb_complaints c WHERE c.text_id = s.id)) whose true answer is 'credit reporting', from labels drawn by weight, v1 on every row and v2 on a run of the ranking (95 % intervals)\ngroup                   rows  labels  exact   v2 rows  v1 says  v2 says  estimate    95 % interval\nall rows               2,000     107   78 %       107   69.1 %   88.1 %    95.5 %      93.9 \u2013 97.1\nlabels: the run at the top of the ranking by u / w (seed 1); exact: the share of the weight in rows certain to be labelled; v2 rows: its run of the same ranking\n\nthe cheapest mix for \u00b12.0 points (a label $1.00; per row v2 $0.000021, v1 already on every row):\ngroup              plan                                     labels    v2 rows  still costs\nall rows           nothing more: the target is met             108        108        $0.00\nin all                                                         108        108        $0.00\ncheapest: nothing more; the target is met",
+      "rounds": 4,
+      "steps": [
+        {
+          "jev_usd": 0.0007514640000000001,
+          "judged": 36,
+          "labelled": 36
+        },
+        {
+          "jev_usd": 0.001214388,
+          "judged": 22,
+          "labelled": 22
+        },
+        {
+          "jev_usd": 0.002298954,
+          "judged": 49,
+          "labelled": 49
+        },
+        {
+          "jev_usd": null,
+          "judged": 0,
+          "labelled": 0
+        }
+      ],
+      "recomputed": true,
+      "alone_half_width": 0.018178276902311684,
+      "alone_held": true
+    },
+    {
+      "answer": "debt collection",
+      "target": 0.02,
+      "truth": 0.01569608735213831,
+      "complaints_own_product": 0.016651501364877162,
+      "laya_says": 0.10759781619654231,
+      "theta": 0.012685328908633515,
+      "se": 0.007304889115237437,
+      "ci": [
+        0.0,
+        0.027002648497100306
+      ],
+      "held": true,
+      "reliable": true,
+      "used": [
+        "labels",
+        "v1"
+      ],
+      "labels": 107,
+      "drawn": 62,
+      "certain": 45,
+      "exact_share": 0.7755232029117379,
+      "jev_texts": 107,
+      "jev_right": 0.9532710280373832,
+      "laya_right_there": 0.8130841121495327,
+      "plan": "met",
+      "laya_alone": {
+        "labels": 107,
+        "rounds": 1,
+        "half_width": 0.014317319588466791,
+        "held": true
+      },
+      "render": "cfpb_join: share of the weight ((SELECT count(*) FROM demo.cfpb_complaints c WHERE c.text_id = s.id)) whose true answer is 'debt collection', from labels drawn by weight, v1 on every row and v2 on a run of the ranking (95 % intervals)\ngroup                   rows  labels  exact   v2 rows  v1 says  v2 says  estimate    95 % interval\nall rows               2,000     107   78 %       107   10.8 %        \u2013     1.3 %        0.0 \u2013 2.7\nlabels: the run at the top of the ranking by u / w (seed 1); exact: the share of the weight in rows certain to be labelled; v2 rows: its run of the same ranking\nv2 left out: the labelled rows hold fewer than 10 with and without the answer\n\nthe cheapest mix for \u00b12.0 points (a label $1.00; per row v2 $0.000021, v1 already on every row):\ngroup              plan                                     labels    v2 rows  still costs\nall rows           nothing more: the target is met             108        108        $0.00\nin all                                                         108        108        $0.00\ncheapest: nothing more; the target is met",
+      "rounds": 1,
+      "steps": [
+        {
+          "jev_usd": null,
+          "judged": 0,
+          "labelled": 0
+        }
+      ],
+      "recomputed": true,
+      "alone_half_width": 0.014317319588466791,
+      "alone_held": true
+    },
+    {
+      "answer": "credit card",
+      "target": 0.02,
+      "truth": 0.02388535031847134,
+      "complaints_own_product": 0.021792538671519562,
+      "laya_says": 0.18721565059144676,
+      "theta": 0.023823395504751127,
+      "se": 0.0013740405575637642,
+      "ci": [
+        0.021130325496457637,
+        0.026516465513044617
+      ],
+      "held": true,
+      "reliable": true,
+      "used": [
+        "labels",
+        "v1",
+        "v2"
+      ],
+      "labels": 386,
+      "drawn": 262,
+      "certain": 124,
+      "exact_share": 0.890400363967243,
+      "jev_texts": 443,
+      "jev_right": 0.9051918735891648,
+      "laya_right_there": 0.8690744920993227,
+      "plan": "met",
+      "laya_alone": {
+        "labels": 386,
+        "rounds": 2,
+        "half_width": 0.0030208106089765867,
+        "held": true
+      },
+      "render": "cfpb_join: share of the weight ((SELECT count(*) FROM demo.cfpb_complaints c WHERE c.text_id = s.id)) whose true answer is 'credit card', from labels drawn by weight, v1 on every row and v2 on a run of the ranking (95 % intervals)\ngroup                   rows  labels  exact   v2 rows  v1 says  v2 says  estimate    95 % interval\nall rows               2,000     386   89 %       443   18.7 %    5.6 %     2.4 %        2.1 \u2013 2.7\nlabels: the run at the top of the ranking by u / w (seed 1); exact: the share of the weight in rows certain to be labelled; v2 rows: its run of the same ranking\n\nthe cheapest mix for \u00b12.0 points (a label $1.00; per row v2 $0.000023, v1 already on every row):\ngroup              plan                                     labels    v2 rows  still costs\nall rows           nothing more: the target is met             373        440        $0.00\nin all                                                         373        440        $0.00\ncheapest: nothing more; the target is met",
+      "rounds": 2,
+      "steps": [
+        {
+          "jev_usd": 0.010159506000000002,
+          "judged": 336,
+          "labelled": 279
+        },
+        {
+          "jev_usd": null,
+          "judged": 0,
+          "labelled": 0
+        }
+      ],
+      "recomputed": true,
+      "alone_half_width": 0.0030208106089765867,
+      "alone_held": true
+    }
+  ],
+  "laya_agreement": 1.0,
+  "texts": 2000,
+  "jev_usd": 0.010159506000000002,
+  "prefixes": true,
+  "laya_seconds": 679.656892
+}

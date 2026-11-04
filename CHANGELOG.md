@@ -4,6 +4,25 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-04
 
+### Added (a live run of #29 on the CFPB join)
+- **`jevbench livejoin`** runs `estimate --with 2 --weight … --target --label-cost --queue --draw` round after round in Postgres, with real calls, capped by `--max-usd`.
+  - **The setup.** The 2,000 CFPB texts and the 21,980 complaints that carry them are two tables, and each text is counted by a correlated count over the join. Laya judges every text as the active version, and Jev 1.14 one row per request is version 2.
+  - **Labels.** Drawn texts are labelled with the product their complaint chose.
+  - **Resuming.** Everything is in the ledger, so a second run picks up where the first stopped.
+- **Result at ± 2 points**, for credit reporting, debt collection and credit card in turn:
+  - **Every interval held the truth.** Jev cost $0.0102, on 443 of the 2,000 texts.
+  - **Narrower intervals, but no labels saved.** Jev narrowed credit reporting's interval from ± 1.82 to ± 1.60 points and credit card's from ± 0.30 to ± 0.27. Laya alone's rounds on the same ranking take the same 107 and 386 labels.
+  - **Why:** the heaviest texts are certain to be labelled, so 78–89 % of the weight was known exactly. The pilot and the floors set the counts.
+  - **Laya's answers matched its stored Phase 0 answers on every text.**
+  - Write-up: `docs/phase1/models.md#live-on-the-cfpb-join`.
+
+### Fixed
+- **`pgdocket label --csv`** reported a file from `estimate --weight --draw` as "manual". It now says "drawn by weight", as the ledger has always stored the rows (#26).
+
+### Tested
+- **Upgrade in place.** A ledger at migration 004, holding a decision with three versions, 91 labels and a calibration, upgrades to 011 with `pgdocket install`, and its view still reads.
+- **Jev on every row.** The weighted Postgres test also queues V on every row (an infinite cut-off), as a plan for a small table does.
+
 ### Added (several models for a weighted share, #29)
 - **`pgdocket estimate NAME --answer A --with V --weight EXPR [--by COL]`**: a weighted share from labels drawn by weight, the active version on every row and version V on a longer run of the same ranking by u / w.
   - **The estimate** is the two-phase regression estimator for samples drawn in proportion to weight (Särndal, Swensson & Wretman, 1992). Rows certain to be labelled count exactly. V's share comes from its run, regressed on the active version's answers, and the active version's share from every row.
