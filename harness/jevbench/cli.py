@@ -108,6 +108,9 @@ def main(argv=None):
     sub.add_parser("groupvalidate")
     sub.add_parser("weightvalidate")
     sub.add_parser("multivalidate")
+    mw = sub.add_parser("multiweightvalidate")
+    mw.add_argument("--trials", type=int, default=1000)
+    mw.add_argument("--runs", type=int, default=100)
     mg = sub.add_parser("multigroupvalidate")
     mg.add_argument("--trials", type=int, default=300)
     mg.add_argument("--runs", type=int, default=100)
@@ -209,6 +212,9 @@ def main(argv=None):
     elif args.cmd == "multivalidate":
         from . import multivalidate
         print("report:", multivalidate.run() + "/report.md")
+    elif args.cmd == "multiweightvalidate":
+        from . import multiweightvalidate
+        print("report:", multiweightvalidate.run(args.trials, args.runs) + "/report.md")
     elif args.cmd == "multigroupvalidate":
         from . import multigroupvalidate
         print("report:", multigroupvalidate.run(args.trials, args.runs) + "/report.md")

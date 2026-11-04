@@ -957,8 +957,8 @@ def test_estimate_with_two_versions_reads_nested_samples_from_the_ledger(env, ca
     assert ledger.estimate(env["owner"], "claims", "billing")[0]["labels"] == 150 + len(sheet)
 
     with pytest.raises(SystemExit) as e:
-        cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", str(v2), "--weight", "1"])
-    assert "doesn't combine with --weight" in str(e.value)
+        cli.main(["estimate", "--dsn", env["owner"], "claims", "--answer", "billing", "--with", "1", "--weight", "1"])
+    assert "takes one version other than the active one" in str(e.value)
 
 
 def test_estimate_with_by_group_queues_each_groups_sample_and_draws_its_labels(env, capsys):
@@ -1053,3 +1053,98 @@ def test_estimate_with_by_group_queues_each_groups_sample_and_draws_its_labels(e
     whole = float(np.mean(team == "billing"))
     assert r["overall"]["ci"][0] - 0.02 <= whole <= r["overall"]["ci"][1] + 0.02
     assert ledger.estimate(env["owner"], "tix", "billing")[0]["labels"] == 100        # plain estimates: random only
+
+
+def test_estimate_with_weight_runs_v_and_the_labels_down_one_ranking_by_weight(env, capsys):
+    """--with and --weight together (#29): labels and V take nested runs of one ranking by u / w, the active version
+    judges every row. `--queue` has V judge its run and `--draw` writes the labels' run, a pilot first and then the
+    cheapest thresholds; the SQL sums are those `multiweight.sums` computes from the rows, and the estimate holds."""
+    import numpy as np
+
+    from pgdocket import cli, groups, multiweight
+    from pgdocket.tests.fakes import FakeSystemOne
+    rng = np.random.default_rng(29)
+    teams, N = ["billing", "technical", "sales"], 800
+    team = rng.choice(teams, N, p=[0.3, 0.5, 0.2])
+    said = np.where(rng.random(N) < 0.85, team, rng.choice(teams, N))
+    copies = (np.floor(rng.pareto(1.2, N) * 2) + 1).astype(int)
+    copies[:3] = [900, 400, 250]                          # a few texts a join counts hundreds of times
+    site = rng.choice(["north", "south"], N, p=[0.6, 0.4])
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.texts (id int PRIMARY KEY, body text, team text, copies int, site text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.texts VALUES (%s, %s, %s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i]), int(copies[i]), str(site[i])) for i in range(N)])
+    FakeSystemOne.answer_override = {"s": "b"}               # v1, the active version, calls sales texts billing
+    try:
+        ledger.create(env["owner"], "texts", "shop.texts", "id", ["body"], _spec(env["url"]))
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    finally:
+        FakeSystemOne.answer_override = {}
+    v2, _ = ledger.revise(env["owner"], "texts", model="fake-2")
+    truth = float((copies * (team == "billing")).sum() / copies.sum())
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"next-{uuid.uuid4().hex[:6]}.csv")
+    args = ["estimate", "--dsn", env["owner"], "texts", "--answer", "billing", "--with", str(v2), "--weight", "copies",
+            "--target", "0.025", "--label-cost", "0.5", "--cost", f"{v2}=0.01", "--queue", "--draw", path]
+    kinds = []
+    for _ in range(4):                                     # rounds: queue V's run, label the drawn rows, again
+        capsys.readouterr()
+        cli.main(args)
+        out = capsys.readouterr().out
+        kinds.append(next(k for k in ("nothing more", "pilot", "label every row", f"labels, v{v2}", "labels and v1")
+                          if k in out.split("the cheapest mix")[1]))
+        if "rows queued" in out:
+            assert f"rows queued for v{v2}: its run of the ranking by weight" in out
+            Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        if "rows to label written" not in out:
+            break
+        assert f"pgdocket label texts --csv {path}" in out
+        with open(path, newline="") as f:
+            sheet = list(csv.DictReader(f))
+        assert sheet and {s["drawn"] for s in sheet} == {"by weight"}
+        for s in sheet:
+            s["label"] = str(team[int(s["key"]) - 1])
+        with open(path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(sheet[0]))
+            w.writeheader()
+            w.writerows(sheet)
+        ledger.import_labels(env["owner"], "texts", csv_path=path)
+    assert kinds[0] == "pilot" and f"labels, v{v2}" in kinds and kinds[-1] == "nothing more"
+    with psycopg.connect(env["owner"]) as c:
+        d = groups.decision(c, "texts")
+        got = multiweight.ledger_sums(c, d, v2, "billing", weight="copies")[0]
+        rows = c.execute(
+            "SELECT s.id, (j1.value = 'billing')::int, (j2.value = 'billing')::int, (l.label = 'billing')::int "
+            "FROM shop.texts s JOIN docket.current c1 ON c1.decision_id = %(d)s AND c1.version = 1 "
+            "AND c1.row_key = s.id::text JOIN docket.judgment j1 ON j1.id = c1.judgment_id "
+            "LEFT JOIN docket.current c2 ON c2.decision_id = %(d)s AND c2.version = %(v)s AND c2.row_key = s.id::text "
+            "LEFT JOIN docket.judgment j2 ON j2.id = c2.judgment_id "
+            "LEFT JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.id::text ORDER BY s.id",
+            {"d": d["id"], "v": v2}).fetchall()
+        r = multiweight.estimate_with(c, "texts", "billing", [v2], "copies")
+        by = multiweight.ledger_sums(c, d, v2, "billing", weight="copies", by="site")
+    ids = np.array([x[0] for x in rows])
+    col = lambda i: np.array([np.nan if x[i] is None else x[i] for x in rows], float)
+    want = multiweight.sums(groups.ALL, copies[ids - 1], col(1), col(2), col(3),
+                            [groups.prn(str(i)) for i in ids])
+    for key in ("rows", "weight", "w2", "xi0", "xi1", "c_n", "c_wy", "wr", "wra", "run_all", "vjudged"):
+        assert got[key] == pytest.approx(want[key]), key
+    for part in ("L0", "Q0", "L01", "Q01", "run"):
+        assert got[part] == pytest.approx(want[part]), part
+    assert got["xi1"] >= got["xi0"] and got["c_n"] >= 1          # labels inside V's run; the heaviest text certain
+    for g in by:                                                 # by group: each group's run of the same ranking
+        m = site[ids - 1] == g["g"]
+        mine = multiweight.sums(g["g"], copies[ids - 1][m], col(1)[m], col(2)[m], col(3)[m],
+                                [groups.prn(str(i)) for i in ids[m]])
+        for key in ("rows", "weight", "xi0", "xi1", "c_wy", "wr"):
+            assert g[key] == pytest.approx(mine[key]), (g["g"], key)
+        for part in ("L0", "L01", "run"):
+            assert g[part] == pytest.approx(mine[part]), (g["g"], part)
+    capsys.readouterr()
+    cli.main(["estimate", "--dsn", env["owner"], "texts", "--answer", "billing", "--with", str(v2), "--weight", "copies",
+              "--by", "site"])
+    out = capsys.readouterr().out
+    assert ", by site, from labels drawn by weight" in out and "north" in out and "south" in out
+    e = r["groups"][0]["est"]
+    assert e["used"] == ["labels", "v1", f"v{v2}"] and e["ci"][0] - 0.02 <= truth <= e["ci"][1] + 0.02
+    assert e["labels"] < N / 2                                   # far from labelling every text

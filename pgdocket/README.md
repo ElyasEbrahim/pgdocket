@@ -210,6 +210,16 @@ pgdocket label complaints --csv next.csv --stratified region
 
 On the CFPB regions, labels drawn within each region cost 49–67 % less than one design drawn across the table for ± 3 points in every region. Adding Jev on a sample to Laya on every row saved a further 11–24 % for three of four answers.
 
+**Weighted shares** (`--with V --weight EXPR`): the labels and version V take nested runs of one ranking by weight, the active version judges every row, and rows certain to be labelled count exactly. `--queue` has V judge its run and `--draw` writes the labels' run:
+
+```bash
+pgdocket estimate complaints --answer "credit reporting" --weight copies --with 2 --target 0.02 --label-cost 1 --queue --draw next.csv
+pgdocket worker                                                     # v2 judges its run of the ranking
+pgdocket label complaints --csv next.csv                            # the file marks the rows drawn by weight
+```
+
+On the CFPB join, the intervals held 93.8–99.4 %. For credit reporting, the second version cut the cost of ± 2 points by 10–19 %. For the rare answers, where the floor of labels sets the count, it saved little or nothing.
+
 See [docs/phase1/models.md](../docs/phase1/models.md).
 
 # Planning human review

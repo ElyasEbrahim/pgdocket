@@ -1,6 +1,6 @@
 # Several models and labels: how many rows each should judge
 
-*2026-11-01 · issue #27; by group 2026-11-03, #28 · lineage: double sampling (Neyman, 1938), multifidelity Monte Carlo (Peherstorfer, Willcox & Gunzburger, 2016), Multiple-PPI (Cowen-Breen et al., 2026), prediction-powered inference (PPI++) · evidence: [results/multi-validation](../../results/multi-validation/report.md), by region [results/multigroup-validation](../../results/multigroup-validation/report.md)*
+*2026-11-01 · issue #27; by group 2026-11-03, #28; weighted 2026-11-04, #29 · lineage: double sampling (Neyman, 1938), multifidelity Monte Carlo (Peherstorfer, Willcox & Gunzburger, 2016), Multiple-PPI (Cowen-Breen et al., 2026), prediction-powered inference (PPI++) · evidence: [results/multi-validation](../../results/multi-validation/report.md), by region [results/multigroup-validation](../../results/multigroup-validation/report.md), weighted [results/multiweight-validation](../../results/multiweight-validation/report.md)*
 
 A share's precision can be bought in three ways: human labels, which are dear and exact; a good model's answers, which are cheap per row; and a cheaper model's answers. Until now pgdocket judged every row with one model and spent the budget on labels. With several models of different cost, and very large tables, the question becomes how many rows each source should cover. Three things decide it:
 
@@ -174,6 +174,84 @@ The same complaints and stored answers, by region: `jevbench multigroupvalidate`
 - **The final intervals** held 92.8–97.2 % of the time, against 93.5–97.5 % with the active version alone. Their half-width was 1.7–2.8 points, and 99.2–100 % were within 5 % of the target.
 - **Rounds cost more than a plan made from the true correlations** ($2,288 against $2,026 for credit reporting in setup A). A pilot's correlations are rough, and a plan only adds rows and labels.
 
+## Weighted shares
+
+*2026-11-04 · issue #29 · lineage: two-phase sampling (Särndal, Swensson & Wretman, 1992), sequential Poisson sampling (Ohlsson, 1998) · evidence: [results/multiweight-validation](../../results/multiweight-validation/report.md)*
+
+Some queries count each row by a weight: a column they sum, or how often a join uses the row ([weighted shares](weights.md), #26). For those, labels are drawn in proportion to weight. Rows are ranked by a permanent random number over their weight, and the heaviest are certain to be drawn. `--with` now works there too, and the second version takes part in the same ranking.
+
+```bash
+pgdocket estimate complaints --answer "credit reporting" --weight copies --with 2 \
+    --target 0.02 --label-cost 1 --queue --draw next.csv       # the labels' run and v2's run of one ranking
+pgdocket worker                                                # v2 judges its run
+pgdocket label complaints --csv next.csv                       # the file marks the rows drawn by weight
+```
+
+- **One ranking, three depths.**
+  - The labels are its first rows.
+  - The second version judges a longer run of it.
+  - The active version judges every row.
+  - Rows heavy enough to be certain to be labelled count exactly, as in #26. Because the runs nest, every labelled row also has the second version's answer.
+- **The estimate** is the two-phase regression estimator for samples drawn in proportion to weight (Särndal, Swensson & Wretman, 1992). It is the labelled rows' share, corrected by how far both versions' answers on those rows stand from the versions' shares of the whole query.
+  - **The active version's share** is known exactly from every row.
+  - **The second version's share** comes from its run, regressed on the active version's answers.
+  - **The variance** weighs each row by how likely it was to be drawn: nearly certain rows add little.
+- **The second version counts once the labelled rows hold 10 with and 10 without the answer.** Until then the estimate is #26's, from the same labels.
+- **The plan** finds the two cut-offs of the ranking that reach ± target most cheaply: how many labels, and how far down the second version judges.
+  - **Certain rows.** Heavy rows become certain as the cut-offs move down, and the variance formula counts that. With no certain rows it is the same plan as without weights.
+  - **A pilot first:** 30 rows drawn by weight, the second version judging them.
+  - **Rounds:** at most four times as many labels drawn per round, as #26's plan takes them, and the next round plans again.
+  - **A stop:** nothing more once the interval is within the target.
+- **`--queue`** has the second version judge its run. **`--draw`** writes the labels' run, marked as drawn by weight for `label`.
+- **One version.** With `--weight`, `--with` takes one version besides the active one.
+
+Here it is on a million complaint texts with the CFPB join's fan-out (the 2,000 texts below, repeated 500 times), after a pilot and a first round. Laya judges every text as the active version. Jev 1.13 has judged the 180 texts at the top of the ranking, which also carry the labels:
+
+```
+complaints: share of the weight (copies) whose true answer is 'credit reporting', from labels drawn by weight, v1 on every row and v2 on a run of the ranking (95 % intervals)
+group                   rows  labels  exact   v2 rows  v1 says  v2 says  estimate    95 % interval
+all rows           1,000,000     180    0 %       180   69.1 %   88.0 %    92.9 %      89.4 – 96.4
+labels: the run at the top of the ranking by u / w (seed 1); exact: the share of the weight in rows certain to be labelled; v2 rows: its run of the same ranking
+
+the cheapest mix for ±2.0 points (a label $1.00; per row v2 $0.000024, v1 already on every row):
+group              plan                                     labels    v2 rows  still costs
+all rows           labels, v2 on a run                         397     29,558      $222.35
+in all                                                         397     29,558      $222.35
+  labels and v1 alone (estimate --weight)                      541        175      $365.58
+  labels, v2 on every row                                      397  1,000,000      $245.07
+cheapest: 222 more labels drawn by weight, 29,384 more rows judged by v2
+```
+
+The true share is 94.3 %. Labels with Laya alone would need 541. With Jev judging 29,600 texts of the ranking, 397 do, for $0.70 of Jev.
+
+### On the CFPB join
+
+The 2,000 CFPB texts judged in Phase 0 stand for the 21,980 complaints in the source shard that carry them word for word, one text 2,866 times ([weighted shares](weights.md)). `jevbench multiweightvalidate` runs everything below with no API calls ([report](../../results/multiweight-validation/report.md)).
+- **The goal:** the share of these complaints about credit reporting (94.3 % of them), debt collection (1.6 %) or credit card (2.4 %), to ± 2 points.
+- **Two setups.** The active version judges every text: batched Jev (setup A) or Laya (setup B). Jev one row per request judges a run of the ranking, at $23.70 per million texts. Labels cost $1.
+
+**Coverage.** 100 or 200 labels at the top of a fresh ranking, inside Jev's run of 500 or 1,000 texts, 1,000 draws per cell:
+- **The intervals held 93.8–99.4 % of the time,** and #26's from the same labels 95.6–99.4 %.
+- **Where Jev counted, they were narrower** than #26's: 15–20 % for credit reporting, and 9–14 % for the rare answers at 200 labels. At 100 labels Jev seldom counted for the rare answers, and the intervals were the same.
+- **How often Jev counted:** in 80–100 % of the draws for credit reporting, and in up to 67 % for the rare answers, whose labels seldom hold 10 complaints with the answer.
+- **The estimate without the second version is #26's.** A two-phase form without it held only 81–94 % in the draws with 5–9 labelled rows on the rarer side.
+
+**The cost of ± 2 points**, planned from the measured variances, on a million and on 100 million texts with this fan-out:
+- **Credit reporting:** the cheapest mix had Jev judge 17,000–37,000 texts (under $1). It cost 12–13 % less than labels with batched Jev alone, and 19 % less than labels with Laya alone.
+- **Credit card:** 5–6 % less with Laya, nothing with batched Jev.
+- **Debt collection:** nothing. At 1.6 % of the complaints, the floor of 5 rows drawn with the answer sets the count, 319 labels.
+- **Jev on every text** cost $233–386 on a million texts, and $2,580–2,743 on 100 million.
+
+**In rounds** on a million texts: a pilot, then the cheapest cut-offs, planned again until met. Each answer and setup ran 100 times, taking 3.8–5.0 rounds on average.
+- **Credit reporting cost 10 % less** with batched Jev and 17 % less with Laya. Credit card cost 2–4 % less. Debt collection cost 1 % less with batched Jev, and 7 % more with Laya.
+- **The final intervals held 91–96 % of the time,** against 94–100 % with the active version alone, at half-widths of 1.2–1.9 points. Rounds stop at the first interval within the target, so a few come out a little narrow, as in #26.
+
+**Why the gain is small here.**
+- **Labels drawn by weight already make the heaviest texts exact:** 150 of them hold 83 % of the weight.
+- **The weighted shares are extreme** (94 % and 2 %), so for the rare answers the floor of labels sets the count.
+- **Jev one row per request is barely better than batched Jev here.** Their residual variances per labelled text drawn are 0.032 and 0.036.
+- **Where it pays:** a weaker active version and a common answer, as with Laya on credit reporting. In the unit tests' heavy-tailed table, where the second model is much better, intervals were about 45 % narrower than #26's.
+
 ## How this relates to other work
 
 - **Multiple-PPI** (Cowen-Breen et al., ICLR 2026) chooses which subsets of models to query on how many samples, and combines them with the minimum-variance linear estimator. pgdocket uses that estimator for whatever samples exist, and the nested special case for planning.
@@ -182,6 +260,7 @@ The same complaints and stored answers, by region: `jevbench multigroupvalidate`
 - **Stratified multifidelity Monte Carlo** (Geraci, Schiavazzi & Zanoni, 2025) stratifies the inputs to reduce the variance of multifidelity estimates of one overall mean. With `--by`, each group has its own target instead. So each group's plan is its own multifidelity plan, and the cheapest total is their sum.
 - **Stratified PPI** (Fisch et al., 2024) and **allocating human oversight across segments** (Ye, Lyu & Tao, 2026) allocate labels across strata for one model. `--with --by` does the same with several models of different cost.
 - **OPAL** (Ma & Candès, 2026) learns which rows to label from a model's uncertainty, and gives intervals for groups such as demographic ones. pgdocket keeps each group's labels drawn at random, so its intervals need no per-row labelling probabilities.
+- **Two-phase sampling** (Särndal, Swensson & Wretman, 1992) measures cheap variables on a first-phase sample and dear ones on a sub-sample of it, and corrects with a regression. With `--weight`, both phases are drawn in proportion to the query's weights. **Two-phase multiwave PPI** (Kluger & Bates, 2026) chooses each wave's probabilities from the data instead.
 - **Cost-optimal active evaluation** (Angelopoulos et al., 2025) splits a budget between a weak and a strong rater for one mean. Semantic query engines choose models per operator for cost and quality (Abacus, Cortex AISQL), without an interval from the user's labels.
 
 ## Limits
@@ -190,11 +269,13 @@ The same complaints and stored answers, by region: `jevbench multigroupvalidate`
 - **New rows are judged as they come.** The trigger queues every new row for every version, so `--sample` describes a table that isn't changing.
 - **The plan assumes nested samples and costs that stay as measured.** Its intervals land near the target on average, and some come out a little wider.
 - **By group, nothing is borrowed across groups.** Each group pays for its own precision in full, so small groups end up labelled whole and rare answers need the floor of 10 labels each way in every group. A model can't lower that floor.
-- **Not built.** `--with` together with `--weight`; routing rows to models one by one; a cost for a person's time other than a price per label.
+- **With `--weight`, the second version counts only on its run at the top of the ranking.** Rows it judged elsewhere, such as a `backfill --sample`, don't count; `--queue` queues the run. It takes one second version.
+- **Not built.** Routing rows to models one by one; a cost for a person's time other than a price per label.
 
 ## Reproduce
 
 ```bash
 docker compose run --rm --no-deps bench multivalidate        # needs the stored Phase 0 and Laya runs (no API calls)
 docker compose run --rm --no-deps bench multigroupvalidate   # by region: also needs the source shard in data/raw/hf (jevbench fetch)
+docker compose run --rm --no-deps bench multiweightvalidate  # weighted: the same shard
 ```

@@ -627,8 +627,8 @@ def _what(p, rows):
 
 def _steps(t):
     """What a plan (or the plans' totals) still needs, in words."""
-    steps = [f"{t['more_labels']:,} more labels"] * bool(t["more_labels"]) + [
-        f"{m:,} more rows judged by {n}" for n, m in t["more_rows"].items() if m]
+    steps = [f"{t['more_labels']:,} more label{'s' * (t['more_labels'] != 1)}"] * bool(t["more_labels"]) + [
+        f"{m:,} more row{'s' * (m != 1)} judged by {n}" for n, m in t["more_rows"].items() if m]
     return ", ".join(steps) if steps else "nothing more; the target is met"
 
 

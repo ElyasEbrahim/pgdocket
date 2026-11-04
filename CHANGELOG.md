@@ -2,6 +2,24 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-04
+
+### Added (several models for a weighted share, #29)
+- **`pgdocket estimate NAME --answer A --with V --weight EXPR [--by COL]`**: a weighted share from labels drawn by weight, the active version on every row and version V on a longer run of the same ranking by u / w.
+  - **The estimate** is the two-phase regression estimator for samples drawn in proportion to weight (Särndal, Swensson & Wretman, 1992). Rows certain to be labelled count exactly. V's share comes from its run, regressed on the active version's answers, and the active version's share from every row.
+  - **When V counts.** Only once the labelled rows hold 10 with and 10 without the answer, all inside V's run. Until then the estimate is #26's.
+  - **Its variance** weights each phase's residuals by 1 − π, so nearly certain rows add little.
+- **`--target --label-cost`** searches the two cut-offs of the ranking for the cheapest pair that reaches the target. The variance formula counts the rows that become certain. With no certain rows it is #27's plan in the population where a row appears as often as its weight.
+  - **Pilots and rounds.** A pilot of 30 rows drawn by weight comes first, V judging them. Each round draws at most four times as many labels as it has, and the next round plans again.
+  - **Also with `--by`:** this same plan and the `--queue` and `--draw` actions run in each group.
+- **`--queue`** has V judge its run; **`--draw`** writes the labels' run, marked as drawn by weight.
+- **Validation** (`jevbench multiweightvalidate`, no API calls): the CFPB join of 2,000 texts and the 21,980 complaints that carry them, to ± 2 points. The active version is batched Jev or Laya on every text; Jev one row per request takes a run of the ranking; labels cost $1.
+  - **Coverage.** The intervals held 93.8–99.4 % (#26's: 95.6–99.4 %). Where Jev counted they were 9–20 % narrower.
+  - **Cost.** For credit reporting the cheapest mix cost 12–19 % less than labels with the active version alone, with Jev on 17,000–37,000 texts. For the rare answers (1.6 % and 2.4 % of the complaints) the floor of labels sets the count, and it saved 0–6 %.
+  - **In rounds** on a million texts, credit reporting cost 10–17 % less. The rare answers ranged from 7 % more to 4 % less. Final intervals held 91–96 %.
+  - **Caught in testing:** the estimate without V had first been a two-phase form; it held 81–94 % in draws with few labels on the rarer side, so it is #26's now. A step to make V usable had first labelled as far as the active version alone needed, which wasted V; and a pilot that fell short asked for nothing more.
+  - Write-up: `docs/phase1/models.md#weighted-shares`.
+
 ## 2026-11-03
 
 ### Added (several models by group, #28)

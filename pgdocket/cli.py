@@ -10,7 +10,8 @@
   pgdocket calibrate  fit a calibrator and a guaranteed threshold from the labels
   pgdocket estimate   how many rows truly have each answer, with a confidence interval; --by: a share per group;
                       --weight: a share of a sum, or of a join's rows; --with: several models and labels together
-                      (with --by, per group), and the cheapest mix of them for a --target
+                      (with --by, per group; with --weight, down one ranking by weight), and the cheapest mix
+                      of them for a --target
   pgdocket plan       how much human review keeps the whole column's error ≤ ε, and the review queue
   pgdocket drift      have the rows or the model shifted since calibration? (rows: free; model: re-asks labelled rows)
   pgdocket audit      are the answers marked auto still right? blind spot checks with an anytime-valid alarm
@@ -143,7 +144,8 @@ def main(argv=None):
                     help="count each row by this SQL expression on the source row s: a column to sum, or how often a join "
                          "uses the row, e.g. \"(SELECT count(*) FROM orders o WHERE o.ticket_id = s.id)\"")
     es.add_argument("--with", dest="with_", metavar="V[,V]",
-                    help="also use these versions' answers (e.g. a cheaper or a better model): one estimate from them all")
+                    help="also use these versions' answers (e.g. a cheaper or a better model): one estimate from them "
+                         "all; with --weight, one version, judging a run of the ranking by weight")
     es.add_argument("--label-cost", type=float, metavar="USD",
                     help="with --with --target: what one label costs, to find the cheapest mix of labels and models")
     es.add_argument("--cost", action="append", default=[], metavar="V=USD",
@@ -157,7 +159,7 @@ def main(argv=None):
                          "weight; with --with, the next in the shared order)")
     es.add_argument("--queue", action="store_true",
                     help="with --with --target --label-cost: queue the rows the cheapest mix has each version judge "
-                         "(with --by, in each group) for the worker")
+                         "(with --by, in each group; with --weight, its run of the ranking) for the worker")
     es.add_argument("--seed", default="1",
                     help="with --draw; with --weight, also the ranking rows are drawn by, so keep it for later estimates")
     pl = sub.add_parser("plan", help="how much review keeps the column's error ≤ ε (95 %% confidence)")
@@ -416,8 +418,6 @@ def _ledger_command(a):
 
 def _estimate_with(a, ledger):
     from . import groups, multi
-    if a.weight:
-        sys.exit("--with doesn't combine with --weight yet: estimate a share of rows (--by and --where narrow it)")
     if (a.draw or a.queue) and not (a.target and a.label_cost is not None):
         sys.exit(f"{'--draw' if a.draw else '--queue'} carries out the cheapest mix: add --target and --label-cost")
     try:
@@ -425,6 +425,8 @@ def _estimate_with(a, ledger):
         costs = {int(k): float(v) for k, v in (c.split("=", 1) for c in a.cost)}
     except ValueError:
         sys.exit("--with takes version numbers (2 or 2,3) and --cost takes V=USD (3=0.00005)")
+    if a.weight:
+        return _estimate_with_weight(a, ledger, wanted, costs)
     import psycopg
     with ledger.connect(a.dsn) as conn:
         try:
@@ -456,6 +458,39 @@ def _estimate_with(a, ledger):
             print(f"{n} rows to label written to {a.draw}, blind (no AI answer): the next in the shared order"
                   + (f" in each {a.by}" if a.by else "") + f". Fill in `label`, then:\n  pgdocket label {a.name} --csv "
                   f"{a.draw} " + (f"--stratified {a.by}" if a.by else "--random"))
+
+
+def _estimate_with_weight(a, ledger, wanted, costs):
+    from . import groups, multiweight
+    import psycopg
+    with ledger.connect(a.dsn) as conn:
+        try:
+            r = multiweight.estimate_with(conn, a.name, a.answer, wanted, a.weight, a.where, a.level, a.target,
+                                          a.label_cost, costs, a.by, a.seed)
+        except psycopg.Error as e:
+            sys.exit(f"{a.name}: {str(e).splitlines()[0]} (--by and --where name columns of the source table; --weight "
+                     "is an SQL expression on its row, s)")
+        print(multiweight.render(r))
+        plans = [(x["g"], multiweight.this_round(x["plan"][0])) for x in r["groups"] if x["plan"]]
+        if not plans:
+            return
+        d = groups.decision(conn, a.name)
+        v = r["versions"][1]["version"]
+        runs = [(g, p["xi1"]) for g, p in plans if p["more_rows"]]
+        each = f" in each {a.by}" if a.by else ""
+        if runs and a.queue:
+            n = multiweight.queue(conn, d, v, runs, a.by, a.where, a.weight, a.seed, r["answer"])
+            print(f"{n:,} rows queued for v{v}: its run of the ranking by weight{each}. Run the worker, then estimate "
+                  "again with the same --seed.")
+        elif runs:
+            print(f"to have v{v} judge its run of the ranking{each}: add --queue, then run the worker")
+        if a.draw and any(p["more_labels"] for _, p in plans):
+            rows = multiweight.draw(conn, d, [(g, p["xi0"]) for g, p in plans if p["more_labels"]], a.by, a.where,
+                                    a.weight, a.seed, r["answer"])
+            n = groups.export(conn, d, a.by, rows, a.draw)
+            print(f"{n} rows to label written to {a.draw}, blind (no AI answer): the next in the ranking by weight{each}. "
+                  f"Fill in `label`, then:\n  pgdocket label {a.name} --csv {a.draw}"
+                  + ("\nand estimate with the same --seed" if a.seed != "1" else ""))
 
 
 def _estimate_by(a, ledger):

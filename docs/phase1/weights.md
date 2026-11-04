@@ -86,6 +86,7 @@ Three stored sets of answers judge the texts: Jev 1.13 at 20 rows per request, J
 - **Normal intervals.** The floor of 5 rows drawn with and without the answer was chosen on this data: from 5 up, every combination held 93 % or more; below 5, 96 % pooled. Labels drawn at random keep the floor of 10, counted by weight.
 - **Rounds stop at the first interval that meets the target.** The final intervals held 92–100 % (mean 98 %).
 - **Not built.** Drawing the query's own rows, which was cheaper in some cells: its sample can't be read back from the labels alone. Groupings that live in the joined table run as one estimate per group.
+- **Built since:** a second version on a longer run of the same ranking (`--with V --weight`, #29). On this join it cut the planned cost of ± 2 points by 12–19 % for credit reporting and by up to 6 % for the rare answers. See [several models, weighted](models.md#weighted-shares).
 
 ## Reproduce
 

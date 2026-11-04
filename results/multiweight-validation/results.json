@@ -1,0 +1,736 @@
+{
+  "texts": 2000,
+  "copies": 21980,
+  "max": 2866,
+  "kish": 26.072280469982797,
+  "cost": 2.3705451e-05,
+  "trials": 1000,
+  "runs": 100,
+  "target": 0.02,
+  "setups": {
+    "A": {
+      "active": "Jev, 20 rows per request",
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9434940855323021,
+          "active_says": 0.9373976342129209,
+          "jev_says": 0.8749317561419472,
+          "population": {
+            "s1": 0.0046856812635979505,
+            "s2": 0.03177352295743851,
+            "s2a": 0.036459204221036455,
+            "share": 0.9434940855323021
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.9578313253012049,
+                "half_width": 0.016978643521876877,
+                "draws": 996,
+                "of": 1000,
+                "used_jev": 0.7991967871485943
+              },
+              "#26, active version": {
+                "coverage": 0.9748995983935743,
+                "half_width": 0.01994989181173999,
+                "draws": 996,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9759036144578314,
+                "half_width": 0.019480535436404253,
+                "draws": 996,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.943,
+                "half_width": 0.007737746506412199,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 1.0
+              },
+              "#26, active version": {
+                "coverage": 0.969,
+                "half_width": 0.009471944608740663,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.958,
+                "half_width": 0.008549654475252196,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 298.7760224856123,
+                "labels": 299,
+                "rows": 17476
+              },
+              "active": {
+                "cost": 340.9827780560105,
+                "labels": 341,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 321.8679528632433,
+                "labels": 299,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 306.2024458733978,
+                "labels": 306,
+                "rows": 25060
+              },
+              "active": {
+                "cost": 350.04730840750767,
+                "labels": 351,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2675.615390547919,
+                "labels": 306,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 4.81,
+              "labels": 352.3,
+              "labels_p90": 447.40000000000003,
+              "rows": 16647.22,
+              "cost": 352.6946298579962,
+              "coverage": 0.94,
+              "half_width": 0.018694050303504253,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.84,
+              "labels": 390.99,
+              "labels_p90": 490.0,
+              "rows": 0.0,
+              "cost": 390.99,
+              "coverage": 0.94,
+              "half_width": 0.018501797763966907,
+              "within": 1.0
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.01569608735213831,
+          "active_says": 0.02429481346678799,
+          "jev_says": 0.04899909008189263,
+          "population": {
+            "s1": 0.0004799513145706137,
+            "s2": 0.01248708285563757,
+            "s2a": 0.012967034170208183,
+            "share": 0.01569608735213831
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.9940298507462687,
+                "half_width": 0.016334729424011412,
+                "draws": 335,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, active version": {
+                "coverage": 0.9940298507462687,
+                "half_width": 0.016334729424011412,
+                "draws": 335,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9970149253731343,
+                "half_width": 0.01664464370355196,
+                "draws": 335,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.9667673716012085,
+                "half_width": 0.005920588465225614,
+                "draws": 993,
+                "of": 1000,
+                "used_jev": 0.6505538771399798
+              },
+              "#26, active version": {
+                "coverage": 0.9768378650553877,
+                "half_width": 0.006600214236614197,
+                "draws": 993,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9687814702920443,
+                "half_width": 0.0061811385704526435,
+                "draws": 993,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 318.55072462669114,
+                "labels": 319,
+                "rows": 0
+              },
+              "active": {
+                "cost": 318.55072462669114,
+                "labels": 319,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 342.2561756266909,
+                "labels": 319,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 318.55072353868115,
+                "labels": 319,
+                "rows": 1
+              },
+              "active": {
+                "cost": 318.55072353868115,
+                "labels": 319,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2689.095823538655,
+                "labels": 319,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.75,
+              "labels": 438.87,
+              "labels_p90": 679.6,
+              "rows": 657.24,
+              "cost": 438.8855801706153,
+              "coverage": 0.96,
+              "half_width": 0.012436103527858454,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.77,
+              "labels": 442.67,
+              "labels_p90": 648.1,
+              "rows": 0.0,
+              "cost": 442.67,
+              "coverage": 0.97,
+              "half_width": 0.012088113111056484,
+              "within": 1.0
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.02388535031847134,
+          "active_says": 0.017606915377616016,
+          "jev_says": 0.05473157415832575,
+          "population": {
+            "s1": 0.0028918170828844533,
+            "s2": 0.01729190962408483,
+            "s2a": 0.02018372670696928,
+            "share": 0.02388535031847134
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.9827089337175793,
+                "half_width": 0.0167921472814182,
+                "draws": 347,
+                "of": 1000,
+                "used_jev": 0.01440922190201729
+              },
+              "#26, active version": {
+                "coverage": 0.9913544668587896,
+                "half_width": 0.01685375310856941,
+                "draws": 347,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9855907780979827,
+                "half_width": 0.01591751819257983,
+                "draws": 347,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.9780564263322884,
+                "half_width": 0.005817507844517156,
+                "draws": 957,
+                "of": 1000,
+                "used_jev": 0.4221525600835946
+              },
+              "#26, active version": {
+                "coverage": 0.9895506792058516,
+                "half_width": 0.006466359565197565,
+                "draws": 957,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9832810867293625,
+                "half_width": 0.006113795181292307,
+                "draws": 957,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 209.33333332234332,
+                "labels": 210,
+                "rows": 0
+              },
+              "active": {
+                "cost": 209.33333332234332,
+                "labels": 210,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 233.03878432234308,
+                "labels": 210,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 209.3333322343333,
+                "labels": 210,
+                "rows": 1
+              },
+              "active": {
+                "cost": 209.3333322343333,
+                "labels": 210,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2579.878432234307,
+                "labels": 210,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 4.0,
+              "labels": 338.4,
+              "labels_p90": 495.2000000000003,
+              "rows": 1330.61,
+              "cost": 338.43154271015504,
+              "coverage": 0.94,
+              "half_width": 0.01599432158141815,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.81,
+              "labels": 350.99,
+              "labels_p90": 503.50000000000006,
+              "rows": 0.0,
+              "cost": 350.99,
+              "coverage": 0.97,
+              "half_width": 0.015793877926203143,
+              "within": 1.0
+            }
+          }
+        }
+      }
+    },
+    "B": {
+      "active": "Laya, 1 row per request",
+      "answers": {
+        "credit reporting": {
+          "truth": 0.9434940855323021,
+          "active_says": 0.6909918107370336,
+          "jev_says": 0.8749317561419472,
+          "population": {
+            "s1": 0.009593311507042438,
+            "s2": 0.03878864136775815,
+            "s2a": 0.04838195287480064,
+            "share": 0.9434940855323021
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.9378134403209629,
+                "half_width": 0.017279157667017986,
+                "draws": 997,
+                "of": 1000,
+                "used_jev": 0.8134403209628887
+              },
+              "#26, active version": {
+                "coverage": 0.9558676028084253,
+                "half_width": 0.02115148239430141,
+                "draws": 997,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9699097291875627,
+                "half_width": 0.019503470799366734,
+                "draws": 997,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.951,
+                "half_width": 0.007760983470537011,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 1.0
+              },
+              "#26, active version": {
+                "coverage": 0.967,
+                "half_width": 0.009737817738360618,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.965,
+                "half_width": 0.008561864319370687,
+                "draws": 1000,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 362.99069396004296,
+                "labels": 363,
+                "rows": 23523
+              },
+              "active": {
+                "cost": 448.65203129465084,
+                "labels": 449,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 385.86892077154624,
+                "labels": 363,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 374.18588506948583,
+                "labels": 374,
+                "rows": 37091
+              },
+              "active": {
+                "cost": 464.47764637174765,
+                "labels": 465,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2742.9511044509654,
+                "labels": 373,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 5.04,
+              "labels": 412.94,
+              "labels_p90": 497.20000000000005,
+              "rows": 24686.97,
+              "cost": 413.52521575767344,
+              "coverage": 0.91,
+              "half_width": 0.018979755610469648,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 4.41,
+              "labels": 496.5,
+              "labels_p90": 590.9000000000002,
+              "rows": 0.0,
+              "cost": 496.5,
+              "coverage": 0.98,
+              "half_width": 0.019081861120380322,
+              "within": 1.0
+            }
+          }
+        },
+        "debt collection": {
+          "truth": 0.01569608735213831,
+          "active_says": 0.10759781619654231,
+          "jev_says": 0.04899909008189263,
+          "population": {
+            "s1": 0.0005659621122315902,
+            "s2": 0.014283438325149259,
+            "s2a": 0.01484940043738085,
+            "share": 0.01569608735213831
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.9880239520958084,
+                "half_width": 0.017988999784909837,
+                "draws": 334,
+                "of": 1000,
+                "used_jev": 0.011976047904191617
+              },
+              "#26, active version": {
+                "coverage": 0.9910179640718563,
+                "half_width": 0.018039213843781897,
+                "draws": 334,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 1.0,
+                "half_width": 0.016793045279042778,
+                "draws": 334,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.9605662285136501,
+                "half_width": 0.0061296550595457515,
+                "draws": 989,
+                "of": 1000,
+                "used_jev": 0.6713852376137512
+              },
+              "#26, active version": {
+                "coverage": 0.9656218402426694,
+                "half_width": 0.007134420190907459,
+                "draws": 989,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.967644084934277,
+                "half_width": 0.006148130696772699,
+                "draws": 989,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 318.55072462669114,
+                "labels": 319,
+                "rows": 0
+              },
+              "active": {
+                "cost": 318.55072462669114,
+                "labels": 319,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 342.2561756266909,
+                "labels": 319,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 318.55072353868115,
+                "labels": 319,
+                "rows": 1
+              },
+              "active": {
+                "cost": 318.55072353868115,
+                "labels": 319,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2689.095823538655,
+                "labels": 319,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 3.87,
+              "labels": 440.0,
+              "labels_p90": 634.3000000000002,
+              "rows": 500.48,
+              "cost": 440.0118641041165,
+              "coverage": 0.94,
+              "half_width": 0.012789269062226938,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.91,
+              "labels": 411.21,
+              "labels_p90": 589.2,
+              "rows": 0.0,
+              "cost": 411.21,
+              "coverage": 1.0,
+              "half_width": 0.013645543672986885,
+              "within": 1.0
+            }
+          }
+        },
+        "credit card": {
+          "truth": 0.02388535031847134,
+          "active_says": 0.18721565059144676,
+          "jev_says": 0.05473157415832575,
+          "population": {
+            "s1": 0.005489692787077411,
+            "s2": 0.017732087815370477,
+            "s2a": 0.023221780602447888,
+            "share": 0.02388535031847134
+          },
+          "coverage": {
+            "100 labels, Jev on 500 texts": {
+              "two-phase": {
+                "coverage": 0.978021978021978,
+                "half_width": 0.017230736639903595,
+                "draws": 364,
+                "of": 1000,
+                "used_jev": 0.0027472527472527475
+              },
+              "#26, active version": {
+                "coverage": 0.9752747252747253,
+                "half_width": 0.017247481992567825,
+                "draws": 364,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9862637362637363,
+                "half_width": 0.015755846007221134,
+                "draws": 364,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            },
+            "200 labels, Jev on 1,000 texts": {
+              "two-phase": {
+                "coverage": 0.9698544698544699,
+                "half_width": 0.005761240548702205,
+                "draws": 962,
+                "of": 1000,
+                "used_jev": 0.4261954261954262
+              },
+              "#26, active version": {
+                "coverage": 0.9854469854469855,
+                "half_width": 0.006377607951602661,
+                "draws": 962,
+                "of": 1000,
+                "used_jev": 0.0
+              },
+              "#26, Jev on every text": {
+                "coverage": 0.9792099792099792,
+                "half_width": 0.006156836365340071,
+                "draws": 962,
+                "of": 1000,
+                "used_jev": 0.0
+              }
+            }
+          },
+          "costs": {
+            "1 million": {
+              "cheapest": {
+                "cost": 209.3405487100268,
+                "labels": 210,
+                "rows": 305
+              },
+              "active": {
+                "cost": 219.26278051773315,
+                "labels": 220,
+                "rows": 0
+              },
+              "every row": {
+                "cost": 233.03878432234308,
+                "labels": 210,
+                "rows": 1000000
+              }
+            },
+            "100 million": {
+              "cheapest": {
+                "cost": 209.340547621991,
+                "labels": 210,
+                "rows": 305
+              },
+              "active": {
+                "cost": 222.97563886106147,
+                "labels": 223,
+                "rows": 1
+              },
+              "every row": {
+                "cost": 2579.878432234307,
+                "labels": 210,
+                "rows": 100000000
+              }
+            }
+          },
+          "rounds": {
+            "with": {
+              "runs": 100,
+              "rounds": 4.02,
+              "labels": 362.21,
+              "labels_p90": 591.0,
+              "rows": 1392.15,
+              "cost": 362.2430015436096,
+              "coverage": 0.95,
+              "half_width": 0.01649743554161748,
+              "within": 1.0
+            },
+            "active": {
+              "runs": 100,
+              "rounds": 3.67,
+              "labels": 370.11,
+              "labels_p90": 529.3000000000001,
+              "rows": 0.0,
+              "cost": 370.11,
+              "coverage": 0.97,
+              "half_width": 0.016572046382748645,
+              "within": 1.0
+            }
+          }
+        }
+      }
+    }
+  }
+}
