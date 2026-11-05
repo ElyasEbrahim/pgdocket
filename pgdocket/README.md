@@ -142,7 +142,7 @@ pgdocket estimate triage --answer billing --where "created_at >= '2026-07-01'" -
 ```
 
 ```sql
-SELECT answer, model_count, estimate, ci_low, ci_high, reliable FROM docket.estimate('triage');
+SELECT answer, model_count, estimate, ci_low, ci_high, reliable, method FROM docket.estimate('triage');
 ```
 
 | Column | Meaning |
@@ -152,11 +152,12 @@ SELECT answer, model_count, estimate, ci_low, ci_high, reliable FROM docket.esti
 | `labels_only_low/high` | the interval from the labels alone, for comparison |
 | `labels`, `labels_with` | labels used, and how many of them had this answer |
 | `lambda` | how much the estimate leans on the model (0 = labels only, 1 = full PPI) |
-| `reliable` | false when fewer than 10 labels have (or lack) the answer: the interval may be too narrow |
+| `reliable` | false when the interval may be too narrow: fewer than 10 labels have (or lack) the answer, and no betting interval could be given |
+| `method` | `normal` (PPI++'s interval) or `betting` (below that floor, from labels drawn at random) |
 | `note` | why something is missing or unreliable |
 
 - **Only labels drawn at random count.** `--sample N` records labels as random, and so does a CSV imported with `--random`. Everything else needs `--include-manual`.
-- **Below 10 labelled rows with or without an answer, the interval is by betting,** marked `(betting)`. It is valid at any number of labels, so a rare answer gets an interval long before the usual one could be trusted, even with no labelled example of it. On the 300 Kubernetes issues of the live replay, all seven rare SIGs' intervals hold their true counts. `docket.estimate()` in SQL keeps the usual interval with `reliable = false`. See [docs/phase1/rare-answers.md](../docs/phase1/rare-answers.md).
+- **Below 10 labelled rows with or without an answer, the interval is by betting,** marked `(betting)`. It is valid at any number of labels, so a rare answer gets an interval long before the usual one could be trusted, even with no labelled example of it. On the 300 Kubernetes issues of the live replay, all seven rare SIGs' intervals hold their true counts. `docket.estimate()` in SQL gives the same interval with `method = 'betting'` (#32), so every SQL client gets it. See [docs/phase1/rare-answers.md](../docs/phase1/rare-answers.md).
 - **Validation:** coverage tests run in CI, and on 500 real Kubernetes issues the intervals held 98–100 % when reliable and were 30–50 % narrower than labels alone. See [docs/phase1/counts.md](../docs/phase1/counts.md).
 
 ## Shares by group

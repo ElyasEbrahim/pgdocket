@@ -1,0 +1,27 @@
+{
+  "cases": 303,
+  "identical": 296,
+  "one_step": 0,
+  "further": 0,
+  "both_empty": 7,
+  "mismatched_empty": 0,
+  "sql_seconds": 0.7426701218864764,
+  "python_seconds": 0.7448278880765429,
+  "timing": [
+    {
+      "rows": 3000,
+      "labels": 1499,
+      "seconds": 0.014617957996961195
+    },
+    {
+      "rows": 1000000,
+      "labels": 2000,
+      "seconds": 0.019367666995094623
+    },
+    {
+      "rows": 1000000,
+      "labels": 10000,
+      "seconds": 0.08827583299716935
+    }
+  ]
+}

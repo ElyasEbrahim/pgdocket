@@ -62,7 +62,8 @@ def _view(dsn):
 def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
-    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011"]
+    assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011",
+                                            "012"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -1211,6 +1212,14 @@ def test_a_rare_answer_below_the_floor_gets_a_betting_interval(env, capsys):
         floor = 10 / max(g["est"]["theta"], 1 / (g["n"] + 2))
         assert p[g["g"]]["need"] < 0.75 * floor                          # betting's labels, not the floor's
 
+    # docket.estimate() in SQL gives the same betting interval itself (#32); not from labels chosen by hand
+    s = ledger.estimate(env["owner"], "notes", "billing")[0]
+    lo, hi = betting.interval(*rows, s["model_count"], s["judged"])
+    assert s["method"] == "betting" and s["reliable"] and s["note"] is None
+    assert s["ci_low"] == pytest.approx(lo * s["judged"], abs=1e-9) and s["ci_high"] == pytest.approx(hi * s["judged"], abs=1e-9)
+    assert s["ci_low"] <= s["estimate"] <= s["ci_high"]
+    assert ledger.estimate(env["owner"], "notes", "billing", include_manual=True)[0]["method"] == "normal"
+
 
 def test_weighted_and_several_model_estimates_below_their_floors_bet(env, capsys):
     """2 % of 2,000 parcels are billing (#31). Labels drawn by weight (a join's fan-out) hold fewer than 5 billing rows:
@@ -1285,3 +1294,31 @@ def test_weighted_and_several_model_estimates_below_their_floors_bet(env, capsys
     cli.main(["estimate", "--dsn", env["owner"], "parcels", "--answer", "billing", "--with", "2"])
     out = capsys.readouterr().out
     assert "(betting)" in out and "v1, which judged every row" in out and "⚠" not in out
+
+
+def test_sql_betting_interval_is_the_pythons(env):
+    """docket.betting_interval finds the ends of the betting interval by bisection, pgdocket.betting.interval over every
+    candidate share (#32): on random labels, few or many, rare answers or common, for scopes of 40 rows to a million
+    (every share k / N a candidate, or 4,001 evenly spaced), both give the same interval, or both none."""
+    import numpy as np
+
+    from pgdocket import betting
+    rng = np.random.default_rng(32)
+    cases = []
+    for _ in range(60):
+        N = int(rng.choice([40, 300, 2000, 4000, 4001, 20000, 1_000_000]))
+        n = int(min(N - 1, rng.choice([1, 5, 20, 60, 150, 400])))
+        share = float(rng.choice([0.002, 0.01, 0.03, 0.1, 0.3, 0.6]))
+        y = (rng.random(n) < share).astype(float)
+        f = np.where(rng.random(n) < float(rng.choice([0.6, 0.9, 0.99])), y, 1 - y)
+        cases.append((y, f, max(float(f.sum()), round(N * share)), N, float(rng.choice([0.05, 0.1]))))
+    cases.append((np.r_[np.ones(5), np.zeros(45)], np.r_[np.ones(5), np.zeros(45)], 5.0, 50, 0.05))   # all but none
+    cases.append((np.ones(4), np.ones(4), 4.0, 4, 0.05))                                               # every row
+    with psycopg.connect(env["owner"]) as c:
+        for y, f, total, N, alpha in cases:
+            want = betting.interval(y, f, total, N, alpha)
+            got = c.execute("SELECT docket.betting_interval(%s::float8[], %s::float8[], %s, %s, %s)",
+                            ([float(x) for x in y], [float(x) for x in f], total, N, alpha)).fetchone()[0]
+            assert (got is None) == (want is None), (N, len(y))
+            if want is not None:
+                assert got == pytest.approx(list(want), abs=1e-12), (N, len(y), want, got)

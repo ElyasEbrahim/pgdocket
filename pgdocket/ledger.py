@@ -211,7 +211,8 @@ def load_spec(kind, question, options=None, options_file=None, backend="jev", mo
 
 
 def estimate(dsn, name, answer=None, where=None, level=0.95, include_manual=False):
-    """Counts with error bars from docket.estimate() (prediction-powered inference)."""
+    """Counts with error bars from docket.estimate(): prediction-powered inference, and below the floor of 10
+    labelled rows each way a betting interval (`method` 'betting', #32)."""
     sampling = ["random", "all", "manual"] if include_manual else ["random"]
     with connect(dsn) as conn:
         cur = conn.execute("SELECT * FROM docket.estimate(%s, %s, %s, %s, %s)", (name, answer, where, level, sampling))

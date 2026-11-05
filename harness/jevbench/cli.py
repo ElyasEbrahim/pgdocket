@@ -118,6 +118,8 @@ def main(argv=None):
                     help="semicolon-separated if an answer has a comma")
     lj.add_argument("--setup-only", action="store_true", help="build the tables and judge every text with Laya")
     lj.add_argument("--report-only", action="store_true", help="no rounds: rewrite the report from the ledger")
+    sb = sub.add_parser("sqlbettingvalidate")
+    sb.add_argument("--cases", type=int, default=300)
     rv = sub.add_parser("rarevalidate")
     rv.add_argument("--draws", type=int, default=500)
     rv.add_argument("--runs", type=int, default=100)
@@ -236,6 +238,9 @@ def main(argv=None):
         out = livejoin.run(args.target, args.max_usd, [a.strip() for a in args.answers.split(sep) if a.strip()],
                            args.setup_only, args.report_only)
         print("report:", out + "/report.md" if out else "set up")
+    elif args.cmd == "sqlbettingvalidate":
+        from . import sqlbettingvalidate
+        print("report:", sqlbettingvalidate.run(args.cases) + "/report.md")
     elif args.cmd == "rarevalidate":
         from . import rarevalidate
         print("report:", rarevalidate.run(args.draws, args.runs, parts=args.parts) + "/report.md")

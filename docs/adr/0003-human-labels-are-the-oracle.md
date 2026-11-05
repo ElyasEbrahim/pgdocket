@@ -15,6 +15,7 @@ Semantic query research (LOTUS, BARGAIN, SUPG-IT, Cortex AISQL cascades) treats 
 - Aggregates (`estimate_count`, `estimate_share`) use prediction-powered inference, importance-weighted when sampling was stratified, and refuse to answer when gold coverage in the requested scope is too thin.
 - Every guarantee is backed by a simulation coverage test in CI.
 - *Implemented (2026-10-20):* `docket.estimate()` uses PPI++ with a normal-approximation interval. Simulations and 500 real Kubernetes judgments show it holds once the labels contain at least 10 rows with **and** 10 without the answer; below that, estimates are flagged `reliable = false`. With no labelled example on one side, no interval is given. Labels record their sampling (`random` / `all` / `manual`), and only `random` feeds estimates by default. Stratified sampling, to make rare answers estimable with fewer labels, is the next step.
+- *Updated (2026-11-05, #30–#32):* below that floor the interval is by betting, valid at any number of labels: in the CLI (#30, #31) and in `docket.estimate()` itself (#32, `method = 'betting'`). See [rare answers](../phase1/rare-answers.md).
 - *Added (2026-10-26, #23):* **audits of accepted rows.**
   - **What.** `pgdocket audit` draws rows at random from those marked `auto` since the previous batch, and people label them blind.
   - **The test.** An e-process tests "precision ≥ target", anytime-valid by Ville's inequality, so the audit can be read after every batch.

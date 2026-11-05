@@ -4,6 +4,12 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-05
 
+### Added (betting intervals in SQL, #32)
+- **`docket.estimate()` gives the betting interval itself** below the floor of 10 labelled rows with or without an answer (migration 012), from labels drawn at random only. A new column, `method`, says `normal` or `betting`; such rows are `reliable`. Before, SQL clients got the normal interval with `reliable = false`, and only the CLI replaced it.
+- **`docket.betting_interval(y, f, model_total, rows, alpha)`** does the arithmetic of `pgdocket.betting.interval` in PL/pgSQL, so a role without superuser can install it. It finds each end of the interval by bisection, since the shares no bet rejects form an interval: the capital betting higher never grows as the candidate share rises, and the capital betting lower never shrinks.
+- **The CLI prints what the function returns** and drops its own Python fallback. On a database still at migration 011 it says to run `pgdocket install`.
+- **Validation** (`jevbench sqlbettingvalidate`, no API calls). In 303 random cases, scopes of 40 rows to a million and 1 to 1,200 labels, SQL and Python gave the same interval every time; 7 were empty both ways. It takes 15–90 ms for 1,500 to 10,000 labels. On the live `k8s_route` decision, `docket.estimate()` returns #30's table interval for interval, in 79 ms for ten answers. A CI test checks 62 cases.
+
 ### Added (rare answers in weighted shares and with several models, #31)
 - **`estimate --weight`** gives a betting interval, marked `(betting)`, below its floors.
   - **Labels drawn by weight** (fewer than 5 drawn each way): `betting.sps`. Each label is scored by its chance of being drawn next, as in betting for weighted sampling without replacement (Shekhar, Xu, Lipton, Liang & Ramdas, 2023). Ranked by u / w, the row drawn at rank t is row i with probability in proportion to w / (1 − t·w), so each score carries the factor (1 − u).

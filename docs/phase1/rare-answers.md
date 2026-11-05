@@ -1,6 +1,6 @@
 # Rare answers: intervals that need no floor
 
-*2026-11-05 · issues #30, #31 · lineage: estimating means by betting (Waudby-Smith & Ramdas, 2024), prediction-powered inference's nonasymptotic variant (Angelopoulos et al., 2023), betting for weighted sampling without replacement (Shekhar et al., 2023) · evidence: [results/betting-validation](../../results/betting-validation/report.md), [results/rare-validation](../../results/rare-validation/report.md)*
+*2026-11-05 · issues #30, #31, #32 · lineage: estimating means by betting (Waudby-Smith & Ramdas, 2024), prediction-powered inference's nonasymptotic variant (Angelopoulos et al., 2023), betting for weighted sampling without replacement (Shekhar et al., 2023) · evidence: [results/betting-validation](../../results/betting-validation/report.md), [results/rare-validation](../../results/rare-validation/report.md), [results/sql-betting](../../results/sql-betting/report.md)*
 
 PPI++'s interval, estimate ± z·se, rests on the central limit theorem. It holds once the labels contain enough rows with and without the answer, so pgdocket waits for 10 of each before trusting one. For a rare answer that floor, not the target, sets how many labels are needed:
 - an answer on 1.8 % of rows needs about 550 labels before the interval can be trusted, whatever precision was asked for;
@@ -8,7 +8,7 @@ PPI++'s interval, estimate ± z·se, rests on the central limit theorem. It hold
 
 ## What pgdocket does
 
-Below the floor, `estimate` and `estimate --by` give a **betting interval** instead, marked `(betting)`. Here it is on the 300 Kubernetes issues of the live replay, judged by Jev, with 80 labels drawn at random:
+Below the floor, `estimate` and `estimate --by` give a **betting interval** instead, marked `(betting)`. So does `docket.estimate()` in SQL, with `method = 'betting'` (#32). Here it is on the 300 Kubernetes issues of the live replay, judged by Jev, with 80 labels drawn at random:
 
 ```
 k8s_route: how many judged rows truly have each answer (95 % intervals)
@@ -154,6 +154,23 @@ Every interval holds its region's share: 2.8 %, 1.2 %, 1.8 % and 1.7 %. For ± 3
 - **The fix.** The plan now takes the share from the usual estimate, never nearer 0 or 1 than 1 in (labels + 2), as `estimate --by` already did.
 - **The test.** The same paired runs found no run where betting took more labels, in any of the four estimates.
 
+## In SQL (#32)
+
+`docket.estimate()` now gives the betting interval itself (migration 012), so a dashboard or an application that queries the function gets an interval that holds at any number of labels, as the CLI does. The CLI prints what the function returns.
+
+```sql
+SELECT answer, model_count, round(estimate) AS estimate, round(ci_low) AS ci_low, round(ci_high) AS ci_high, method
+FROM docket.estimate('k8s_route');
+```
+
+On the live replay's 300 issues it returns the table above, interval for interval, with `method = 'betting'` for the seven rare SIGs. The whole call takes 79 ms.
+
+- **The same interval, found faster.** `docket.betting_interval(y, f, model_total, rows, alpha)` does the arithmetic of the Python, in PL/pgSQL, which a role without superuser can install. Rather than testing every candidate share, it finds each end of the interval by bisection, a dozen candidates each.
+- **Why bisection is exact here.** The capital betting that the share is higher never grows as the candidate share rises, and the capital betting that it is lower never shrinks. So the shares no bet rejects form an interval.
+- **Checked** (`jevbench sqlbettingvalidate`, [report](../../results/sql-betting/report.md)). In 303 random cases (scopes of 40 rows to a million, 1 to 1,200 labels, answers on 0.2 % to 60 % of rows), the SQL interval was the Python one in every case; 7 were empty both ways. A test in CI does the same on 62 cases.
+- **Fast.** It takes 15–90 ms for a rare answer with 1,500 to 10,000 labels.
+- **Only labels drawn at random.** With `p_sampling` naming any other kind of label (`--include-manual`), the function keeps the normal interval, as the CLI does.
+
 ## How this relates to other work
 
 - **Betting confidence intervals** (Waudby-Smith & Ramdas, 2024) estimate the mean of a bounded variable at any sample size. pgdocket uses their hedged capital process for sampling without replacement, with their predictable plug-in bets for confidence sequences, at most ¾ of the largest safe bet. Their aGRAPA bets, which the audits use (#23), gave intervals up to 63 % wider here.
@@ -168,7 +185,7 @@ Every interval holds its region's share: 2.8 %, 1.2 %, 1.8 % and 1.7 %. For ± 3
 - **Random labels can't vouch for heavy rows.** With weights as uneven as a join's fan-out, betting from labels drawn at random is valid but wide (± 30–45 points on the CFPB join), since a heavy row not yet labelled may have the answer. Draw by weight.
 - **Below the floor, `--with` bets with one version that judged every row.** A second version judging a sample plays no part there; with `--weight`, neither does the second version's run.
 - **The weighted plan judges betting's labels on a typical draw** from the rows not yet certain. It treats them as drawn at random, which the rows near certainty make a little optimistic. A short round is then planned again from what it shows.
-- **The SQL function `docket.estimate()` is unchanged.** It still gives the normal interval with `reliable = false`; the CLI replaces it.
+- **In SQL (#32), only `docket.estimate()`.** It gives the betting interval itself, `method = 'betting'` and `reliable = true`, from labels drawn at random only; the CLI prints what it returns. `--by`, `--weight` and `--with` remain in the CLI and Python.
 - **Wider than the normal interval would be.** With very few labels the betting interval is wide: ± 5–10 points at 50 labels for the answers above.
 - **An empty set is possible.** With probability at most 5 %, every share is rejected; then nothing is reported, and the normal interval is shown with ⚠.
 - **The floor itself is unchanged.** Above it, the normal interval stays, as validated in #14 and #25.

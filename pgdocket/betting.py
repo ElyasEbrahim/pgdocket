@@ -26,6 +26,11 @@ The price of validity at any n is width: where the normal interval holds, this o
 against the Gaussian tail, and bets that must work at every n), 1.7 times for an answer on 30 % of rows at 400 labels.
 So pgdocket uses it only below the floor.
 
+**In SQL (#32).** `docket.estimate()` gives the same interval itself: `docket.betting_interval` (migration 012) does this
+arithmetic in PL/pgSQL. It finds the ends by bisection rather than testing every candidate: the capital betting that the
+share is higher never grows as the candidate rises, and the one betting lower never shrinks, so the shares no bet
+rejects form an interval. Integration tests check that it returns `interval`'s result.
+
 **Weighted shares (#31).** A weighted share Σ w·y / Σ w is bet on the same way once each label is scored by how likely
 its row was to be drawn next. With any design that draws one row at a time from the rows not yet drawn, row i with
 probability q(i), the score x(i)·w(i) / q(i) has, given the past, the mean Σ w·x over the rows not yet drawn, which a
