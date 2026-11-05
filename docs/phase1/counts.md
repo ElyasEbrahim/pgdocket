@@ -69,5 +69,6 @@ Each row reports:
 
 - **Validity needs random labels.** If the labelled rows were chosen because they were hard, recent or interesting, the interval can be wrong. That's why `manual` labels are excluded by default.
 - **The interval is a normal approximation.** It needs about 10 labelled rows with *and* without the answer. For rare answers that means more labels overall. Stratified sampling, which over-samples rare answers and weights them back, is the next improvement.
+- **Built since:** below that floor, a betting interval valid at any number of labels (#30). On these 300 issues it gives every rare SIG an interval that holds its true count, instrumentation's included. See [rare answers](rare-answers.md).
 - **It counts judged rows only.** Rows still `pending` in the scope are reported, not estimated.
 - **A `--where` scope uses only the labels inside it,** so a narrow scope needs its own labels.

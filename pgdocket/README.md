@@ -156,7 +156,7 @@ SELECT answer, model_count, estimate, ci_low, ci_high, reliable FROM docket.esti
 | `note` | why something is missing or unreliable |
 
 - **Only labels drawn at random count.** `--sample N` records labels as random, and so does a CSV imported with `--random`. Everything else needs `--include-manual`.
-- **No labelled example of an answer means no interval.** Nothing measures how often the model is wrong there.
+- **Below 10 labelled rows with or without an answer, the interval is by betting,** marked `(betting)`. It is valid at any number of labels, so a rare answer gets an interval long before the usual one could be trusted, even with no labelled example of it. On the 300 Kubernetes issues of the live replay, all seven rare SIGs' intervals hold their true counts. `docket.estimate()` in SQL keeps the usual interval with `reliable = false`. See [docs/phase1/rare-answers.md](../docs/phase1/rare-answers.md).
 - **Validation:** coverage tests run in CI, and on 500 real Kubernetes issues the intervals held 98–100 % when reliable and were 30–50 % narrower than labels alone. See [docs/phase1/counts.md](../docs/phase1/counts.md).
 
 ## Shares by group
@@ -169,6 +169,8 @@ pgdocket label complaints --csv next.csv --stratified region     # once people h
 ```
 
 Labels imported with `--stratified region` count for `--by region` only: they are a random sample of their group, not of the table. On 2,000 CFPB complaints, drawing labels within groups needed 24–64 % fewer than drawing them across the table for every group to reach ± 5 points. See [docs/phase1/groups.md](../docs/phase1/groups.md).
+
+Groups below the floor get a betting interval too, and `--target` plans each group on whichever reaches the target with fewer labels: the usual interval, which needs 10 labelled rows each way, or betting, which needs none. For every region and year to reach ± 5 points, that took 64–71 % fewer labels for an answer on 1.8 % of complaints, and 34–39 % fewer for one on 5.5 %.
 
 ## Weighted shares
 

@@ -2,6 +2,26 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-05
+
+### Added (rare answers: betting intervals below the floor, #30)
+- **`pgdocket estimate`** gives a betting interval, marked `(betting)`, wherever the labels hold fewer than 10 rows with or without an answer. Before, such an answer got the normal interval marked ⚠, or none with no labelled example. **`estimate --by`** does the same group by group.
+  - **The interval** (`pgdocket/betting.py`) is valid at any number of labels and wherever the labelling stops. It follows Waudby-Smith & Ramdas (2024) and PPI's nonasymptotic variant (Angelopoulos et al., 2023).
+  - **How it bets.** Bets are on the rectifier y − λ·f, with λ fitted to the labels before each one. Each bet is against the share left among the rows not yet labelled. The bets are predictable plug-in confidence-sequence bets, hedged both ways, staking at most ¾ of the safe maximum.
+  - **The model's share is known from every row,** so all of α goes to the labels.
+  - **In the order drawn:** when imported, then by a hash of the key.
+- **`--by --target`** plans each group below the floor on whichever reaches the target with fewer labels: the normal interval, which needs the floor, or betting, judged on a typical draw.
+- **`docket.estimate()` in SQL is unchanged:** the normal interval with `reliable = false`. The weighted and several-model estimates keep their floors.
+- **Validation** (`jevbench bettingvalidate`, no API calls): 500 Kubernetes issues and 2,000 CFPB complaints, each answered by Jev 1.13 and by Laya.
+  - **Coverage.** The betting interval held 95.4–100 % in all 152 cells (500 draws of 50–300 labels each). The normal interval held 28–98 % of the draws below the floor (median 87 %) for answers under 8 % at up to 200 labels.
+  - **Labels saved.** By region and year, each group to ± 5 points: 64–71 % for an answer on 1.8 % of complaints, 34–39 % on 5.5 %, 21–27 % on 7.1 %, 4–9 % on 12 %. At ± 3 points: 41–46 %, 6–14 %, 0–3 % and none. Final intervals held at least 97 %.
+  - **Settings.** Bets tuned to a known number of labels were narrower but not valid over rounds. aGRAPA bets were up to 63 % wider.
+  - Write-up: `docs/phase1/rare-answers.md`.
+
+### Fixed
+- **`--by --target` stopped short of its target.** Groups ended at ± 5.0–5.5 points for ± 5: the plan's formula left out the model's own spread on unlabelled rows. It also judged the floor from the estimated share, so a group with 8 of its 10 labelled rows could be told it had enough. In some cells only 8 % of runs reached every group. A group short of its target now asks for n · (half-width / target)², and at least a tenth more; below the floor, for the rows still missing on top of its labels. Runs now reach every target 99–100 % of the time.
+- **A betting interval could reject the true share** when the labels held every row with the answer, since N · (k / N) − k is not exactly 0 in floating point. This was caught in testing, before release.
+
 ## 2026-11-04
 
 ### Added (a live run of #29 on the CFPB join)

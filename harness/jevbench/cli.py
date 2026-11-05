@@ -108,6 +108,9 @@ def main(argv=None):
     sub.add_parser("groupvalidate")
     sub.add_parser("weightvalidate")
     sub.add_parser("multivalidate")
+    bv = sub.add_parser("bettingvalidate")
+    bv.add_argument("--draws", type=int, default=500)
+    bv.add_argument("--runs", type=int, default=100)
     lj = sub.add_parser("livejoin")
     lj.add_argument("--target", type=float, default=0.02)
     lj.add_argument("--max-usd", type=float, default=0.10, help="cap on Jev spend for the decision, all runs together")
@@ -219,6 +222,9 @@ def main(argv=None):
     elif args.cmd == "multivalidate":
         from . import multivalidate
         print("report:", multivalidate.run() + "/report.md")
+    elif args.cmd == "bettingvalidate":
+        from . import bettingvalidate
+        print("report:", bettingvalidate.run(args.draws, args.runs) + "/report.md")
     elif args.cmd == "livejoin":
         from . import livejoin
         sep = ";" if ";" in args.answers else ","

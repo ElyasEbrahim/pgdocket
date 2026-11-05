@@ -64,8 +64,12 @@ def test_plan_pilots_unknown_groups_and_sizes_the_rest_from_their_own_disagreeme
     assert p["tiny"]["kind"] == "exact" and p["tiny"]["need"] == 12            # label all 12: the share is then exact
     for name in ("big", "noisy"):
         g = next(x for x in gs if x["g"] == name)
-        width = math.ceil(Z * Z * g["est"]["res_var"] / 0.05 ** 2)
-        assert p[name]["need"] == max(g["n"], width, math.ceil(10 / min(g["est"]["theta"], 1 - g["est"]["theta"])))
+        if Z * g["est"]["se"] <= 0.05:
+            assert p[name]["need"] == g["n"]                                   # there already
+            continue
+        width = max(math.ceil(Z * Z * g["est"]["res_var"] / 0.05 ** 2), math.ceil(g["n"] * (Z * g["est"]["se"] / 0.05) ** 2),
+                    math.ceil(1.1 * g["n"]))
+        assert min(g["k"], g["n"] - g["k"]) >= 10 and p[name]["need"] == width          # past the floor: the width
     assert p["big"]["more"] == 0 and p["noisy"]["more"] > 0   # labels go where the model disagrees with people
     assert groups.plan(gs, 0.05, Z)["uniform"] is None                        # can't compare before the pilots
 
@@ -233,3 +237,36 @@ def test_render_names_the_heavy_row_and_how_labels_were_drawn():
     out = groups.render(r)
     assert "each counted by amount" in out and "at random" in out
     assert "an unlabelled row holds 42.9 % of the weight" in out and "Draw by weight" in out
+
+
+def test_a_group_just_short_of_its_target_asks_for_more_labels():
+    """The plan's own formula (z² · residual variance / target²) leaves out the model's spread on the unlabelled rows,
+    which the interval counts: a group a little over its target could be told it had enough (#30). It now asks for
+    n · (half-width / target)², and at least a tenth more."""
+    rng = np.random.default_rng(36)
+    g = groups.summarise([_group("g", *_sample(rng, 2000, 0.12, 0.9, 200))], Z)[0]
+    hw = Z * g["est"]["se"]
+    target = 0.97 * hw                                      # just out of reach
+    assert g["reliable"] and math.ceil(Z * Z * g["est"]["res_var"] / target ** 2) <= g["n"] + 25
+    p = groups.plan([g], target, Z)["groups"][0]
+    assert p["kind"] == "target" and p["more"] >= max(20, math.ceil(g["n"] * (hw / target) ** 2) - g["n"])
+
+
+def test_a_group_below_the_floor_asks_for_the_rows_it_still_misses():
+    """229 labels holding 8 rows with the answer: the share alone (about 5 %) says 200 labels give 10, but these give 8.
+    The plan asks for the 2 still missing on top of the labels so far, with or without betting (#30: it said enough)."""
+    rng = np.random.default_rng(37)
+    N = 984
+    y = np.zeros(N, int)
+    y[:44] = 1
+    f = np.where(rng.random(N) < 0.97, y, 1 - y)
+    lab = np.zeros(N, bool)
+    lab[np.r_[np.arange(8), 44 + rng.choice(N - 44, 221, replace=False)]] = True
+    g = groups.summarise([_group("g", f, y, lab)], Z)[0]
+    assert g["k"] == 8 and not g["reliable"]
+    for bet in (False, True):
+        p = groups.plan([g], 0.03, Z, bet=bet)["groups"][0]
+        assert p["more"] >= 23                              # at least a tenth more, and a floor or betting route
+    floor = groups.plan([g], 0.03, Z, bet=False)["groups"][0]
+    p_hat = g["est"]["theta"] if g["est"] else 8 / 229
+    assert floor["need"] >= 229 + math.ceil(2 / min(p_hat, 1 - p_hat)) or floor["kind"] == "exact"

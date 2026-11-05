@@ -1161,3 +1161,50 @@ def test_estimate_with_weight_runs_v_and_the_labels_down_one_ranking_by_weight(e
     assert every["vjudged"] == N and math.isinf(every["xi1"]) and every["run"]["D"] == 0     # V a census: no 1 − π
     e = r["groups"][0]["est"]
     assert e["used"] == ["labels", "v1", f"v{v2}"] and e["ci"][0] - 0.02 <= truth <= e["ci"][1] + 0.02
+
+
+def test_a_rare_answer_below_the_floor_gets_a_betting_interval(env, capsys):
+    """2 % of 3,000 rows are billing, and 150 labels drawn at random hold about 3 of them: fewer than the 10 the usual
+    interval needs (#30). `estimate` and `estimate --by` give a betting interval instead, from the labels in the order
+    they were drawn, and it holds; the plan for ± 3 points takes betting's labels, far below the floor's."""
+    import numpy as np
+
+    from pgdocket import betting, cli, groups
+    rng = np.random.default_rng(30)
+    N = 3000
+    team = rng.choice(["billing", "technical", "sales"], N, p=[0.02, 0.68, 0.30])
+    said = np.where(rng.random(N) < 0.9, team, rng.choice(["billing", "technical", "sales"], N))
+    region = rng.choice(["north", "south"], N, p=[0.6, 0.4])
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.notes (id int PRIMARY KEY, body text, team text, region text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.notes VALUES (%s, %s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i]), str(region[i])) for i in range(N)])
+    ledger.create(env["owner"], "notes", "shop.notes", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "notes", column="team", sample=150, seed="30")
+
+    capsys.readouterr()
+    cli.main(["estimate", "--dsn", env["owner"], "notes", "--answer", "billing"])
+    out = capsys.readouterr().out
+    line = next(x for x in out.splitlines() if x.startswith("billing"))
+    assert "(betting)" in line and "⚠" not in out and "valid at any number of labels" in out
+    lo, hi = (float(x.replace(",", "")) for x in line.split()[3:6:2])
+    truth = int((team == "billing").sum())
+    assert lo <= truth <= hi
+
+    with psycopg.connect(env["owner"]) as c:
+        d = groups.decision(c, "notes")
+        rows = groups.labelled_rows(c, d, None, "billing")[groups.ALL]
+        order = [k for (k,) in c.execute("SELECT row_key FROM docket.label WHERE decision_id = %s "
+                                         "ORDER BY labeled_at, md5(row_key)", (d["id"],))]
+        r = groups.estimate_by(c, "notes", "region", "billing", target=0.03)
+    y = np.array([team[int(k) - 1] == "billing" for k in order], float)
+    assert len(rows[0]) == 150 and (rows[0] == y).all()                 # the labels in the order they were drawn
+    for g in r["groups"]:
+        share = float(np.mean(team[region == g["g"]] == "billing"))
+        assert g["interval"] == "betting" and g["reliable"] and g["ci"][0] <= share <= g["ci"][1]
+    p = {x["group"]: x for x in r["plan"]["groups"]}
+    for g in r["groups"]:
+        floor = 10 / max(g["est"]["theta"], 1 / (g["n"] + 2))
+        assert p[g["g"]]["need"] < 0.75 * floor                          # betting's labels, not the floor's

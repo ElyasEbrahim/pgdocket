@@ -339,14 +339,19 @@ def _ledger_command(a):
         if a.target or a.draw or a.queue:
             sys.exit("--target, --draw and --queue plan labels for a share: add --by COL, --weight EXPR or --with V")
         rows = ledger.estimate(a.dsn, a.name, a.answer, a.where, a.level, a.include_manual)
+        bets = {} if a.include_manual else _betting(a, ledger, rows)
         lvl = f"{100 * a.level:.0f} %"
         print(f"{a.name}: how many judged rows truly have each answer ({lvl} intervals)"
               + (f", where {a.where}" if a.where else ""))
         print(f"{'answer':<22} {'model says':>10}  {'estimate':>9}  {lvl + ' interval':>20}  {'labels only':>20}  {'labels':>9}")
         for r in rows:
             ci = lambda lo, hi: "–" if lo is None else f"{lo:,.0f} – {hi:,.0f}"
+            if r["answer"] in bets:                   # below the floor: the betting interval, and the estimate inside it
+                lo, hi = (x * r["judged"] for x in bets[r["answer"]])
+                share = r["estimate"] if r["estimate"] is not None else r["labels_with"] / r["labels"] * r["judged"]
+                r.update(estimate=min(max(share, lo), hi), ci_low=lo, ci_high=hi, note=None)
             est = "–" if r["estimate"] is None else f"{r['estimate']:,.0f}"
-            flag = "" if r["reliable"] else "  ⚠"
+            flag = "  (betting)" if r["answer"] in bets else "" if r["reliable"] else "  ⚠"
             print(f"{r['answer']:<22} {r['model_count']:>10,.0f}  {est:>9}  {ci(r['ci_low'], r['ci_high']):>20}  "
                   f"{ci(r['labels_only_low'], r['labels_only_high']):>20}  {r['labels_with']:>3}/{r['labels']:<5}{flag}")
         if rows:
@@ -354,7 +359,10 @@ def _ledger_command(a):
         for r in rows:
             if r["note"]:
                 print(f"  {r['answer']}: {r['note']}")
-        if any(not r["reliable"] for r in rows):
+        if bets:
+            print("(betting): fewer than 10 labelled rows with or without that answer, so the interval is by betting: "
+                  "valid at any number of labels, and wider than the usual one would be once there are enough")
+        if any(not r["reliable"] and r["answer"] not in bets for r in rows):
             print("⚠ fewer than 10 labelled rows with or without that answer: label more rows before relying on it")
     elif a.cmd == "plan":
         _plan(a, ledger)
@@ -421,6 +429,24 @@ def _ledger_command(a):
         for r in rows:
             print(f"{r['name']:<24} v{r['version']}  judged {r['judged']:>8,}  queued {r['queued']:>6,}  errors {r['errors']:>4,}  "
                   f"labels {r['labels']:>5,}  tokens {r['tokens']:>12,}  {'calibrated' if r['calibrated'] else 'not calibrated'}")
+
+
+def _betting(a, ledger, rows):
+    """Betting intervals (#30) for the answers whose labels hold fewer than 10 rows with or without them, from the same
+    labels drawn at random as docket.estimate() uses, in the order they were drawn. {answer: (low, high)} as shares."""
+    from . import betting, groups
+    short = [r for r in rows if not r["reliable"] and r["labels"]]
+    if not short:
+        return {}
+    out = {}
+    with ledger.connect(a.dsn) as conn:
+        d = groups.decision(conn, a.name)
+        for r in short:
+            lab = groups.labelled_rows(conn, d, None, r["answer"], a.where).get(groups.ALL)
+            ci = betting.interval(*lab, r["model_count"], r["judged"], 1 - a.level) if lab else None
+            if ci:
+                out[r["answer"]] = ci
+    return out
 
 
 def _estimate_with(a, ledger):

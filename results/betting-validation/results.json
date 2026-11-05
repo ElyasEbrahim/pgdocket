@@ -1,0 +1,5464 @@
+{
+  "draws": 500,
+  "runs": 100,
+  "coverage": {
+    "Kubernetes issues (500), which SIG": {
+      "Jev": {
+        "node": {
+          "50": {
+            "truth": 0.334,
+            "below_floor": 0.01,
+            "normal": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.06831584494476745
+            },
+            "normal_above": {
+              "coverage": 0.9858585858585859,
+              "draws": 495,
+              "half_width": 0.06832808658155805
+            },
+            "normal_below": {
+              "coverage": 0.6,
+              "draws": 5,
+              "half_width": 0.0671039229024988
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.140816
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.06894080571574247
+            }
+          },
+          "100": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.056086211549553636
+            },
+            "normal_above": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.056086211549553636
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.09109
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.056086211549553636
+            }
+          },
+          "200": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.047469068782198906
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.047469068782198906
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.05536472945891784
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.047469068782198906
+            }
+          },
+          "300": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04423410173336664
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04423410173336664
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.039240480961923854
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04423410173336664
+            }
+          }
+        },
+        "api-machinery": {
+          "50": {
+            "truth": 0.228,
+            "below_floor": 0.216,
+            "normal": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.06583593066946078
+            },
+            "normal_above": {
+              "coverage": 0.9948979591836735,
+              "draws": 392,
+              "half_width": 0.0664391709443906
+            },
+            "normal_below": {
+              "coverage": 0.8981481481481481,
+              "draws": 108,
+              "half_width": 0.06364639189378953
+            },
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.12987800000000002
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.07862831002040224
+            }
+          },
+          "100": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.051564680895486346
+            },
+            "normal_above": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.051564680895486346
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.08533400000000001
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.051564680895486346
+            }
+          },
+          "200": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04306077147371983
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04306077147371983
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.972,
+              "draws": 500,
+              "half_width": 0.053991967871485955
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04306077147371983
+            }
+          },
+          "300": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.03968932418977252
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.03968932418977252
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.03730800000000001
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.03968932418977252
+            }
+          }
+        },
+        "scheduling": {
+          "50": {
+            "truth": 0.128,
+            "below_floor": 0.902,
+            "normal": {
+              "coverage": 0.912,
+              "draws": 500,
+              "half_width": 0.04602746252227924
+            },
+            "normal_above": {
+              "coverage": 0.9795918367346939,
+              "draws": 49,
+              "half_width": 0.05703701472774449
+            },
+            "normal_below": {
+              "coverage": 0.9046563192904656,
+              "draws": 451,
+              "half_width": 0.04483130274829299
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.10847799999999999
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.10212362744331896
+            }
+          },
+          "100": {
+            "truth": 0.128,
+            "below_floor": 0.13,
+            "normal": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.03836682537197609
+            },
+            "normal_above": {
+              "coverage": 0.9954022988505747,
+              "draws": 435,
+              "half_width": 0.03897173660422627
+            },
+            "normal_below": {
+              "coverage": 0.8615384615384616,
+              "draws": 65,
+              "half_width": 0.0343185732792249
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.07135
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.04269341084567685
+            }
+          },
+          "200": {
+            "truth": 0.128,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.032674032746884074
+            },
+            "normal_above": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.032674032746884074
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.04256224899598394
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.032674032746884074
+            }
+          },
+          "300": {
+            "truth": 0.128,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.030821138207832832
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.030821138207832832
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.02916265060240964
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.030821138207832832
+            }
+          }
+        },
+        "network": {
+          "50": {
+            "truth": 0.086,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.948,
+              "draws": 500,
+              "half_width": 0.037644626164929355
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.04584448777675268
+            },
+            "normal_below": {
+              "coverage": 0.9478957915831663,
+              "draws": 499,
+              "half_width": 0.037628094185873255
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.09363199999999999
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0934856889755535
+            }
+          },
+          "100": {
+            "truth": 0.086,
+            "below_floor": 0.664,
+            "normal": {
+              "coverage": 0.972,
+              "draws": 500,
+              "half_width": 0.03183642983209699
+            },
+            "normal_above": {
+              "coverage": 0.9880952380952381,
+              "draws": 168,
+              "half_width": 0.033981972986977575
+            },
+            "normal_below": {
+              "coverage": 0.963855421686747,
+              "draws": 332,
+              "half_width": 0.030750733295892365
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.061256
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.05097794292362447
+            }
+          },
+          "200": {
+            "truth": 0.086,
+            "below_floor": 0.01,
+            "normal": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.02721634080201454
+            },
+            "normal_above": {
+              "coverage": 0.9939393939393939,
+              "draws": 495,
+              "half_width": 0.027256921080744075
+            },
+            "normal_below": {
+              "coverage": 0.2,
+              "draws": 5,
+              "half_width": 0.023198893207790623
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.037236000000000005
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.027294351869936635
+            }
+          },
+          "300": {
+            "truth": 0.086,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.025766977491058708
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.025766977491058708
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.024821643286573148
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.025766977491058708
+            }
+          }
+        },
+        "storage": {
+          "50": {
+            "truth": 0.068,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.858,
+              "draws": 500,
+              "half_width": 0.03307900163696727
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.858,
+              "draws": 500,
+              "half_width": 0.03307900163696727
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.086512
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.086512
+            }
+          },
+          "100": {
+            "truth": 0.068,
+            "below_floor": 0.882,
+            "normal": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.02784631269506152
+            },
+            "normal_above": {
+              "coverage": 0.9830508474576272,
+              "draws": 59,
+              "half_width": 0.030615152995674917
+            },
+            "normal_below": {
+              "coverage": 0.9727891156462585,
+              "draws": 441,
+              "half_width": 0.02747587827842617
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.05713800000000001
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.05368258805348964
+            }
+          },
+          "200": {
+            "truth": 0.068,
+            "below_floor": 0.06,
+            "normal": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.024133915737241978
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 470,
+              "half_width": 0.024299719161241514
+            },
+            "normal_below": {
+              "coverage": 0.8666666666666667,
+              "draws": 30,
+              "half_width": 0.021536328761249293
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.0346
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.02487573601156702
+            }
+          },
+          "300": {
+            "truth": 0.068,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.022988837182070756
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.022988837182070756
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.023008032128514058
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.022988837182070756
+            }
+          }
+        },
+        "apps": {
+          "50": {
+            "truth": 0.046,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.928,
+              "draws": 500,
+              "half_width": 0.035312606866263786
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.928,
+              "draws": 500,
+              "half_width": 0.035312606866263786
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.07866799999999999
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.07866799999999999
+            }
+          },
+          "100": {
+            "truth": 0.046,
+            "below_floor": 0.99,
+            "normal": {
+              "coverage": 0.904,
+              "draws": 500,
+              "half_width": 0.02958244826918709
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 5,
+              "half_width": 0.03557855026373158
+            },
+            "normal_below": {
+              "coverage": 0.9030303030303031,
+              "draws": 495,
+              "half_width": 0.02952151227330757
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.053166000000000005
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.05279178550263732
+            }
+          },
+          "200": {
+            "truth": 0.046,
+            "below_floor": 0.556,
+            "normal": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.02310736169536435
+            },
+            "normal_above": {
+              "coverage": 0.990990990990991,
+              "draws": 222,
+              "half_width": 0.024588216516360888
+            },
+            "normal_below": {
+              "coverage": 0.9496402877697842,
+              "draws": 278,
+              "half_width": 0.021924808564928268
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.03380360721442886
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.028559168133264236
+            }
+          },
+          "300": {
+            "truth": 0.046,
+            "below_floor": 0.02,
+            "normal": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.020600897877317063
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 490,
+              "half_width": 0.02068214011331204
+            },
+            "normal_below": {
+              "coverage": 0.6,
+              "draws": 10,
+              "half_width": 0.016620028313563174
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.02303607214428858
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.020678497311045804
+            }
+          }
+        },
+        "auth": {
+          "50": {
+            "truth": 0.034,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.848,
+              "draws": 500,
+              "half_width": 0.03342171763471615
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.848,
+              "draws": 500,
+              "half_width": 0.03342171763471615
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06912799999999998
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06912799999999998
+            }
+          },
+          "100": {
+            "truth": 0.034,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.848,
+              "draws": 500,
+              "half_width": 0.02658245039231326
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.848,
+              "draws": 500,
+              "half_width": 0.02658245039231326
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.04686800000000001
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.04686800000000001
+            }
+          },
+          "200": {
+            "truth": 0.034,
+            "below_floor": 0.918,
+            "normal": {
+              "coverage": 0.954,
+              "draws": 500,
+              "half_width": 0.02112870460565849
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 41,
+              "half_width": 0.024580184361008537
+            },
+            "normal_below": {
+              "coverage": 0.9498910675381264,
+              "draws": 459,
+              "half_width": 0.0208204024924355
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.030692
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.029773575117602705
+            }
+          },
+          "300": {
+            "truth": 0.034,
+            "below_floor": 0.318,
+            "normal": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.018608256546402573
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 341,
+              "half_width": 0.019335685701739894
+            },
+            "normal_below": {
+              "coverage": 0.9748427672955975,
+              "draws": 159,
+              "half_width": 0.017048172634641395
+            },
+            "betting": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.020923999999999998
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.01950293764858661
+            }
+          }
+        },
+        "cli": {
+          "50": {
+            "truth": 0.03,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.798,
+              "draws": 500,
+              "half_width": 0.01911848948104999
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.798,
+              "draws": 500,
+              "half_width": 0.01911848948104999
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06666
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06666
+            }
+          },
+          "100": {
+            "truth": 0.03,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.017637543716282334
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.017637543716282334
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.043424000000000004
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.043424000000000004
+            }
+          },
+          "200": {
+            "truth": 0.03,
+            "below_floor": 0.964,
+            "normal": {
+              "coverage": 0.972,
+              "draws": 500,
+              "half_width": 0.0158604270774036
+            },
+            "normal_above": {
+              "coverage": 0.8888888888888888,
+              "draws": 18,
+              "half_width": 0.015579011295948384
+            },
+            "normal_below": {
+              "coverage": 0.975103734439834,
+              "draws": 482,
+              "half_width": 0.01587095822930837
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.025908000000000004
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.025534844406654145
+            }
+          },
+          "300": {
+            "truth": 0.03,
+            "below_floor": 0.586,
+            "normal": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.015216176316282222
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 207,
+              "half_width": 0.015465874390159456
+            },
+            "normal_below": {
+              "coverage": 0.9965870307167235,
+              "draws": 293,
+              "half_width": 0.015039768462041313
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.01746
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.016886871997526014
+            }
+          }
+        },
+        "testing": {
+          "50": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.598,
+              "draws": 500,
+              "half_width": 0.025703125496521595
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.598,
+              "draws": 500,
+              "half_width": 0.025703125496521595
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.05801
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.05801
+            }
+          },
+          "100": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.852,
+              "draws": 500,
+              "half_width": 0.01951962755479461
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.852,
+              "draws": 500,
+              "half_width": 0.01951962755479461
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.03491
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.03491
+            }
+          },
+          "200": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.948,
+              "draws": 500,
+              "half_width": 0.015385580594088769
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.948,
+              "draws": 500,
+              "half_width": 0.015385580594088769
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.020954
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.020954
+            }
+          },
+          "300": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.013710274442103444
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.013710274442103444
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.013926000000000003
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.013926000000000003
+            }
+          }
+        },
+        "instrumentation": {
+          "50": {
+            "truth": 0.028,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.796,
+              "draws": 500,
+              "half_width": 0.022967925306015522
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.796,
+              "draws": 500,
+              "half_width": 0.022967925306015522
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.065886
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.065886
+            }
+          },
+          "100": {
+            "truth": 0.028,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.944,
+              "draws": 500,
+              "half_width": 0.01970405385312604
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.944,
+              "draws": 500,
+              "half_width": 0.01970405385312604
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.041608000000000006
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.041608000000000006
+            }
+          },
+          "200": {
+            "truth": 0.028,
+            "below_floor": 0.982,
+            "normal": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.0168553200865664
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 9,
+              "half_width": 0.017557023081644557
+            },
+            "normal_below": {
+              "coverage": 0.9613034623217923,
+              "draws": 491,
+              "half_width": 0.01684243166420782
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.026028000000000006
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.025858026415469606
+            }
+          },
+          "300": {
+            "truth": 0.028,
+            "below_floor": 0.702,
+            "normal": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.015522997362756625
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 149,
+              "half_width": 0.016260045000086116
+            },
+            "normal_below": {
+              "coverage": 0.9943019943019943,
+              "draws": 351,
+              "half_width": 0.015210119590784846
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.01746
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.01710149341002566
+            }
+          }
+        }
+      },
+      "Laya": {
+        "node": {
+          "50": {
+            "truth": 0.334,
+            "below_floor": 0.008,
+            "normal": {
+              "coverage": 0.952,
+              "draws": 500,
+              "half_width": 0.1268858006224229
+            },
+            "normal_above": {
+              "coverage": 0.9596774193548387,
+              "draws": 496,
+              "half_width": 0.12712289244243744
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 4,
+              "half_width": 0.09748641494062224
+            },
+            "betting": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.19625
+            },
+            "reported": {
+              "coverage": 0.954,
+              "draws": 500,
+              "half_width": 0.12720990930289794
+            }
+          },
+          "100": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.09019854992908756
+            },
+            "normal_above": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.09019854992908756
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.15126
+            },
+            "reported": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.09019854992908756
+            }
+          },
+          "200": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.06395695986277984
+            },
+            "normal_above": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.06395695986277984
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.964,
+              "draws": 500,
+              "half_width": 0.11002799999999999
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.06395695986277984
+            }
+          },
+          "300": {
+            "truth": 0.334,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.05265795876073455
+            },
+            "normal_above": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.05265795876073455
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.08402199999999999
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.05265795876073455
+            }
+          }
+        },
+        "api-machinery": {
+          "50": {
+            "truth": 0.228,
+            "below_floor": 0.246,
+            "normal": {
+              "coverage": 0.952,
+              "draws": 500,
+              "half_width": 0.10329444615948581
+            },
+            "normal_above": {
+              "coverage": 0.9946949602122016,
+              "draws": 377,
+              "half_width": 0.1065411783726156
+            },
+            "normal_below": {
+              "coverage": 0.8211382113821138,
+              "draws": 123,
+              "half_width": 0.09334307994525876
+            },
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.159548
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.11495604849295217
+            }
+          },
+          "100": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.0749449695553021
+            },
+            "normal_above": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.0749449695553021
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.96,
+              "draws": 500,
+              "half_width": 0.11742
+            },
+            "reported": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.0749449695553021
+            }
+          },
+          "200": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.05451243451515013
+            },
+            "normal_above": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.05451243451515013
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.08336072144288575
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.05451243451515013
+            }
+          },
+          "300": {
+            "truth": 0.228,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.045546211274538576
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.045546211274538576
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.96,
+              "draws": 500,
+              "half_width": 0.062044
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.045546211274538576
+            }
+          }
+        },
+        "scheduling": {
+          "50": {
+            "truth": 0.128,
+            "below_floor": 0.914,
+            "normal": {
+              "coverage": 0.9,
+              "draws": 500,
+              "half_width": 0.07869625009639802
+            },
+            "normal_above": {
+              "coverage": 0.8604651162790697,
+              "draws": 43,
+              "half_width": 0.09665539686684312
+            },
+            "normal_below": {
+              "coverage": 0.9037199124726477,
+              "draws": 457,
+              "half_width": 0.07700273406322009
+            },
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.119696
+            },
+            "reported": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.11491436413054851
+            }
+          },
+          "100": {
+            "truth": 0.128,
+            "below_floor": 0.122,
+            "normal": {
+              "coverage": 0.958,
+              "draws": 500,
+              "half_width": 0.05793878648860164
+            },
+            "normal_above": {
+              "coverage": 0.9931662870159453,
+              "draws": 439,
+              "half_width": 0.05911295442243202
+            },
+            "normal_below": {
+              "coverage": 0.7049180327868853,
+              "draws": 61,
+              "half_width": 0.04948862709595342
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.08644
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.060621173982895314
+            }
+          },
+          "200": {
+            "truth": 0.128,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.04258122945485975
+            },
+            "normal_above": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.04258122945485975
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.05850503018108653
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.04258122945485975
+            }
+          },
+          "300": {
+            "truth": 0.128,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.035916407922908816
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.035916407922908816
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.043525050100200406
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.035916407922908816
+            }
+          }
+        },
+        "network": {
+          "50": {
+            "truth": 0.086,
+            "below_floor": 0.986,
+            "normal": {
+              "coverage": 0.908,
+              "draws": 500,
+              "half_width": 0.06331140164985684
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 7,
+              "half_width": 0.09863893113813914
+            },
+            "normal_below": {
+              "coverage": 0.9066937119675457,
+              "draws": 493,
+              "half_width": 0.06280672265716711
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.10414599999999999
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.10341494503593396
+            }
+          },
+          "100": {
+            "truth": 0.086,
+            "below_floor": 0.62,
+            "normal": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.04774159782102087
+            },
+            "normal_above": {
+              "coverage": 0.9842105263157894,
+              "draws": 190,
+              "half_width": 0.0539611044102118
+            },
+            "normal_below": {
+              "coverage": 0.9032258064516129,
+              "draws": 310,
+              "half_width": 0.04392964216958128
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.076392
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.06402921967588049
+            }
+          },
+          "200": {
+            "truth": 0.086,
+            "below_floor": 0.006,
+            "normal": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.03513658056969755
+            },
+            "normal_above": {
+              "coverage": 0.9959758551307847,
+              "draws": 497,
+              "half_width": 0.03517768949569431
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 3,
+              "half_width": 0.028326201829567202
+            },
+            "betting": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.05184400000000001
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.03518662335872015
+            }
+          },
+          "300": {
+            "truth": 0.086,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.02965214968726962
+            },
+            "normal_above": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.02965214968726962
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.036486000000000005
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.02965214968726962
+            }
+          }
+        },
+        "storage": {
+          "50": {
+            "truth": 0.068,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.864,
+              "draws": 500,
+              "half_width": 0.060055478218437604
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.11196859415329433
+            },
+            "normal_below": {
+              "coverage": 0.8637274549098196,
+              "draws": 499,
+              "half_width": 0.059947997647143904
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.09247
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.0923859371883066
+            }
+          },
+          "100": {
+            "truth": 0.068,
+            "below_floor": 0.866,
+            "normal": {
+              "coverage": 0.94,
+              "draws": 500,
+              "half_width": 0.04544227006240728
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 67,
+              "half_width": 0.05641965745068405
+            },
+            "normal_below": {
+              "coverage": 0.930715935334873,
+              "draws": 433,
+              "half_width": 0.043743690489625425
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.06671
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.06253423409839166
+            }
+          },
+          "200": {
+            "truth": 0.068,
+            "below_floor": 0.066,
+            "normal": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.03314177461761062
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 467,
+              "half_width": 0.033591226831638794
+            },
+            "normal_below": {
+              "coverage": 0.696969696969697,
+              "draws": 33,
+              "half_width": 0.026781344800908886
+            },
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.044936000000000004
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.03360020586075063
+            }
+          },
+          "300": {
+            "truth": 0.068,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.027573260724422073
+            },
+            "normal_above": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.027573260724422073
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.032004000000000005
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.027573260724422073
+            }
+          }
+        },
+        "apps": {
+          "50": {
+            "truth": 0.046,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.86,
+              "draws": 500,
+              "half_width": 0.044570925734087774
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.86,
+              "draws": 500,
+              "half_width": 0.044570925734087774
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.07754599999999999
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.07754599999999999
+            }
+          },
+          "100": {
+            "truth": 0.046,
+            "below_floor": 0.992,
+            "normal": {
+              "coverage": 0.894,
+              "draws": 500,
+              "half_width": 0.03504364135021813
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 4,
+              "half_width": 0.05348556983432819
+            },
+            "normal_below": {
+              "coverage": 0.8931451612903226,
+              "draws": 496,
+              "half_width": 0.03489461566549804
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.05536
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.05506988455867463
+            }
+          },
+          "200": {
+            "truth": 0.046,
+            "below_floor": 0.554,
+            "normal": {
+              "coverage": 0.944,
+              "draws": 500,
+              "half_width": 0.026241242740689594
+            },
+            "normal_above": {
+              "coverage": 0.9955156950672646,
+              "draws": 223,
+              "half_width": 0.02890453843108427
+            },
+            "normal_below": {
+              "coverage": 0.9025270758122743,
+              "draws": 277,
+              "half_width": 0.024097145488133583
+            },
+            "betting": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.038124000000000005
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.03183742414026359
+            }
+          },
+          "300": {
+            "truth": 0.046,
+            "below_floor": 0.028,
+            "normal": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.022179558049953377
+            },
+            "normal_above": {
+              "coverage": 0.9917695473251029,
+              "draws": 486,
+              "half_width": 0.022294670536892873
+            },
+            "normal_below": {
+              "coverage": 0.7857142857142857,
+              "draws": 14,
+              "half_width": 0.01818351028905379
+            },
+            "betting": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.027633266533066136
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.022224419761859873
+            }
+          }
+        },
+        "auth": {
+          "50": {
+            "truth": 0.034,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.646,
+              "draws": 500,
+              "half_width": 0.034730412773056316
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.646,
+              "draws": 500,
+              "half_width": 0.034730412773056316
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.07023399999999998
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.07023399999999998
+            }
+          },
+          "100": {
+            "truth": 0.034,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.828,
+              "draws": 500,
+              "half_width": 0.026948791249217216
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.828,
+              "draws": 500,
+              "half_width": 0.026948791249217216
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.046686
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.046686
+            }
+          },
+          "200": {
+            "truth": 0.034,
+            "below_floor": 0.908,
+            "normal": {
+              "coverage": 0.932,
+              "draws": 500,
+              "half_width": 0.02116567658261213
+            },
+            "normal_above": {
+              "coverage": 0.9782608695652174,
+              "draws": 46,
+              "half_width": 0.024629227764140768
+            },
+            "normal_below": {
+              "coverage": 0.9273127753303965,
+              "draws": 454,
+              "half_width": 0.020814744084043147
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.0318
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.03081188895430095
+            }
+          },
+          "300": {
+            "truth": 0.034,
+            "below_floor": 0.376,
+            "normal": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.018342527210424144
+            },
+            "normal_above": {
+              "coverage": 0.9967948717948718,
+              "draws": 312,
+              "half_width": 0.019241341620164006
+            },
+            "normal_below": {
+              "coverage": 0.9468085106382979,
+              "draws": 188,
+              "half_width": 0.01685087776447288
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.022506
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.019782597170982342
+            }
+          }
+        },
+        "cli": {
+          "50": {
+            "truth": 0.03,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.708,
+              "draws": 500,
+              "half_width": 0.03827779271468893
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.708,
+              "draws": 500,
+              "half_width": 0.03827779271468893
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.06419
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.06419
+            }
+          },
+          "100": {
+            "truth": 0.03,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.822,
+              "draws": 500,
+              "half_width": 0.02862080135776625
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.822,
+              "draws": 500,
+              "half_width": 0.02862080135776625
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.044026
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.044026
+            }
+          },
+          "200": {
+            "truth": 0.03,
+            "below_floor": 0.968,
+            "normal": {
+              "coverage": 0.946,
+              "draws": 500,
+              "half_width": 0.0219070534575242
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 16,
+              "half_width": 0.028804754348486103
+            },
+            "normal_below": {
+              "coverage": 0.9442148760330579,
+              "draws": 484,
+              "half_width": 0.021679030287575046
+            },
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.029532
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.029083752139151556
+            }
+          },
+          "300": {
+            "truth": 0.03,
+            "below_floor": 0.6,
+            "normal": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.01847793906241677
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 200,
+              "half_width": 0.020260740313273694
+            },
+            "normal_below": {
+              "coverage": 0.9833333333333333,
+              "draws": 300,
+              "half_width": 0.017289404895178818
+            },
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.020626000000000002
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.01964029612530948
+            }
+          }
+        },
+        "testing": {
+          "50": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.626,
+              "draws": 500,
+              "half_width": 0.03609385009611965
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.626,
+              "draws": 500,
+              "half_width": 0.03609385009611965
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.056224
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.056224
+            }
+          },
+          "100": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.874,
+              "draws": 500,
+              "half_width": 0.02374271958731906
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.874,
+              "draws": 500,
+              "half_width": 0.02374271958731906
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.03294
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.03294
+            }
+          },
+          "200": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.926,
+              "draws": 500,
+              "half_width": 0.017161610739555258
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.926,
+              "draws": 500,
+              "half_width": 0.017161610739555258
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.019388000000000002
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.019388000000000002
+            }
+          },
+          "300": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.014825938645363315
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.014825938645363315
+            },
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.013006000000000002
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.013006000000000002
+            }
+          }
+        },
+        "instrumentation": {
+          "50": {
+            "truth": 0.028,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.74,
+              "draws": 500,
+              "half_width": 0.039031206888415756
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.74,
+              "draws": 500,
+              "half_width": 0.039031206888415756
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.063094
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.063094
+            }
+          },
+          "100": {
+            "truth": 0.028,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.95,
+              "draws": 500,
+              "half_width": 0.027695955138938026
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.95,
+              "draws": 500,
+              "half_width": 0.027695955138938026
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.040805999999999995
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.040805999999999995
+            }
+          },
+          "200": {
+            "truth": 0.028,
+            "below_floor": 0.992,
+            "normal": {
+              "coverage": 0.952,
+              "draws": 500,
+              "half_width": 0.021632770358179086
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 4,
+              "half_width": 0.029297520826642595
+            },
+            "normal_below": {
+              "coverage": 0.9516129032258065,
+              "draws": 496,
+              "half_width": 0.021570957854401152
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.025846000000000004
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.02579038016661315
+            }
+          },
+          "300": {
+            "truth": 0.028,
+            "below_floor": 0.72,
+            "normal": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.018252349732701116
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 140,
+              "half_width": 0.020489760332314016
+            },
+            "normal_below": {
+              "coverage": 0.9638888888888889,
+              "draws": 360,
+              "half_width": 0.017382245610629433
+            },
+            "betting": {
+              "coverage": 0.98,
+              "draws": 500,
+              "half_width": 0.017976000000000002
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.017949132893047923
+            }
+          }
+        }
+      }
+    },
+    "CFPB complaints (2,000), which product": {
+      "Jev": {
+        "checking or savings account": {
+          "50": {
+            "truth": 0.062,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.878,
+              "draws": 500,
+              "half_width": 0.037963922010297295
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.878,
+              "draws": 500,
+              "half_width": 0.037963922010297295
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.09054750000000002
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.09054750000000002
+            }
+          },
+          "100": {
+            "truth": 0.062,
+            "below_floor": 0.906,
+            "normal": {
+              "coverage": 0.922,
+              "draws": 500,
+              "half_width": 0.029041313753446853
+            },
+            "normal_above": {
+              "coverage": 0.9574468085106383,
+              "draws": 47,
+              "half_width": 0.035811777877119214
+            },
+            "normal_below": {
+              "coverage": 0.9183222958057395,
+              "draws": 453,
+              "half_width": 0.028338859418319703
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.0629925
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.05958230712044921
+            }
+          },
+          "200": {
+            "truth": 0.062,
+            "below_floor": 0.16,
+            "normal": {
+              "coverage": 0.948,
+              "draws": 500,
+              "half_width": 0.02246543494954551
+            },
+            "normal_above": {
+              "coverage": 0.9714285714285714,
+              "draws": 420,
+              "half_width": 0.02295343064163969
+            },
+            "normal_below": {
+              "coverage": 0.825,
+              "draws": 80,
+              "half_width": 0.01990345756605109
+            },
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.0437435
+            },
+            "reported": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.025671381738977334
+            }
+          },
+          "300": {
+            "truth": 0.062,
+            "below_floor": 0.004,
+            "normal": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.018820529801770392
+            },
+            "normal_above": {
+              "coverage": 0.9658634538152611,
+              "draws": 498,
+              "half_width": 0.018830143888278316
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 2,
+              "half_width": 0.01642662226129642
+            },
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.034497
+            },
+            "reported": {
+              "coverage": 0.964,
+              "draws": 500,
+              "half_width": 0.018875323312725203
+            }
+          }
+        },
+        "credit card": {
+          "50": {
+            "truth": 0.071,
+            "below_floor": 0.992,
+            "normal": {
+              "coverage": 0.87,
+              "draws": 500,
+              "half_width": 0.05389702590804189
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 4,
+              "half_width": 0.08402197183222618
+            },
+            "normal_below": {
+              "coverage": 0.8689516129032258,
+              "draws": 496,
+              "half_width": 0.053650100121778094
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.09419049999999998
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.09382767577465781
+            }
+          },
+          "100": {
+            "truth": 0.071,
+            "below_floor": 0.852,
+            "normal": {
+              "coverage": 0.906,
+              "draws": 500,
+              "half_width": 0.040745280867833376
+            },
+            "normal_above": {
+              "coverage": 0.9324324324324325,
+              "draws": 74,
+              "half_width": 0.048867494127844205
+            },
+            "normal_below": {
+              "coverage": 0.9014084507042254,
+              "draws": 426,
+              "half_width": 0.039327724780001294
+            },
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.06742685370741483
+            },
+            "reported": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.06275389692477047
+            }
+          },
+          "200": {
+            "truth": 0.071,
+            "below_floor": 0.082,
+            "normal": {
+              "coverage": 0.954,
+              "draws": 500,
+              "half_width": 0.029432686924105257
+            },
+            "normal_above": {
+              "coverage": 0.9891067538126361,
+              "draws": 459,
+              "half_width": 0.02988913732715911
+            },
+            "normal_below": {
+              "coverage": 0.5609756097560976,
+              "draws": 41,
+              "half_width": 0.02432266899723412
+            },
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.04762349999999999
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.030595728066332064
+            }
+          },
+          "300": {
+            "truth": 0.071,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.024514119014577722
+            },
+            "normal_above": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.024514119014577722
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.038979999999999994
+            },
+            "reported": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.024514119014577722
+            }
+          }
+        },
+        "credit reporting": {
+          "50": {
+            "truth": 0.624,
+            "below_floor": 0.004,
+            "normal": {
+              "coverage": 0.952,
+              "draws": 500,
+              "half_width": 0.09443926603591242
+            },
+            "normal_above": {
+              "coverage": 0.9558232931726908,
+              "draws": 498,
+              "half_width": 0.09446835595612853
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 2,
+              "half_width": 0.08719587590210492
+            },
+            "betting": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.1762185
+            },
+            "reported": {
+              "coverage": 0.952,
+              "draws": 500,
+              "half_width": 0.094637982532304
+            }
+          },
+          "100": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.06836565939739904
+            },
+            "normal_above": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.06836565939739904
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.1264715
+            },
+            "reported": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.06836565939739904
+            }
+          },
+          "200": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.049613079111433395
+            },
+            "normal_above": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.049613079111433395
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.08958
+            },
+            "reported": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.049613079111433395
+            }
+          },
+          "300": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.04147851148819893
+            },
+            "normal_above": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.04147851148819893
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.958,
+              "draws": 500,
+              "half_width": 0.0731315
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.04147851148819893
+            }
+          }
+        },
+        "debt collection": {
+          "50": {
+            "truth": 0.1195,
+            "below_floor": 0.95,
+            "normal": {
+              "coverage": 0.906,
+              "draws": 500,
+              "half_width": 0.07013672390567915
+            },
+            "normal_above": {
+              "coverage": 0.72,
+              "draws": 25,
+              "half_width": 0.09234868183316344
+            },
+            "normal_below": {
+              "coverage": 0.9157894736842105,
+              "draws": 475,
+              "half_width": 0.06896024308324884
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.12192499999999999
+            },
+            "reported": {
+              "coverage": 0.972,
+              "draws": 500,
+              "half_width": 0.11868493409165816
+            }
+          },
+          "100": {
+            "truth": 0.1195,
+            "below_floor": 0.196,
+            "normal": {
+              "coverage": 0.938,
+              "draws": 500,
+              "half_width": 0.050862431606428025
+            },
+            "normal_above": {
+              "coverage": 0.9900497512437811,
+              "draws": 402,
+              "half_width": 0.05272694826814423
+            },
+            "normal_below": {
+              "coverage": 0.7244897959183674,
+              "draws": 98,
+              "half_width": 0.04321410815734724
+            },
+            "betting": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.0887995
+            },
+            "reported": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.05718896640758796
+            }
+          },
+          "200": {
+            "truth": 0.1195,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.936,
+              "draws": 500,
+              "half_width": 0.0366059317519377
+            },
+            "normal_above": {
+              "coverage": 0.936,
+              "draws": 500,
+              "half_width": 0.0366059317519377
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.0639705
+            },
+            "reported": {
+              "coverage": 0.936,
+              "draws": 500,
+              "half_width": 0.0366059317519377
+            }
+          },
+          "300": {
+            "truth": 0.1195,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.946,
+              "draws": 500,
+              "half_width": 0.030446121348511528
+            },
+            "normal_above": {
+              "coverage": 0.946,
+              "draws": 500,
+              "half_width": 0.030446121348511528
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.052781999999999996
+            },
+            "reported": {
+              "coverage": 0.946,
+              "draws": 500,
+              "half_width": 0.030446121348511528
+            }
+          }
+        },
+        "money transfer or virtual currency": {
+          "50": {
+            "truth": 0.0195,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.682,
+              "draws": 500,
+              "half_width": 0.020674747642934935
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.682,
+              "draws": 500,
+              "half_width": 0.020674747642934935
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.06364949999999998
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.06364949999999998
+            }
+          },
+          "100": {
+            "truth": 0.0195,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.858,
+              "draws": 500,
+              "half_width": 0.015768756426924005
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.858,
+              "draws": 500,
+              "half_width": 0.015768756426924005
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0402465
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0402465
+            }
+          },
+          "200": {
+            "truth": 0.0195,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.888,
+              "draws": 500,
+              "half_width": 0.01320079002910433
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.01790597957988161
+            },
+            "normal_below": {
+              "coverage": 0.8877755511022044,
+              "draws": 499,
+              "half_width": 0.01319118760144968
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0296605
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.029628811959159763
+            }
+          },
+          "300": {
+            "truth": 0.0195,
+            "below_floor": 0.956,
+            "normal": {
+              "coverage": 0.924,
+              "draws": 500,
+              "half_width": 0.011345602743151901
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 22,
+              "half_width": 0.014377531658801351
+            },
+            "normal_below": {
+              "coverage": 0.9205020920502092,
+              "draws": 478,
+              "half_width": 0.011205176561795507
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.0246105
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.02400361139298726
+            }
+          }
+        },
+        "mortgage": {
+          "50": {
+            "truth": 0.055,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.94,
+              "draws": 500,
+              "half_width": 0.02803399424913511
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.040526434005694764
+            },
+            "normal_below": {
+              "coverage": 0.9398797595190381,
+              "draws": 499,
+              "half_width": 0.028007583171425685
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.08604550000000001
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.08586755286801138
+            }
+          },
+          "100": {
+            "truth": 0.055,
+            "below_floor": 0.962,
+            "normal": {
+              "coverage": 0.918,
+              "draws": 500,
+              "half_width": 0.021627577491996456
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 19,
+              "half_width": 0.025818906438263484
+            },
+            "normal_below": {
+              "coverage": 0.9147609147609148,
+              "draws": 481,
+              "half_width": 0.02146201564172811
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.058724000000000005
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.05726761844465401
+            }
+          },
+          "200": {
+            "truth": 0.055,
+            "below_floor": 0.302,
+            "normal": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.017302899501378883
+            },
+            "normal_above": {
+              "coverage": 0.9914040114613181,
+              "draws": 349,
+              "half_width": 0.01784036574452263
+            },
+            "normal_below": {
+              "coverage": 0.9139072847682119,
+              "draws": 151,
+              "half_width": 0.016060676197689017
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.040709
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.024336575289676803
+            }
+          },
+          "300": {
+            "truth": 0.055,
+            "below_floor": 0.028,
+            "normal": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.015023821233716931
+            },
+            "normal_above": {
+              "coverage": 0.9897119341563786,
+              "draws": 486,
+              "half_width": 0.015054213492782083
+            },
+            "normal_below": {
+              "coverage": 0.2857142857142857,
+              "draws": 14,
+              "half_width": 0.013968775669026637
+            },
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.031295
+            },
+            "reported": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.015431695514984184
+            }
+          }
+        },
+        "payday, title, or personal loan": {
+          "50": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.278,
+              "draws": 500,
+              "half_width": 0.019788028545154806
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.278,
+              "draws": 500,
+              "half_width": 0.019788028545154806
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0553805
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0553805
+            }
+          },
+          "100": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.636,
+              "draws": 500,
+              "half_width": 0.014814213001962957
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.636,
+              "draws": 500,
+              "half_width": 0.014814213001962957
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.03388650000000001
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.03388650000000001
+            }
+          },
+          "200": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.892,
+              "draws": 500,
+              "half_width": 0.011366674154517094
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.892,
+              "draws": 500,
+              "half_width": 0.011366674154517094
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.022772999999999995
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.022772999999999995
+            }
+          },
+          "300": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.882,
+              "draws": 500,
+              "half_width": 0.009720021627836702
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.882,
+              "draws": 500,
+              "half_width": 0.009720021627836702
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0184165
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0184165
+            }
+          }
+        },
+        "student loan": {
+          "50": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.508,
+              "draws": 500,
+              "half_width": 0.020259763694681947
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.508,
+              "draws": 500,
+              "half_width": 0.020259763694681947
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.061346
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.061346
+            }
+          },
+          "100": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.804,
+              "draws": 500,
+              "half_width": 0.016372590784757696
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.804,
+              "draws": 500,
+              "half_width": 0.016372590784757696
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.039876999999999996
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.039876999999999996
+            }
+          },
+          "200": {
+            "truth": 0.018,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.866,
+              "draws": 500,
+              "half_width": 0.013093825882209247
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.018438970544246626
+            },
+            "normal_below": {
+              "coverage": 0.8657314629258517,
+              "draws": 499,
+              "half_width": 0.013082713315344302
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0274895
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.027451377941088494
+            }
+          },
+          "300": {
+            "truth": 0.018,
+            "below_floor": 0.964,
+            "normal": {
+              "coverage": 0.922,
+              "draws": 500,
+              "half_width": 0.011307234228039965
+            },
+            "normal_above": {
+              "coverage": 0.8888888888888888,
+              "draws": 18,
+              "half_width": 0.014594566464704504
+            },
+            "normal_below": {
+              "coverage": 0.9232365145228216,
+              "draws": 482,
+              "half_width": 0.011184215558060834
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.022237
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.021765904392729362
+            }
+          }
+        },
+        "vehicle loan or lease": {
+          "50": {
+            "truth": 0.019,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.622,
+              "draws": 500,
+              "half_width": 0.01917229492752875
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.622,
+              "draws": 500,
+              "half_width": 0.01917229492752875
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06050299999999999
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.06050299999999999
+            }
+          },
+          "100": {
+            "truth": 0.019,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.854,
+              "draws": 500,
+              "half_width": 0.01743838604792004
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.854,
+              "draws": 500,
+              "half_width": 0.01743838604792004
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04042149999999999
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.04042149999999999
+            }
+          },
+          "200": {
+            "truth": 0.019,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.914,
+              "draws": 500,
+              "half_width": 0.013633633621470971
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.015557274270879067
+            },
+            "normal_below": {
+              "coverage": 0.9138276553106213,
+              "draws": 499,
+              "half_width": 0.013629763117146206
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.027745
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.027679614548541755
+            }
+          },
+          "300": {
+            "truth": 0.019,
+            "below_floor": 0.968,
+            "normal": {
+              "coverage": 0.924,
+              "draws": 500,
+              "half_width": 0.0118350854696188
+            },
+            "normal_above": {
+              "coverage": 0.9375,
+              "draws": 16,
+              "half_width": 0.015717786661155093
+            },
+            "normal_below": {
+              "coverage": 0.9235537190082644,
+              "draws": 484,
+              "half_width": 0.011706465968449894
+            },
+            "betting": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.023267
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.02284196917315696
+            }
+          }
+        }
+      },
+      "Laya": {
+        "checking or savings account": {
+          "50": {
+            "truth": 0.062,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.77,
+              "draws": 500,
+              "half_width": 0.05170803581944126
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.10129549221602077
+            },
+            "normal_below": {
+              "coverage": 0.7695390781563126,
+              "draws": 499,
+              "half_width": 0.051605370278247506
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.0924745
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.09237709098443204
+            }
+          },
+          "100": {
+            "truth": 0.062,
+            "below_floor": 0.92,
+            "normal": {
+              "coverage": 0.918,
+              "draws": 500,
+              "half_width": 0.04037233497206077
+            },
+            "normal_above": {
+              "coverage": 0.95,
+              "draws": 40,
+              "half_width": 0.052352552202539
+            },
+            "normal_below": {
+              "coverage": 0.9152173913043479,
+              "draws": 460,
+              "half_width": 0.03933057695201919
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.06978749999999999
+            },
+            "reported": {
+              "coverage": 0.99,
+              "draws": 500,
+              "half_width": 0.06671120417620313
+            }
+          },
+          "200": {
+            "truth": 0.062,
+            "below_floor": 0.192,
+            "normal": {
+              "coverage": 0.932,
+              "draws": 500,
+              "half_width": 0.029032523053102773
+            },
+            "normal_above": {
+              "coverage": 0.9801980198019802,
+              "draws": 404,
+              "half_width": 0.03011611941598471
+            },
+            "normal_below": {
+              "coverage": 0.7291666666666666,
+              "draws": 96,
+              "half_width": 0.024472388359307984
+            },
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.050787
+            },
+            "reported": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.03227632448811565
+            }
+          },
+          "300": {
+            "truth": 0.062,
+            "below_floor": 0.014,
+            "normal": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.02403302126137826
+            },
+            "normal_above": {
+              "coverage": 0.947261663286004,
+              "draws": 493,
+              "half_width": 0.024138752141544477
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 7,
+              "half_width": 0.016586546415385848
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.042322000000000005
+            },
+            "reported": {
+              "coverage": 0.944,
+              "draws": 500,
+              "half_width": 0.02418430961156286
+            }
+          }
+        },
+        "credit card": {
+          "50": {
+            "truth": 0.071,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.88,
+              "draws": 500,
+              "half_width": 0.05950529795460361
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.10094253142255455
+            },
+            "normal_below": {
+              "coverage": 0.8797595190380761,
+              "draws": 499,
+              "half_width": 0.05942090440375239
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.09515200000000001
+            },
+            "reported": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.09501338506284512
+            }
+          },
+          "100": {
+            "truth": 0.071,
+            "below_floor": 0.842,
+            "normal": {
+              "coverage": 0.898,
+              "draws": 500,
+              "half_width": 0.043647202601040186
+            },
+            "normal_above": {
+              "coverage": 0.9620253164556962,
+              "draws": 79,
+              "half_width": 0.05281736966299702
+            },
+            "normal_below": {
+              "coverage": 0.8859857482185273,
+              "draws": 421,
+              "half_width": 0.04192643491007917
+            },
+            "betting": {
+              "coverage": 0.96,
+              "draws": 500,
+              "half_width": 0.06833600000000001
+            },
+            "reported": {
+              "coverage": 0.962,
+              "draws": 500,
+              "half_width": 0.06364164440675353
+            }
+          },
+          "200": {
+            "truth": 0.071,
+            "below_floor": 0.088,
+            "normal": {
+              "coverage": 0.94,
+              "draws": 500,
+              "half_width": 0.03217737782662916
+            },
+            "normal_above": {
+              "coverage": 0.9846491228070176,
+              "draws": 456,
+              "half_width": 0.0327976208898463
+            },
+            "normal_below": {
+              "coverage": 0.4772727272727273,
+              "draws": 44,
+              "half_width": 0.025749404262378792
+            },
+            "betting": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.050482
+            },
+            "reported": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.03334743025153983
+            }
+          },
+          "300": {
+            "truth": 0.071,
+            "below_floor": 0.002,
+            "normal": {
+              "coverage": 0.944,
+              "draws": 500,
+              "half_width": 0.02642753622948134
+            },
+            "normal_above": {
+              "coverage": 0.9458917835671342,
+              "draws": 499,
+              "half_width": 0.02644258227233416
+            },
+            "normal_below": {
+              "coverage": 0.0,
+              "draws": 1,
+              "half_width": 0.01891956084592389
+            },
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.041336
+            },
+            "reported": {
+              "coverage": 0.946,
+              "draws": 500,
+              "half_width": 0.0264541971077895
+            }
+          }
+        },
+        "credit reporting": {
+          "50": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.924,
+              "draws": 500,
+              "half_width": 0.11099566767624428
+            },
+            "normal_above": {
+              "coverage": 0.924,
+              "draws": 500,
+              "half_width": 0.11099566767624428
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.974,
+              "draws": 500,
+              "half_width": 0.19111
+            },
+            "reported": {
+              "coverage": 0.924,
+              "draws": 500,
+              "half_width": 0.11099566767624428
+            }
+          },
+          "100": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.0783684679633068
+            },
+            "normal_above": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.0783684679633068
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.13987
+            },
+            "reported": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.0783684679633068
+            }
+          },
+          "200": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.05651672349377452
+            },
+            "normal_above": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.05651672349377452
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.10343000000000001
+            },
+            "reported": {
+              "coverage": 0.966,
+              "draws": 500,
+              "half_width": 0.05651672349377452
+            }
+          },
+          "300": {
+            "truth": 0.624,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.046802822387711385
+            },
+            "normal_above": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.046802822387711385
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.968,
+              "draws": 500,
+              "half_width": 0.0865385
+            },
+            "reported": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.046802822387711385
+            }
+          }
+        },
+        "debt collection": {
+          "50": {
+            "truth": 0.1195,
+            "below_floor": 0.934,
+            "normal": {
+              "coverage": 0.942,
+              "draws": 500,
+              "half_width": 0.0794820403207468
+            },
+            "normal_above": {
+              "coverage": 0.9393939393939394,
+              "draws": 33,
+              "half_width": 0.10127135191405343
+            },
+            "normal_below": {
+              "coverage": 0.9421841541755889,
+              "draws": 467,
+              "half_width": 0.07793902040104912
+            },
+            "betting": {
+              "coverage": 0.978,
+              "draws": 500,
+              "half_width": 0.12106
+            },
+            "reported": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.11751540922632751
+            }
+          },
+          "100": {
+            "truth": 0.1195,
+            "below_floor": 0.206,
+            "normal": {
+              "coverage": 0.938,
+              "draws": 500,
+              "half_width": 0.05793153908731804
+            },
+            "normal_above": {
+              "coverage": 0.982367758186398,
+              "draws": 397,
+              "half_width": 0.06017693663076822
+            },
+            "normal_below": {
+              "coverage": 0.7669902912621359,
+              "draws": 103,
+              "half_width": 0.04927694855576729
+            },
+            "betting": {
+              "coverage": 0.972,
+              "draws": 500,
+              "half_width": 0.08979559118236473
+            },
+            "reported": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.06312398768482998
+            }
+          },
+          "200": {
+            "truth": 0.1195,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.958,
+              "draws": 500,
+              "half_width": 0.04120241018062263
+            },
+            "normal_above": {
+              "coverage": 0.958,
+              "draws": 500,
+              "half_width": 0.04120241018062263
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.06589500000000001
+            },
+            "reported": {
+              "coverage": 0.958,
+              "draws": 500,
+              "half_width": 0.04120241018062263
+            }
+          },
+          "300": {
+            "truth": 0.1195,
+            "below_floor": 0.0,
+            "normal": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.03421168507248536
+            },
+            "normal_above": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.03421168507248536
+            },
+            "normal_below": null,
+            "betting": {
+              "coverage": 0.954,
+              "draws": 500,
+              "half_width": 0.055744466800804825
+            },
+            "reported": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.03421168507248536
+            }
+          }
+        },
+        "money transfer or virtual currency": {
+          "50": {
+            "truth": 0.0195,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.502,
+              "draws": 500,
+              "half_width": 0.029726287958855235
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.502,
+              "draws": 500,
+              "half_width": 0.029726287958855235
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.060429000000000004
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.060429000000000004
+            }
+          },
+          "100": {
+            "truth": 0.0195,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.822,
+              "draws": 500,
+              "half_width": 0.02113116068850388
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.822,
+              "draws": 500,
+              "half_width": 0.02113116068850388
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.04055
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.04055
+            }
+          },
+          "200": {
+            "truth": 0.0195,
+            "below_floor": 0.992,
+            "normal": {
+              "coverage": 0.874,
+              "draws": 500,
+              "half_width": 0.016012265467416523
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 4,
+              "half_width": 0.02529133965559224
+            },
+            "normal_below": {
+              "coverage": 0.8729838709677419,
+              "draws": 496,
+              "half_width": 0.015936051305706658
+            },
+            "betting": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.029581
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.029414330717244738
+            }
+          },
+          "300": {
+            "truth": 0.0195,
+            "below_floor": 0.936,
+            "normal": {
+              "coverage": 0.934,
+              "draws": 500,
+              "half_width": 0.013702522421164183
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 32,
+              "half_width": 0.01861711323296918
+            },
+            "normal_below": {
+              "coverage": 0.9294871794871795,
+              "draws": 468,
+              "half_width": 0.013366482023775807
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.024239999999999998
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.023343495246910026
+            }
+          }
+        },
+        "mortgage": {
+          "50": {
+            "truth": 0.055,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.904,
+              "draws": 500,
+              "half_width": 0.03530743200444519
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.904,
+              "draws": 500,
+              "half_width": 0.03530743200444519
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0863305
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0863305
+            }
+          },
+          "100": {
+            "truth": 0.055,
+            "below_floor": 0.964,
+            "normal": {
+              "coverage": 0.914,
+              "draws": 500,
+              "half_width": 0.02894097625829983
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 18,
+              "half_width": 0.03613373220876554
+            },
+            "normal_below": {
+              "coverage": 0.9107883817427386,
+              "draws": 482,
+              "half_width": 0.02867180867595392
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.061211
+            },
+            "reported": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.059864814359515565
+            }
+          },
+          "200": {
+            "truth": 0.055,
+            "below_floor": 0.33,
+            "normal": {
+              "coverage": 0.93,
+              "draws": 500,
+              "half_width": 0.021865886876713723
+            },
+            "normal_above": {
+              "coverage": 0.982089552238806,
+              "draws": 335,
+              "half_width": 0.023091020526452448
+            },
+            "normal_below": {
+              "coverage": 0.8242424242424242,
+              "draws": 165,
+              "half_width": 0.019378494315122986
+            },
+            "betting": {
+              "coverage": 0.982,
+              "draws": 500,
+              "half_width": 0.04295040080160321
+            },
+            "reported": {
+              "coverage": 0.976,
+              "draws": 500,
+              "half_width": 0.02842298375272314
+            }
+          },
+          "300": {
+            "truth": 0.055,
+            "below_floor": 0.022,
+            "normal": {
+              "coverage": 0.956,
+              "draws": 500,
+              "half_width": 0.01818354068476479
+            },
+            "normal_above": {
+              "coverage": 0.9754601226993865,
+              "draws": 489,
+              "half_width": 0.018280978523656524
+            },
+            "normal_below": {
+              "coverage": 0.09090909090909091,
+              "draws": 11,
+              "half_width": 0.013851985846759446
+            },
+            "betting": {
+              "coverage": 0.984,
+              "draws": 500,
+              "half_width": 0.033590499999999995
+            },
+            "reported": {
+              "coverage": 0.97,
+              "draws": 500,
+              "half_width": 0.018430296996136086
+            }
+          }
+        },
+        "payday, title, or personal loan": {
+          "50": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.364,
+              "draws": 500,
+              "half_width": 0.03187343527395987
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.364,
+              "draws": 500,
+              "half_width": 0.03187343527395987
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0535
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.0535
+            }
+          },
+          "100": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.676,
+              "draws": 500,
+              "half_width": 0.019612750890865345
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.676,
+              "draws": 500,
+              "half_width": 0.019612750890865345
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.033095
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.033095
+            }
+          },
+          "200": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.908,
+              "draws": 500,
+              "half_width": 0.013533508567715579
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.908,
+              "draws": 500,
+              "half_width": 0.013533508567715579
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.021439999999999997
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.021439999999999997
+            }
+          },
+          "300": {
+            "truth": 0.012,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.874,
+              "draws": 500,
+              "half_width": 0.01120325917509907
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.874,
+              "draws": 500,
+              "half_width": 0.01120325917509907
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.016886500000000002
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.016886500000000002
+            }
+          }
+        },
+        "student loan": {
+          "50": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.548,
+              "draws": 500,
+              "half_width": 0.024308278799900825
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.548,
+              "draws": 500,
+              "half_width": 0.024308278799900825
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.05908449999999999
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.05908449999999999
+            }
+          },
+          "100": {
+            "truth": 0.018,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.834,
+              "draws": 500,
+              "half_width": 0.018241322699446654
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.834,
+              "draws": 500,
+              "half_width": 0.018241322699446654
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.039548
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.039548
+            }
+          },
+          "200": {
+            "truth": 0.018,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.896,
+              "draws": 500,
+              "half_width": 0.014695954041953629
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 1,
+              "half_width": 0.022398978568238845
+            },
+            "normal_below": {
+              "coverage": 0.8957915831663327,
+              "draws": 499,
+              "half_width": 0.014680360874896372
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.029372
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.029331297957136477
+            }
+          },
+          "300": {
+            "truth": 0.018,
+            "below_floor": 0.964,
+            "normal": {
+              "coverage": 0.91,
+              "draws": 500,
+              "half_width": 0.01254276279009866
+            },
+            "normal_above": {
+              "coverage": 0.9444444444444444,
+              "draws": 18,
+              "half_width": 0.017539324732941994
+            },
+            "normal_below": {
+              "coverage": 0.9087136929460581,
+              "draws": 482,
+              "half_width": 0.012355391717242037
+            },
+            "betting": {
+              "coverage": 0.988,
+              "draws": 500,
+              "half_width": 0.023784499999999997
+            },
+            "reported": {
+              "coverage": 0.986,
+              "draws": 500,
+              "half_width": 0.023181915690385912
+            }
+          }
+        },
+        "vehicle loan or lease": {
+          "50": {
+            "truth": 0.019,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.504,
+              "draws": 500,
+              "half_width": 0.028142937748978688
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.504,
+              "draws": 500,
+              "half_width": 0.028142937748978688
+            },
+            "betting": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.05978699999999999
+            },
+            "reported": {
+              "coverage": 1.0,
+              "draws": 500,
+              "half_width": 0.05978699999999999
+            }
+          },
+          "100": {
+            "truth": 0.019,
+            "below_floor": 1.0,
+            "normal": {
+              "coverage": 0.748,
+              "draws": 500,
+              "half_width": 0.020233836786411236
+            },
+            "normal_above": null,
+            "normal_below": {
+              "coverage": 0.748,
+              "draws": 500,
+              "half_width": 0.020233836786411236
+            },
+            "betting": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0395895
+            },
+            "reported": {
+              "coverage": 0.998,
+              "draws": 500,
+              "half_width": 0.0395895
+            }
+          },
+          "200": {
+            "truth": 0.019,
+            "below_floor": 0.998,
+            "normal": {
+              "coverage": 0.862,
+              "draws": 500,
+              "half_width": 0.015555748069512806
+            },
+            "normal_above": {
+              "coverage": 0.0,
+              "draws": 1,
+              "half_width": 0.02941153138948012
+            },
+            "normal_below": {
+              "coverage": 0.8637274549098196,
+              "draws": 499,
+              "half_width": 0.015527470960696545
+            },
+            "betting": {
+              "coverage": 0.996,
+              "draws": 500,
+              "half_width": 0.028669
+            },
+            "reported": {
+              "coverage": 0.994,
+              "draws": 500,
+              "half_width": 0.02865882306277896
+            }
+          },
+          "300": {
+            "truth": 0.019,
+            "below_floor": 0.954,
+            "normal": {
+              "coverage": 0.9,
+              "draws": 500,
+              "half_width": 0.013300011683834703
+            },
+            "normal_above": {
+              "coverage": 1.0,
+              "draws": 23,
+              "half_width": 0.018542653695622902
+            },
+            "normal_below": {
+              "coverage": 0.8951781970649895,
+              "draws": 477,
+              "half_width": 0.013046690746290314
+            },
+            "betting": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.024067500000000002
+            },
+            "reported": {
+              "coverage": 0.992,
+              "draws": 500,
+              "half_width": 0.023363462069998654
+            }
+          }
+        }
+      }
+    }
+  },
+  "groups": {
+    "region": {
+      "sizes": {
+        "Midwest": 252,
+        "Northeast": 336,
+        "South": 984,
+        "West": 420,
+        "other or unknown": 8
+      },
+      "big": [
+        "Midwest",
+        "Northeast",
+        "South",
+        "West"
+      ],
+      "answers": {
+        "debt collection": {
+          "truth": {
+            "Midwest": 0.1111111111111111,
+            "Northeast": 0.10714285714285714,
+            "South": 0.11890243902439024,
+            "West": 0.1357142857142857,
+            "other or unknown": 0.125
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 662.77,
+                    "labels_p90": 800.2,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 609.21,
+                    "labels_p90": 694.1,
+                    "group_coverage": 0.984,
+                    "reached": 1.0,
+                    "betting_share": 0.012
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 652.23,
+                    "labels_p90": 763.0000000000001,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 598.03,
+                    "labels_p90": 701.4000000000001,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.0125
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1398.72,
+                    "labels_p90": 1508.1000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1403.27,
+                    "labels_p90": 1507.0,
+                    "group_coverage": 0.994,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1408.31,
+                    "labels_p90": 1551.0,
+                    "group_coverage": 0.9925,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1396.6,
+                    "labels_p90": 1511.2,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 715.17,
+                    "labels_p90": 847.4000000000001,
+                    "group_coverage": 0.992,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 678.65,
+                    "labels_p90": 752.4000000000001,
+                    "group_coverage": 0.98,
+                    "reached": 1.0,
+                    "betting_share": 0.014
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 712.23,
+                    "labels_p90": 839.1000000000001,
+                    "group_coverage": 0.9925,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 667.48,
+                    "labels_p90": 762.0,
+                    "group_coverage": 0.9875,
+                    "reached": 1.0,
+                    "betting_share": 0.005
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1493.42,
+                    "labels_p90": 1604.7,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1487.08,
+                    "labels_p90": 1619.5,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1483.43,
+                    "labels_p90": 1584.8000000000002,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1451.62,
+                    "labels_p90": 1515.8000000000002,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": {
+            "Midwest": 0.07539682539682539,
+            "Northeast": 0.09226190476190477,
+            "South": 0.054878048780487805,
+            "West": 0.09047619047619047,
+            "other or unknown": 0.0
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 793.64,
+                    "labels_p90": 971.1,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 602.31,
+                    "labels_p90": 666.3000000000001,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.186
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 794.4,
+                    "labels_p90": 953.6000000000001,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 579.83,
+                    "labels_p90": 639.5,
+                    "group_coverage": 0.97,
+                    "reached": 1.0,
+                    "betting_share": 0.29
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1205.87,
+                    "labels_p90": 1297.6000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1207.89,
+                    "labels_p90": 1291.6000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.014
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1212.94,
+                    "labels_p90": 1319.3000000000002,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1185.36,
+                    "labels_p90": 1265.2,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.01
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 811.38,
+                    "labels_p90": 1010.8000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 615.53,
+                    "labels_p90": 690.5,
+                    "group_coverage": 0.98,
+                    "reached": 1.0,
+                    "betting_share": 0.222
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 802.21,
+                    "labels_p90": 942.3000000000001,
+                    "group_coverage": 0.98,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 608.84,
+                    "labels_p90": 670.2,
+                    "group_coverage": 0.9825,
+                    "reached": 1.0,
+                    "betting_share": 0.255
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1257.16,
+                    "labels_p90": 1338.1,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1249.09,
+                    "labels_p90": 1330.4,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.004
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1257.78,
+                    "labels_p90": 1345.4,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1240.42,
+                    "labels_p90": 1313.0,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.005
+                  }
+                }
+              }
+            }
+          }
+        },
+        "mortgage": {
+          "truth": {
+            "Midwest": 0.031746031746031744,
+            "Northeast": 0.05952380952380952,
+            "South": 0.04878048780487805,
+            "West": 0.08095238095238096,
+            "other or unknown": 0.0
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 918.32,
+                    "labels_p90": 1047.6000000000001,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 586.43,
+                    "labels_p90": 653.2,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.478
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 912.43,
+                    "labels_p90": 1050.5,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 585.17,
+                    "labels_p90": 652.1,
+                    "group_coverage": 0.9875,
+                    "reached": 1.0,
+                    "betting_share": 0.6175
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 976.32,
+                    "labels_p90": 1100.7,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 883.23,
+                    "labels_p90": 988.7,
+                    "group_coverage": 0.994,
+                    "reached": 0.99,
+                    "betting_share": 0.128
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 938.02,
+                    "labels_p90": 1035.6000000000001,
+                    "group_coverage": 0.9925,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 883.16,
+                    "labels_p90": 1002.5,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.1825
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 956.41,
+                    "labels_p90": 1073.9,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 588.17,
+                    "labels_p90": 653.6,
+                    "group_coverage": 0.988,
+                    "reached": 1.0,
+                    "betting_share": 0.458
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 921.98,
+                    "labels_p90": 1079.0,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 580.96,
+                    "labels_p90": 644.1,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.5925
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1043.79,
+                    "labels_p90": 1173.4,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 933.27,
+                    "labels_p90": 1067.3000000000002,
+                    "group_coverage": 0.986,
+                    "reached": 1.0,
+                    "betting_share": 0.186
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1027.85,
+                    "labels_p90": 1156.2,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 945.2,
+                    "labels_p90": 1061.1,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.19
+                  }
+                }
+              }
+            }
+          }
+        },
+        "student loan": {
+          "truth": {
+            "Midwest": 0.027777777777777776,
+            "Northeast": 0.011904761904761904,
+            "South": 0.018292682926829267,
+            "West": 0.016666666666666666,
+            "other or unknown": 0.0
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1643.65,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 485.8,
+                    "labels_p90": 567.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.8
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1609.84,
+                    "labels_p90": 1803.5,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 467.12,
+                    "labels_p90": 535.0000000000001,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.9975
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1625.75,
+                    "labels_p90": 1816.0000000000002,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 918.06,
+                    "labels_p90": 1035.2,
+                    "group_coverage": 0.994,
+                    "reached": 1.0,
+                    "betting_share": 0.726
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1645.5,
+                    "labels_p90": 1934.6000000000001,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 944.56,
+                    "labels_p90": 1074.8000000000002,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.89
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1630.34,
+                    "labels_p90": 1855.6000000000001,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 467.29,
+                    "labels_p90": 593.2,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.8
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1628.85,
+                    "labels_p90": 1847.3000000000002,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 475.59,
+                    "labels_p90": 565.4000000000001,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 1.0
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1605.79,
+                    "labels_p90": 1861.1000000000004,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 926.29,
+                    "labels_p90": 1047.5,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.704
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1630.74,
+                    "labels_p90": 1882.0000000000005,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 931.38,
+                    "labels_p90": 1064.2,
+                    "group_coverage": 0.9975,
+                    "reached": 1.0,
+                    "betting_share": 0.8825
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "year": {
+      "sizes": {
+        "2015": 3,
+        "2016": 10,
+        "2017": 30,
+        "2018": 80,
+        "2019": 119,
+        "2020": 145,
+        "2021": 219,
+        "2022": 386,
+        "2023": 989,
+        "2024": 19
+      },
+      "big": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023"
+      ],
+      "answers": {
+        "debt collection": {
+          "truth": {
+            "2015": 0.3333333333333333,
+            "2016": 0.3,
+            "2017": 0.23333333333333334,
+            "2018": 0.2,
+            "2019": 0.20168067226890757,
+            "2020": 0.20689655172413793,
+            "2021": 0.1917808219178082,
+            "2022": 0.09067357512953368,
+            "2023": 0.07987866531850354,
+            "2024": 0.10526315789473684
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1030.85,
+                    "labels_p90": 1189.4,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 940.54,
+                    "labels_p90": 995.1,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.014
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 862.84,
+                    "labels_p90": 1016.5,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 799.54,
+                    "labels_p90": 874.3000000000001,
+                    "group_coverage": 0.988,
+                    "reached": 1.0,
+                    "betting_share": 0.024
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1299.55,
+                    "labels_p90": 1444.1,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1268.83,
+                    "labels_p90": 1360.4,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1144.48,
+                    "labels_p90": 1237.1000000000001,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1134.74,
+                    "labels_p90": 1219.0,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.002
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 997.79,
+                    "labels_p90": 1113.2,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 954.21,
+                    "labels_p90": 1016.1,
+                    "group_coverage": 0.992,
+                    "reached": 1.0,
+                    "betting_share": 0.02
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 870.83,
+                    "labels_p90": 1005.9000000000001,
+                    "group_coverage": 0.992,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 807.77,
+                    "labels_p90": 869.7,
+                    "group_coverage": 0.992,
+                    "reached": 1.0,
+                    "betting_share": 0.032
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1327.84,
+                    "labels_p90": 1410.7,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1333.28,
+                    "labels_p90": 1418.0,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1198.17,
+                    "labels_p90": 1306.7,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1197.72,
+                    "labels_p90": 1320.8000000000002,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "credit card": {
+          "truth": {
+            "2015": 0.0,
+            "2016": 0.1,
+            "2017": 0.03333333333333333,
+            "2018": 0.1,
+            "2019": 0.09243697478991597,
+            "2020": 0.027586206896551724,
+            "2021": 0.0821917808219178,
+            "2022": 0.06217616580310881,
+            "2023": 0.07381193124368049,
+            "2024": 0.10526315789473684
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 993.55,
+                    "labels_p90": 1172.8000000000002,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 787.96,
+                    "labels_p90": 844.1,
+                    "group_coverage": 0.995,
+                    "reached": 1.0,
+                    "betting_share": 0.213
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 865.31,
+                    "labels_p90": 1003.4000000000001,
+                    "group_coverage": 0.99,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 642.24,
+                    "labels_p90": 718.1000000000001,
+                    "group_coverage": 0.988,
+                    "reached": 1.0,
+                    "betting_share": 0.446
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1183.27,
+                    "labels_p90": 1301.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1162.63,
+                    "labels_p90": 1280.5000000000002,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.042
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1050.2,
+                    "labels_p90": 1159.5,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1021.19,
+                    "labels_p90": 1123.7,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.104
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1029.38,
+                    "labels_p90": 1219.6000000000001,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 797.66,
+                    "labels_p90": 871.0,
+                    "group_coverage": 0.993,
+                    "reached": 1.0,
+                    "betting_share": 0.238
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 871.91,
+                    "labels_p90": 996.0000000000002,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 650.14,
+                    "labels_p90": 719.5,
+                    "group_coverage": 0.982,
+                    "reached": 1.0,
+                    "betting_share": 0.45
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1250.29,
+                    "labels_p90": 1350.0,
+                    "group_coverage": 0.999,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1227.78,
+                    "labels_p90": 1323.3,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.044
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1109.55,
+                    "labels_p90": 1235.4,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1093.14,
+                    "labels_p90": 1189.0,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.096
+                  }
+                }
+              }
+            }
+          }
+        },
+        "mortgage": {
+          "truth": {
+            "2015": 0.3333333333333333,
+            "2016": 0.4,
+            "2017": 0.1,
+            "2018": 0.1,
+            "2019": 0.058823529411764705,
+            "2020": 0.13793103448275862,
+            "2021": 0.091324200913242,
+            "2022": 0.02849740932642487,
+            "2023": 0.03538928210313448,
+            "2024": 0.05263157894736842
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1234.35,
+                    "labels_p90": 1352.0,
+                    "group_coverage": 0.999,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 806.98,
+                    "labels_p90": 867.1,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.268
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1094.58,
+                    "labels_p90": 1219.4,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 670.13,
+                    "labels_p90": 739.1,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.504
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1313.91,
+                    "labels_p90": 1412.7,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1172.9,
+                    "labels_p90": 1262.0,
+                    "group_coverage": 0.997,
+                    "reached": 1.0,
+                    "betting_share": 0.137
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1173.82,
+                    "labels_p90": 1285.5,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1022.82,
+                    "labels_p90": 1123.5,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.256
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1237.0,
+                    "labels_p90": 1362.3,
+                    "group_coverage": 0.999,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 822.48,
+                    "labels_p90": 891.2,
+                    "group_coverage": 0.999,
+                    "reached": 1.0,
+                    "betting_share": 0.266
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1109.89,
+                    "labels_p90": 1220.3,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 676.0,
+                    "labels_p90": 753.4000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.474
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1328.45,
+                    "labels_p90": 1422.3000000000002,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1136.77,
+                    "labels_p90": 1224.0,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.138
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1159.04,
+                    "labels_p90": 1258.5,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 997.66,
+                    "labels_p90": 1071.0,
+                    "group_coverage": 0.992,
+                    "reached": 1.0,
+                    "betting_share": 0.252
+                  }
+                }
+              }
+            }
+          }
+        },
+        "student loan": {
+          "truth": {
+            "2015": 0.0,
+            "2016": 0.0,
+            "2017": 0.1,
+            "2018": 0.025,
+            "2019": 0.058823529411764705,
+            "2020": 0.027586206896551724,
+            "2021": 0.0182648401826484,
+            "2022": 0.0051813471502590676,
+            "2023": 0.014155712841253791,
+            "2024": 0.0
+          },
+          "models": {
+            "Jev": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1807.81,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 660.53,
+                    "labels_p90": 735.1000000000001,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.507
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1678.01,
+                    "labels_p90": 1858.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 538.77,
+                    "labels_p90": 609.0,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.894
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1814.35,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1054.71,
+                    "labels_p90": 1115.9000000000003,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.322
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1666.11,
+                    "labels_p90": 1858.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 905.46,
+                    "labels_p90": 970.1,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.594
+                  }
+                }
+              }
+            },
+            "Laya": {
+              "0.05": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1825.18,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 627.32,
+                    "labels_p90": 705.6,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.509
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1656.39,
+                    "labels_p90": 1858.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 490.04,
+                    "labels_p90": 579.5,
+                    "group_coverage": 0.996,
+                    "reached": 1.0,
+                    "betting_share": 0.908
+                  }
+                }
+              },
+              "0.03": {
+                "every group": {
+                  "floor only": {
+                    "labels": 1813.44,
+                    "labels_p90": 2000.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 1067.83,
+                    "labels_p90": 1171.8000000000002,
+                    "group_coverage": 0.998,
+                    "reached": 1.0,
+                    "betting_share": 0.303
+                  }
+                },
+                "groups of 100+ rows": {
+                  "floor only": {
+                    "labels": 1651.9,
+                    "labels_p90": 1858.0,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.0
+                  },
+                  "with betting": {
+                    "labels": 925.22,
+                    "labels_p90": 1005.2,
+                    "group_coverage": 1.0,
+                    "reached": 1.0,
+                    "betting_share": 0.588
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
