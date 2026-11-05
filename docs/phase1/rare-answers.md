@@ -1,6 +1,6 @@
 # Rare answers: intervals that need no floor
 
-*2026-11-05 · issue #30 · lineage: estimating means by betting (Waudby-Smith & Ramdas, 2024), prediction-powered inference's nonasymptotic variant (Angelopoulos et al., 2023) · evidence: [results/betting-validation](../../results/betting-validation/report.md)*
+*2026-11-05 · issues #30, #31 · lineage: estimating means by betting (Waudby-Smith & Ramdas, 2024), prediction-powered inference's nonasymptotic variant (Angelopoulos et al., 2023), betting for weighted sampling without replacement (Shekhar et al., 2023) · evidence: [results/betting-validation](../../results/betting-validation/report.md), [results/rare-validation](../../results/rare-validation/report.md)*
 
 PPI++'s interval, estimate ± z·se, rests on the central limit theorem. It holds once the labels contain enough rows with and without the answer, so pgdocket waits for 10 of each before trusting one. For a rare answer that floor, not the target, sets how many labels are needed:
 - an answer on 1.8 % of rows needs about 550 labels before the interval can be trusted, whatever precision was asked for;
@@ -68,17 +68,106 @@ judged rows in scope: 300 of 300
 - **The floor.** It was judged from the estimated share, so a group with 8 of the 10 labelled rows it needed could be told it had enough.
 - **The fix.** A group short of its target now asks for n × (half-width ÷ target)² labels, and at least a tenth more. Below the floor, it asks for the rows still missing on top of its labels. Runs now reach every target 99–100 % of the time.
 
+## Weighted shares and several models (#31)
+
+Three estimates kept floors of their own after #30:
+- **`--weight` with labels drawn by weight** trusts its interval from 5 rows drawn with the answer and 5 without.
+- **`--weight` with labels drawn at random** needs 10 each way counted by weight, and no unlabelled row heavier than the interval's half-width.
+- **`--with`** can't weigh any version against the labels until they hold 10 rows each way. Until then the estimate was the labels' alone, flagged.
+
+Below those floors they now give betting intervals too, marked `(betting)`, and their plans take whichever route reaches the target first.
+
+**Labels drawn by weight.** #30's interval assumes each label is drawn at random from the rows not yet labelled. Rows drawn by weight are not: pgdocket ranks rows by u / w and labels the first ones (sequential Poisson sampling, Ohlsson 1998).
+- **Scoring each draw by its probability.** Shekhar, Xu, Lipton, Liang & Ramdas (2023) build betting intervals for a weighted mean under any design that draws without replacement. They score each draw by its value over its probability of being drawn next, which keeps the gambler's capital a fair bet at the true share. pgdocket uses that, with the model's answers as the control variate y − λ·f.
+- **What that probability is here.** A row not drawn by rank t has its rank uniform between t and 1 / w. So the row drawn at rank t is row i with probability in proportion to w / (1 − t·w): in proportion to weight while t·w is small, and likelier as a row nears certainty.
+  - For the row drawn, t·w is its own u, so each label's score is scaled by (1 − u).
+  - What the true share implies for that score needs one sum over the rows not yet drawn, Σ w / (1 − t·w). The heaviest rows enter one by one and the rest through 40 power sums, all computed in SQL.
+  - Rows heavy enough to be certain are drawn early and count exactly, through the weight they take away.
+- **Checked.** In the unit tests, each score's mean, given the rows before it, is what the true share implies (and not what a share 5 points off implies). The run and the power sums read back from Postgres match those computed from the rows themselves.
+
+Here is the CFPB join of #26, with Laya answering, labelled down one ranking by weight. Of the first 100 texts, 40 are heavy enough to be certain and 60 were drawn. Only 4 of the 60 are about debt collection, short of the 5 the usual interval needs. These are the library's own CLI tables, replayed on the stored answers. Before:
+
+```
+texts: share of judged rows whose true answer is 'debt collection', each counted by (SELECT count(*) FROM complaints c WHERE c.text_hash = s.text_hash) (95 % intervals)
+group                   rows  labels     drawn  exact  model says  estimate      95 % interval     labels for ±2.0 pts
+all rows               2,000     100 by weight   75 %      10.8 %     1.6 %          0.0 – 3.2                     +33  ⚠
+⚠ fewer than 5 rows drawn by weight with or without the answer (rows certain to be drawn aside): the interval may be too narrow
+```
+
+Now:
+
+```
+group                   rows  labels     drawn  exact  model says  estimate      95 % interval     labels for ±2.0 pts
+all rows               2,000     100 by weight   75 %      10.8 %     1.6 %          0.3 – 3.6                      +0  (betting)
+(betting): fewer than 5 rows drawn by weight with or without the answer, so the interval is by betting: valid at any number of labels, and wider than the usual one would be once there are enough
+```
+
+The true share is 1.57 %. The interval is within ± 2 points already, so the 33 more labels the floor asked for aren't needed.
+
+**Labels drawn at random, with weights.** Each label is scored w·(y − λ·f), against what the true share implies for the rows not yet drawn, and scaled by the heaviest of them. It is valid, but a heavy row not yet labelled makes it wide: random labels can't rule out that row having the answer. The table points to drawing by weight, as before.
+
+**`--with`.** Below the floor, the interval is #30's, from the labels and the first version, in the order given, that has judged every row in scope. That is normally the active one; with none, the labels alone. The version is fixed before any label is looked at, so choosing it costs nothing. A version judging only a sample plays no part until the floor, as before. With `--with --weight`, the labels and the active version get the interval for labels drawn by weight.
+
+Here is student loans by region with Laya active, 60 labels per region, and Jev 1.14 on 200 rows per region:
+
+```
+complaints: share of rows whose true answer is 'student loan', by region, from labels and 2 versions (95 % intervals); 1,992 rows
+group                     rows  labels  v1 says   v2 rows  v2 says  estimate    95 % interval  labels alone
+Midwest                    252      60    2.8 %       200    5.5 %     1.7 %        0.4 – 9.9     0.0 – 5.6  (betting)
+Northeast                  336      60    0.6 %       200    1.0 %     0.0 %        0.0 – 6.8             –  (betting)
+South                      984      60    1.5 %       200    3.0 %     5.0 %       0.3 – 10.9    0.0 – 10.9  (betting)
+West                       420      60    0.7 %       200    2.0 %     0.0 %        0.0 – 7.1             –  (betting)
+(betting): fewer than 10 labelled rows with or without the answer, so no version can be weighed against them yet and the interval is by betting from the labels and v1, which judged every row: valid at any number of labels, and wider than the usual one would be once there are enough
+```
+
+Every interval holds its region's share: 2.8 %, 1.2 %, 1.8 % and 1.7 %. For ± 3 points the plan asks for 150–200 labels per region.
+
+### On real answers
+
+`jevbench rarevalidate` ([report](../../results/rare-validation/report.md)) runs the following with no API calls.
+
+**Does it hold?** On the CFPB join, with labels drawn by weight: the first 50, 100, 150 and 250 texts of a fresh ranking, 500 times each, for three answers judged by three models.
+- **The betting interval held 96.2–99.8 %** in all 36 cells.
+- **The usual interval below its floor held 63–93 %.** That counts the 21 cells with at least 50 such draws. Debt collection at 150 labels was the worst, at 63–64 %.
+- **What pgdocket now reports held 95.0 % or more.** That is the usual interval above the floor and betting below it.
+- **With labels drawn at random,** the flagged usual interval held 49–100 %, and betting held every time, at ± 30–45 points.
+
+**Does it save labels?** In rounds, with each run starting from the same ranking or draws both ways, so the two differ only in the plan and the interval. **In no run did betting take more labels.**
+
+| estimate | target | answer | fewer labels | runs with fewer |
+| --- | --- | --- | ---: | ---: |
+| `--with 2 --by region` (#28) | ± 3 points in every region | student loan (1.2–2.8 %) | 57–61 % | 100 % |
+| | | mortgage (3.2–8.1 %) | 4–8 % | 42–66 % |
+| | | credit card (5.5–9.2 %) | none | 0–6 % |
+| `--with 2 --weight` (#29) | ± 2 points | debt collection (1.6 %) | 22–28 % | 42–46 % |
+| | | credit card (2.4 %) | 12–17 % | 18–20 % |
+| | | credit reporting (94 %) | 0–1 % | 0–2 % |
+| `--weight` (#26) | ± 2 points | credit card (2.4 %) | 4–16 % | 14–38 % |
+| | | debt collection (1.6 %) | 1–2 % | 5–6 % |
+| | | credit reporting (94 %) | 0–1 % | 1–2 % |
+
+- **`--with` by region pays most.** No version could be weighed against fewer than 10 student-loan complaints, so every region needed about 10 ÷ its share in labels. That was 3,000–3,300 labels in all, cut to 1,300.
+- **`--weight` alone pays least.** Its floor is 5, not 10, and at ± 2 points the usual interval meets the target soon after the floor.
+- **Final intervals held 90–100 %**, with betting and without. The lowest, 90 %, is credit reporting under `--with --weight` with Laya, the same both ways.
+
+**Found on the way: a plan asking more of betting than of the floor.** In the first by-region runs, betting took more labels than the floor in about half the runs for mortgage. When a region's pilot held no complaint about mortgage, its betting interval's estimate was 0. The plan took that as the share, so the floor asked for every row, and betting's route won at up to twice the floor's labels.
+- **The fix.** The plan now takes the share from the usual estimate, never nearer 0 or 1 than 1 in (labels + 2), as `estimate --by` already did.
+- **The test.** The same paired runs found no run where betting took more labels, in any of the four estimates.
+
 ## How this relates to other work
 
 - **Betting confidence intervals** (Waudby-Smith & Ramdas, 2024) estimate the mean of a bounded variable at any sample size. pgdocket uses their hedged capital process for sampling without replacement, with their predictable plug-in bets for confidence sequences, at most ¾ of the largest safe bet. Their aGRAPA bets, which the audits use (#23), gave intervals up to 63 % wider here.
 - **Prediction-powered inference** (Angelopoulos et al., 2023) has a nonasymptotic variant built on those intervals. It bounds the rectifier from the labels and the model's mean from unlabelled data, splitting the error between them. In pgdocket the model judges every row, so only the labels carry error.
 - **Anytime-valid PPI.** Kilian, Cortinovis & Caron (2025) build prediction-powered confidence sequences that are valid over time asymptotically, and Csillag, Struchiner & Goedert (2025) give prediction-powered e-values. pgdocket's interval is valid at any sample size, not only asymptotically, for the shares it estimates.
+- **Weighted sampling without replacement.** Shekhar, Xu, Lipton, Liang & Ramdas (2023) build betting confidence sequences for a weighted mean by importance weighting, for any design that draws one item at a time, with side information as a control variate. pgdocket applies that to its own designs: drawn at random, and drawn by weight in rank order, whose draw probabilities it derives above.
 - **Clopper–Pearson** on the labels alone is exact for a proportion and narrower than betting at very small samples. It can't use the model, though, and splitting the error between the two would have gained in some cells what it lost in others.
 
 ## Limits
 
 - **Labels drawn at random only.** The guarantee assumes the labels are a random sample of the scope or of the group, as `label --sample`, `--random` and `--stratified` record them.
-- **Weighted shares and several models keep their floors for now.** That is `--weight`, `--with`, and `--with --weight`.
+- **Random labels can't vouch for heavy rows.** With weights as uneven as a join's fan-out, betting from labels drawn at random is valid but wide (± 30–45 points on the CFPB join), since a heavy row not yet labelled may have the answer. Draw by weight.
+- **Below the floor, `--with` bets with one version that judged every row.** A second version judging a sample plays no part there; with `--weight`, neither does the second version's run.
+- **The weighted plan judges betting's labels on a typical draw** from the rows not yet certain. It treats them as drawn at random, which the rows near certainty make a little optimistic. A short round is then planned again from what it shows.
 - **The SQL function `docket.estimate()` is unchanged.** It still gives the normal interval with `reliable = false`; the CLI replaces it.
 - **Wider than the normal interval would be.** With very few labels the betting interval is wide: ± 5–10 points at 50 labels for the answers above.
 - **An empty set is possible.** With probability at most 5 %, every share is rejected; then nothing is reported, and the normal interval is shown with ⚠.
@@ -88,4 +177,5 @@ judged rows in scope: 300 of 300
 
 ```bash
 docker compose run --rm bench bettingvalidate        # needs the stored check runs, the Phase 0 and Laya runs, and the source shard
+docker compose run --rm bench rarevalidate           # #31: weighted shares and --with; the Phase 0 and Laya runs and the source shard
 ```

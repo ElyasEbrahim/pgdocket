@@ -20,6 +20,13 @@ sizes in closed form from each model's correlation ρ with the labels and its co
 a model is worth its cost only if w_prev / w > (ρ_prev² − ρ²) / (ρ² − ρ_next²), and level i gets m_i ∝
 √(w_0 (ρ_i² − ρ_{i+1}²) / (w_i (1 − ρ_1²))) rows. A table has only so many rows: a level that would judge more judges
 every row, and a model free per row judges every row.
+
+**Below the floor (#31).** Until the labels hold MIN_EACH_SIDE rows with and without the answer, no model can be weighed
+against them and the estimate is the labels' alone, flagged. Instead it is now a betting interval (`betting.interval`,
+#30) from the labels and the first version, in the order given (the active one first), that has judged every row in
+scope; with none, from the labels alone. Which version is fixed before any label is looked at, so choosing it costs
+nothing. The plan for that version on every row, and for labels alone, takes whichever reaches the target first: the
+floor or betting.
 """
 import itertools
 import math
@@ -27,6 +34,7 @@ import math
 import numpy as np
 from psycopg import sql
 
+from . import betting
 from .estimate import MIN_EACH_SIDE
 
 LABEL = 0             # source index of the human label; models are 1..K
@@ -185,20 +193,22 @@ def pattern_stats(sources, columns):
 
 
 # ---------------------------------------------------------------- the cheapest mix for a target
-def plan(share, rho, costs, label_cost, rows, target, z, names=None, labelled=0, judged=None):
+def plan(share, rho, costs, label_cost, rows, target, z, names=None, labelled=0, judged=None, bet=None):
     """The cheapest nested sample sizes for an interval of ± `target` on a share near `share`, among: labels alone;
     labels with each subset of the models (multifidelity Monte Carlo, capped at the table's `rows`); and labels with
     each model on every row, as pgdocket judges by default. `rho`: each model's correlation with the labels; `costs`:
     each model's cost per row. Work already done is paid for: `labelled` labels, `judged` rows per model (a model that
-    judged every row costs nothing more). Returns the plans, cheapest first, each with its labels, rows per model and
-    the cost of what it still needs."""
+    judged every row costs nothing more). `bet`: labels a betting interval needs, below the floor (#31), {None: from
+    the labels alone, name: with that model on every row}; those plans take the fewer. Returns the plans, cheapest
+    first, each with its labels, rows per model and the cost of what it still needs."""
     names = names or [f"model {i + 1}" for i in range(len(rho))]
+    bet = bet or {}
     judged = judged or [0] * len(rho)
     costs = [0.0 if j >= rows else c for c, j in zip(costs, judged)]
     var_y = share * (1 - share)
     V = (target / z) ** 2
     floor = MIN_EACH_SIDE / max(min(share, 1 - share), 1e-9)
-    plans = [_nested([], [], [], var_y, label_cost, rows, V, floor, "labels alone")]
+    plans = [_nested([], [], [], var_y, label_cost, rows, V, floor, "labels alone", bet_m0=bet.get(None))]
     done = dict(zip(names, judged))
     for size in range(1, len(rho) + 1):
         for subset in itertools.combinations(range(len(rho)), size):
@@ -209,7 +219,7 @@ def plan(share, rho, costs, label_cost, rows, target, z, names=None, labelled=0,
                 plans.append(p)
     for i in range(len(rho)):                                # judging every row, as pgdocket does by default
         p = _nested([names[i]], [abs(rho[i])], [costs[i]], var_y, label_cost, rows, V, floor, "every row",
-                    every_row=True)
+                    every_row=True, bet_m0=bet.get(names[i]))
         if p:
             plans.append(p)
     for p in plans:                                         # what each plan still costs
@@ -219,9 +229,10 @@ def plan(share, rho, costs, label_cost, rows, target, z, names=None, labelled=0,
     return sorted(plans, key=lambda p: (p["cost"], p["labels"]))
 
 
-def _nested(names, rho, w, var_y, w0, N, V, floor, kind, every_row=False):
+def _nested(names, rho, w, var_y, w0, N, V, floor, kind, every_row=False, bet_m0=None):
     """One nested plan: labels m_0 inside m_1 rows judged by the best model, inside m_2 by the next… None when a model
-    isn't worth its cost (the multifidelity conditions) or no sample size reaches the target."""
+    isn't worth its cost (the multifidelity conditions) or no sample size reaches the target. `bet_m0`: the labels a
+    betting interval needs instead of the floor's."""
     r = list(rho) + [0.0]
     if any(r[i] <= r[i + 1] for i in range(len(rho))) or (rho and rho[0] >= 1):
         return None                                          # correlations must fall strictly from model to model
@@ -261,6 +272,8 @@ def _nested(names, rho, w, var_y, w0, N, V, floor, kind, every_row=False):
             lo, hi = (mid, hi) if var(mid) > V else (lo, mid)
         m0 = hi
     m0 = min(N, max(m0, floor))
+    if bet_m0 is not None:
+        m0 = min(m0, bet_m0)
     m = sizes(m0)
     cost = w0 * m0 + sum(wi * mi for wi, mi in zip(w, m))
     return {"kind": kind or ("models on samples" if names else "labels alone"), "labels": math.ceil(m0),
@@ -434,6 +447,52 @@ def draw_labels(conn, d, want, by=None, where=None, seed="1"):
                                                 "d": d["id"], "seed": str(seed), "by": by}).fetchall()]
 
 
+def labelled_rows(conn, d, versions, answer, where=None, by=None):
+    """The labels that count here (`_counts`), in the order they were drawn (when imported, then by a hash of the key),
+    with each version's answer: {group: (y, F)}, F one column per version, NaN where it hasn't judged the row."""
+    from .groups import _cond
+    noul = d["spec"]["kind"] == "noul"
+    cols, joins = [], []
+    for i, v in enumerate(versions, 1):
+        c, j = sql.Identifier(f"c{i}"), sql.Identifier(f"j{i}")
+        joins.append(sql.SQL(" LEFT JOIN docket.current {c} ON {c}.decision_id = %(d)s AND {c}.version = {v} "
+                             "AND {c}.row_key = s.{k}::text LEFT JOIN docket.judgment {j} ON {j}.id = {c}.judgment_id")
+                     .format(c=c, j=j, v=sql.Literal(int(v)), k=sql.Identifier(d["key"])))
+        cols.append(sql.SQL("({j}.score >= 0.5)::int" if noul else "({j}.value = %(ans)s)::int").format(j=j))
+    q = sql.SQL("""
+        SELECT {g}, (l.label = %(ans)s)::int{cols} FROM {table} s
+        JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = s.{k}::text{joins}
+        WHERE ({cond}) AND ({counts})
+        ORDER BY 1 NULLS LAST, l.labeled_at, md5(s.{k}::text)""").format(
+        g=_group(by), cols=sql.SQL("").join(sql.SQL(", ") + c for c in cols), table=sql.SQL(d["source"]),
+        k=sql.Identifier(d["key"]), joins=sql.SQL("").join(joins), cond=_cond(where), counts=_counts(by))
+    out = {}
+    for g, y, *f in conn.execute(q, {"ans": answer, "d": d["id"], "by": by}).fetchall():
+        out.setdefault(g, []).append([y] + [np.nan if x is None else x for x in f])
+    return {g: (a[:, 0], a[:, 1:]) for g, a in ((g, np.array(v, float)) for g, v in out.items())}
+
+
+def _bet(est, lab, vs, rows, z):
+    """Give an estimate below the floor a betting interval from its labels (`labelled_rows`) and the first version
+    that judged every row (`vs` in order, the active one first), or the labels alone. Returns what the plan's betting
+    route takes: the version's name (None: labels alone), its answers summed over the rows, and the rates at which
+    people say the answer where it said it and where it didn't."""
+    from .groups import _alpha
+    y, F = lab
+    i = next((i for i, v in enumerate(vs) if v["rows"] == rows and i < F.shape[1]), None)
+    f = F[:, i] if i is not None else np.zeros(len(y))
+    total = vs[i]["says"] * rows if i is not None else 0.0
+    ci = betting.interval(y, f, total, rows, _alpha(z)) if len(y) else None
+    if ci is not None:
+        theta = est["theta"] if est["theta"] is not None else float(np.mean(y))
+        est.update(theta=min(max(theta, ci[0]), ci[1]), ci=ci, normal_theta=est["theta"], normal_se=est["se"],
+                   se=(ci[1] - ci[0]) / (2 * z), reliable=True, interval="betting",
+                   bet_with=None if i is None else f"v{vs[i]['version']}")
+    k1, n1 = float((y * f).sum()), float(f.sum())
+    return {"model": None if i is None else f"v{vs[i]['version']}", "total": total,
+            "q1": (k1 + 0.5) / (n1 + 1), "q0": (float(y.sum()) - k1 + 0.5) / (len(y) - n1 + 1)}
+
+
 def correlation(stats, i):
     """Model i's correlation with the labels, from the labelled rows it judged (smoothed as in `covariance`)."""
     cov = covariance(_restrict(stats, [LABEL, i]))
@@ -457,21 +516,24 @@ def estimate_with(conn, name, answer, wanted, where=None, level=0.95, target=Non
     z = norm_ppf(0.5 + level / 2)
     ids = [v["version"] for v in vs]
     head = {"name": name, "answer": answer, "level": level, "where": where, "by": by}
+    lab = labelled_rows(conn, d, ids, answer, where, by)                  # for betting below the floor
     if not by:
+        from .groups import ALL
         stats, rows = ledger_stats(conn, d, ids, answer, where)
-        return {**together(stats, rows, vs, z, target, label_cost), **head}
-    per = [(g, together(st, n, [dict(v) for v in vs], z, target, label_cost))
+        return {**together(stats, rows, vs, z, target, label_cost, lab.get(ALL)), **head}
+    per = [(g, together(st, n, [dict(v) for v in vs], z, target, label_cost, lab.get(g)))
            for g, st, n in ledger_stats(conn, d, ids, answer, where, by)]
     return {**by_groups(per, vs, z, target, label_cost), **head}
 
 
-def together(stats, rows, vs, z, target=None, label_cost=None):
+def together(stats, rows, vs, z, target=None, label_cost=None, lab=None):
     """What `estimate_with` reports, from the statistics: the estimate from every source, each version with the
     labels, the labels alone, and the cheapest mix for ± `target` when labels have a cost. `vs`: the versions in the
     order of the statistics' sources, as `version_info` gives them (rows, says and alone are filled in here). With
     fewer than PILOT labels the correlations aren't known yet, and the plan is a pilot (`_pilot`); once the interval
-    is within ± `target` (and has MIN_EACH_SIDE labels each way), nothing more is needed."""
-    from .groups import PILOT
+    is within ± `target` (and has MIN_EACH_SIDE labels each way, or a betting interval from `lab`, the labels as
+    `labelled_rows` gives them), nothing more is needed."""
+    from .groups import PILOT, _alpha
     est = estimate(stats, z, rows)
     for i, v in enumerate(vs, 1):
         n = sum(p["n"] for p in stats["patterns"] if i in p["mask"])
@@ -480,6 +542,8 @@ def together(stats, rows, vs, z, target=None, label_cost=None):
         v["alone"] = estimate(_restrict(stats, [LABEL, i]), z, rows)
         v["rho"] = correlation(stats, i) if v["alone"]["theta"] is not None else None
     labels = estimate(_restrict(stats, [LABEL]), z, rows)
+    below = bool(est["labels"]) and not est["exact"] and not est["reliable"]
+    route = _bet(est, lab, vs, rows, z) if below and lab is not None else None
     out = {"rows": rows, "versions": vs, "estimate": est, "labels": labels, "plan": None, "target": target,
            "label_cost": label_cost}
     if target and label_cost is not None and rows:
@@ -487,12 +551,30 @@ def together(stats, rows, vs, z, target=None, label_cost=None):
             out["plan"], out["planned"] = [_pilot(vs, rows, est["labels"], label_cost)], [f"v{v['version']}" for v in vs]
             return out
         usable = [v for v in vs if v["rho"] is not None and v["rho"] > 0]
-        # labels all on one side (a rare answer): the share is about 1 in (labels + 2) (Laplace's rule of succession)
-        share = next((e["theta"] for e in (est, labels) if e["theta"] is not None),
-                     (est["labels_with"] + 1) / (est["labels"] + 2))
+        # labels all on one side (a rare answer): the share is about 1 in (labels + 2) (Laplace's rule of succession),
+        # and never nearer 0 or 1 than that: a betting interval's estimate can be 0, which would ask the floor for ∞
+        n = est["labels"]
+        normal = est.get("normal_theta") if est.get("interval") else est["theta"]
+        share = next((t for t in (normal, labels["theta"]) if t is not None), (est["labels_with"] + 1) / (n + 2))
+        share = min(max(share, 1 / (n + 2)), 1 - 1 / (n + 2))
         names = [f"v{v['version']}" for v in usable]
+        bets = None
+        if route is not None:                                # below the floor: how many labels betting needs
+            def need(total, q1, q0):
+                m = betting.labels_for(target, rows, total, q1, q0, _alpha(z), start=n + 1)
+                return max(m, math.ceil(n * (z * est["se"] / target) ** 2)) if est.get("interval") else m
+
+            # below the floor the interval bets with the version on every row (with none, the labels alone): its plan
+            # takes the route; one that can't be weighed yet (the labels hold no row with the answer) rides on labels
+            # alone, as the estimate will
+            m = need(route["total"], route["q1"], route["q0"])
+            bets = {route["model"]: m} if route["model"] in names else {None: m}
         out["plan"] = plan(share, [v["rho"] for v in usable], [v["cost"] for v in usable], label_cost, rows, target, z,
-                           names, labelled=est["labels"], judged=[v["rows"] for v in usable])
+                           names, labelled=est["labels"], judged=[v["rows"] for v in usable], bet=bets)
+        if bets and None in bets and route["model"]:
+            for p in out["plan"]:
+                if p["kind"] == "labels alone":
+                    p["bet_with"] = route["model"]
         out["planned"] = names
         if est["theta"] is not None and est["reliable"] and z * est["se"] <= target:
             used = [n for n in est.get("used", []) if n in names]
@@ -580,13 +662,15 @@ def render(r):
     L.append(f"{'labels drawn at random':<36} {est['labels']:>11,} "
              f"{pct(est['labels_with'] / est['labels'] if est['labels'] else None):>8}")
     L.append(f"{'estimate, every source together':<36} {'':>11} {pct(est['theta']):>8}  {ci(est)}"
-             + ("" if est["reliable"] or est["theta"] is None else "  ⚠"))
+             + ("" if est["reliable"] or est["theta"] is None else "  ⚠") + ("  (betting)" if est.get("interval") else ""))
     for v in vs:
         a = v["alone"]
         L.append(f"{'  v' + str(v['version']) + ' with the labels':<36} {'':>11} {pct(a['theta']):>8}  {ci(a)}")
     L.append(f"{'  the labels alone':<36} {'':>11} {pct(r['labels']['theta']):>8}  {ci(r['labels'])}")
     left = [s for s in ["v" + str(v["version"]) for v in vs] if est.get("used") and s not in est["used"]]
-    if left:
+    if est.get("interval"):
+        L.append(_betting_note([est]))
+    elif left:
         L.append(f"left out: {', '.join(left)} (it says the same thing on every row, or judged fewer than "
                  f"{MIN_EACH_SIDE} labelled rows with and without the answer)")
     if est["theta"] is not None and not est["reliable"]:
@@ -613,6 +697,15 @@ def render(r):
     return "\n".join(L)
 
 
+def _betting_note(ests):
+    """The line that explains betting intervals, naming the versions they bet with."""
+    used = sorted({e["bet_with"] for e in ests if e.get("bet_with")})
+    return (f"(betting): fewer than {MIN_EACH_SIDE} labelled rows with or without the answer, so no version can be "
+            "weighed against them yet and the interval is by betting from the labels"
+            + (f" and {' or '.join(used)}, which judged every row" if used else "") + ": valid at any number of "
+            "labels, and wider than the usual one would be once there are enough")
+
+
 def _what(p, rows):
     """A plan in words."""
     if p["kind"] == "pilot":
@@ -621,6 +714,8 @@ def _what(p, rows):
         return "label every row: exact"
     if p["kind"] == "met":
         return "nothing more: the target is met"
+    if p.get("bet_with"):
+        return f"labels, betting with {p['bet_with']} on every row"
     return "labels alone" if not p["models"] else "labels, " + ", ".join(
         f"{m} on {'every row' if p['rows'][m] >= rows else 'a sample'}" for m in p["models"])
 
@@ -650,7 +745,7 @@ def render_by(r):
         L.append(f"{name(x['g']):<20.20} {x['rows']:>9,} {e['labels']:>7,}" + "".join(
             (f" {x['versions'][i]['rows']:>9,}" if i in partial else "") + f" {pct(x['versions'][i]['says']):>8}"
             for i in range(len(vs))) + f" {pct(e['theta']):>9} {ci(e):>16} {ci(x['labels']):>13}"
-            + ("" if e["reliable"] or e["theta"] is None else "  ⚠"))
+            + ("" if e["reliable"] or e["theta"] is None else "  ⚠") + ("  (betting)" if e.get("interval") else ""))
     o = r["overall"]
     if o and len(gs) > 1:
         L.append(f"{'all groups':<20} {o['rows']:>9,} {sum(x['estimate']['labels'] for x in gs):>7,}"
@@ -660,10 +755,12 @@ def render_by(r):
     L.append("versions: " + ", ".join(f"v{v['version']} {v['model'] or ''}".rstrip()
                                       + (" (active)" if v["status"] == "active" else "") for v in vs)
              + f"; labels: drawn at random, from the table or within each {r['by']}")
+    if any(x["estimate"].get("interval") for x in gs):
+        L.append(_betting_note([x["estimate"] for x in gs if x["estimate"].get("interval")]))
     left = {}                                                # versions left out → the groups where they were
     for x in gs:
-        out_ = tuple(f"v{v['version']}" for v in vs if x["estimate"].get("used") and
-                     f"v{v['version']}" not in x["estimate"]["used"])
+        out_ = tuple(f"v{v['version']}" for v in vs if x["estimate"].get("used") and not x["estimate"].get("interval")
+                     and f"v{v['version']}" not in x["estimate"]["used"])
         if out_:
             left.setdefault(out_, []).append(name(x["g"]))
     if left:

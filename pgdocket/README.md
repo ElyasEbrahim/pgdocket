@@ -185,6 +185,7 @@ pgdocket label texts --csv next.csv         # the file marks the rows drawn by w
 - **With labels drawn at random**, rows heavier than every unlabelled row count exactly. The estimate warns when an unlabelled row holds more of the weight than the interval's half-width.
 - **`--target --draw` draws rows by weight instead.** This is sequential Poisson sampling: rows are ranked by a permanent random number over their weight, and heavy rows are certain to be drawn. Later estimates find that sample again from the labels; keep the same `--seed` for draws and estimates.
 - **Measured** on 2,000 CFPB texts standing for 21,980 complaints: drawing by weight reached ± 2 points with 112–192 labels, 53–94 % fewer than texts drawn at random. See [docs/phase1/weights.md](../docs/phase1/weights.md).
+- **Below its floor, a betting interval** (#31): with fewer than 5 rows drawn by weight with or without the answer, or, from labels drawn at random, fewer than 10 counted by weight. Each label is scored by how likely its row was to be drawn next. On the CFPB join, the usual interval below the floor held as little as 63 % of the time; betting held 96–100 %. See [docs/phase1/rare-answers.md](../docs/phase1/rare-answers.md#weighted-shares-and-several-models-31).
 
 ## Several models
 
@@ -201,6 +202,7 @@ pgdocket label complaints --csv next.csv --random
 - **Costs per row** come from the ledger's tokens at TypeSafe's price. Set a price for a free backend's hardware with `--cost V=USD`.
 - **Nesting.** `backfill --sample` and `--draw` take prefixes of one shared random order (labelled rows first), so labels sit inside every version's sample.
 - **A pilot, then a stop.** With fewer than 30 labels the plan is a pilot of 30. Once the interval is within the target, nothing more is needed.
+- **Below 10 labelled rows with or without the answer**, no version can be weighed against the labels yet, and the interval is by betting from the labels and the first version that judged every row (#31). The plan takes betting's route where it needs fewer labels.
 
 **By group** (`--with V --by COL`): each group's share from its own labels and each version's answers on its rows, and each group's cheapest mix. `--queue` queues each version's sample in every group, and `--draw` writes the next labels in each group:
 
@@ -210,7 +212,7 @@ pgdocket worker                                                     # v2 judges 
 pgdocket label complaints --csv next.csv --stratified region
 ```
 
-On the CFPB regions, labels drawn within each region cost 49–67 % less than one design drawn across the table for ± 3 points in every region. Adding Jev on a sample to Laya on every row saved a further 11–24 % for three of four answers.
+On the CFPB regions, labels drawn within each region cost 49–67 % less than one design drawn across the table for ± 3 points in every region. Adding Jev on a sample to Laya on every row saved a further 11–24 % for three of four answers. For student loans (1.2–2.8 % of each region's complaints), betting below the floor cut the labels by 57–61 %.
 
 **Weighted shares** (`--with V --weight EXPR`): the labels and version V take nested runs of one ranking by weight, the active version judges every row, and rows certain to be labelled count exactly. `--queue` has V judge its run and `--draw` writes the labels' run:
 
@@ -220,7 +222,7 @@ pgdocket worker                                                     # v2 judges 
 pgdocket label complaints --csv next.csv                            # the file marks the rows drawn by weight
 ```
 
-On the CFPB join, the intervals held 93.8–99.4 %. On a million texts with that join's fan-out, the second version cut the cost of ± 2 points by 10–19 % for credit reporting. For the rare answers, where the floor of labels sets the count, it saved little or nothing. Run live on the 2,000-text join itself (`jevbench livejoin`), every interval held and Jev cost $0.01, but it saved no labels: the heaviest texts are certain to be labelled anyway.
+On the CFPB join, the intervals held 93.8–99.4 %. On a million texts with that join's fan-out, the second version cut the cost of ± 2 points by 10–19 % for credit reporting. For the rare answers, where the floor of labels sets the count, it saved little or nothing. Betting below the floor (#31) then cut their labels by 22–28 % (debt collection) and 12–17 % (credit card). Run live on the 2,000-text join itself (`jevbench livejoin`), every interval held and Jev cost $0.01, but it saved no labels: the heaviest texts are certain to be labelled anyway.
 
 See [docs/phase1/models.md](../docs/phase1/models.md).
 

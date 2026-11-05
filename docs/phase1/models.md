@@ -239,7 +239,7 @@ The 2,000 CFPB texts judged in Phase 0 stand for the 21,980 complaints in the so
 **The cost of ± 2 points**, planned from the measured variances, on a million and on 100 million texts with this fan-out:
 - **Credit reporting:** the cheapest mix had Jev judge 17,000–37,000 texts (under $1). It cost 12–13 % less than labels with batched Jev alone, and 19 % less than labels with Laya alone.
 - **Credit card:** 5–6 % less with Laya, nothing with batched Jev.
-- **Debt collection:** nothing. At 1.6 % of the complaints, the floor of 5 rows drawn with the answer sets the count, 319 labels.
+- **Debt collection:** nothing. At 1.6 % of the complaints, the floor of 5 rows drawn with the answer sets the count, 319 labels. Betting below the floor (#31) cut it by 22–28 % in rounds.
 - **Jev on every text** cost $233–386 on a million texts, and $2,580–2,743 on 100 million.
 
 **In rounds** on a million texts: a pilot, then the cheapest cut-offs, planned again until met. Each answer and setup ran 100 times, taking 3.8–5.0 rounds on average.
@@ -293,7 +293,7 @@ The 2,000 CFPB texts judged in Phase 0 stand for the 21,980 complaints in the so
 - **Every source must be a random sample of the scope.** Use labels drawn at random, and versions judging every row or a `backfill --sample`. A version run with `compare` judges the labelled rows first and then a random sample, which also qualifies.
 - **New rows are judged as they come.** The trigger queues every new row for every version, so `--sample` describes a table that isn't changing.
 - **The plan assumes nested samples and costs that stay as measured.** Its intervals land near the target on average, and some come out a little wider.
-- **By group, nothing is borrowed across groups.** Each group pays for its own precision in full, so small groups end up labelled whole and rare answers need the floor of 10 labels each way in every group. A model can't lower that floor.
+- **By group, nothing is borrowed across groups.** Each group pays for its own precision in full, so small groups end up labelled whole and rare answers need the floor of 10 labels each way in every group. A model can't lower that floor. **Built since** (#31): below it, a betting interval from the labels and the version on every row, which cut student loans' labels by region by 57–61 %. See [rare answers](rare-answers.md#weighted-shares-and-several-models-31).
 - **With `--weight`, the second version counts only on its run at the top of the ranking.** Rows it judged elsewhere, such as a `backfill --sample`, don't count; `--queue` queues the run. It takes one second version.
 - **Not built.** Routing rows to models one by one; a cost for a person's time other than a price per label.
 

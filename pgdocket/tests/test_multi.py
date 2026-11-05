@@ -168,3 +168,56 @@ def test_by_group_plans_a_pilot_first_labels_a_small_group_whole_and_adds_up():
     assert t["cheapest"]["cost"] <= t["active"]["cost"] <= t["labels alone"]["cost"]
     text = multi.render({**r, "name": "t", "answer": "x", "level": 0.95, "where": None, "by": "site"})
     assert "pilot: 30 labels first" in text and "label every row: exact" in text and "1 group needs a pilot" in text
+
+
+def test_below_the_floor_the_labels_and_the_version_on_every_row_get_a_betting_interval():
+    """2 % of the rows, 150 labels: fewer than 10 with the answer, so no version can be weighed against them (#31).
+    With the labels in the order drawn, the estimate is a betting interval from them and v1, which judged every row:
+    it holds, and the cheapest plan never takes more labels than with the floor, and far fewer when the labels
+    show the answer rarely (the floor then asks for 10 rows with it at the share they suggest)."""
+    rng = np.random.default_rng(315)
+    N = 20000
+    y = (rng.random(N) < 0.02).astype(float)
+    f1 = np.where(rng.random(N) < 0.97, y, 1 - y)
+    f2 = np.where(rng.random(N) < 0.99, y, 1 - y)
+    hits, kept = [], []
+    for _ in range(40):
+        order = rng.permutation(N)
+        lab, sample = np.zeros(N, bool), np.zeros(N, bool)
+        lab[order[:150]], sample[order[:2000]] = True, True
+        st = multi.pattern_stats(["labels", "v1", "v2"], [np.where(lab, y, NAN), f1, np.where(sample, f2, NAN)])
+        first = order[:150]
+        rows = (y[first], np.c_[f1[first], f2[first]])
+        without = multi.together(st, N, _versions(), Z, 0.03, 1.0)
+        r = multi.together(st, N, _versions(), Z, 0.03, 1.0, rows)
+        e = r["estimate"]
+        if without["estimate"]["reliable"]:
+            continue
+        assert e["interval"] == "betting" and e["bet_with"] == "v1" and e["reliable"]
+        hits.append(e["ci"][0] <= y.mean() <= e["ci"][1])
+        kept.append((r["plan"][0]["labels"], without["plan"][0]["labels"]))     # the cheapest mix, either way
+        assert "(betting)" in multi.render({**r, "name": "x", "answer": "a", "level": 0.95, "where": None, "by": None})
+    assert len(hits) >= 30 and np.mean(hits) >= 0.95
+    bet, floor = np.array(kept).T                      # never more; far fewer when the labels show the answer rarely
+    assert (bet <= floor).all() and bet.sum() < 0.6 * floor.sum()
+
+
+def test_labels_with_no_row_with_the_answer_plan_on_about_1_in_labels_plus_2_with_betting_too():
+    """30 labels and none with the answer: the betting interval's estimate is 0, yet the plan takes the share as about
+    1 in 32, as without betting, and asks no more labels than the floor (#31: it took 0, so the floor asked for every
+    row and betting's route, half as many again as the floor, won)."""
+    rng = np.random.default_rng(316)
+    N = 200000
+    y = (rng.random(N) < 0.03).astype(float)
+    f1 = np.where(rng.random(N) < 0.95, y, 1 - y)
+    f2 = np.where(rng.random(N) < 0.98, y, 1 - y)
+    order = rng.permutation(N)
+    order = np.r_[order[y[order] == 0][:30], order[y[order] == 1], order[y[order] == 0][30:]]   # no yes in the first 30
+    lab, sample = np.zeros(N, bool), np.zeros(N, bool)
+    lab[order[:30]], sample[order[:30]] = True, True
+    st = multi.pattern_stats(["labels", "v1", "v2"], [np.where(lab, y, NAN), f1, np.where(sample, f2, NAN)])
+    rows = (y[order[:30]], np.c_[f1[order[:30]], f2[order[:30]]])
+    without = multi.together(st, N, _versions(), Z, 0.03, 1.0)["plan"][0]
+    r = multi.together(st, N, _versions(), Z, 0.03, 1.0, rows)
+    assert r["estimate"]["interval"] == "betting" and r["estimate"]["theta"] == 0.0
+    assert without["labels"] == math.ceil(10 * 32) and r["plan"][0]["labels"] <= without["labels"]

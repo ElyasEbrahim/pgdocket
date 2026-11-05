@@ -833,9 +833,11 @@ def test_estimate_weight_reads_rows_drawn_by_weight_back(env, capsys):
         r = groups.estimate_by(c, "cases", None, "billing", weight=fanout)
     g = r["groups"][0]
     truth = sum(o for o, t in zip(orders, team) if t == "billing") / orders.sum()
-    assert g["method"] == "random" and not g["reliable"] and g["heaviest"] > 1.96 * g["est"]["se"]
+    # the heavy case is unlabelled, so the usual interval can't be trusted; betting allows for it (#31), and is wide
+    assert g["method"] == "random" and g["heaviest"] > 1.96 * g["est"]["normal_se"] and g["interval"] == "betting"
+    assert g["ci"][0] <= truth <= g["ci"][1] and g["ci"][1] - g["ci"][0] > 0.5 * g["heaviest"]
     out = groups.render(r)
-    assert "an unlabelled row holds" in out and "Draw by weight" in out
+    assert "the heaviest unlabelled row holds" in out and "Draw by weight" in out and "(betting)" in out
 
     path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"weight-{uuid.uuid4().hex[:6]}.csv")
     for _ in range(6):                                         # rounds: draw by weight, label, estimate
@@ -1208,3 +1210,78 @@ def test_a_rare_answer_below_the_floor_gets_a_betting_interval(env, capsys):
     for g in r["groups"]:
         floor = 10 / max(g["est"]["theta"], 1 / (g["n"] + 2))
         assert p[g["g"]]["need"] < 0.75 * floor                          # betting's labels, not the floor's
+
+
+def test_weighted_and_several_model_estimates_below_their_floors_bet(env, capsys):
+    """2 % of 2,000 parcels are billing (#31). Labels drawn by weight (a join's fan-out) hold fewer than 5 billing rows:
+    `estimate --weight` reads the run and the rest back from SQL as `groups.run_rows` computes them from the rows, and
+    gives a betting interval that holds, as `estimate --with 2 --weight` does; 150 labels drawn at random hold fewer
+    than 10: `estimate --with 2` bets with the labels and v1, which judged every row, in the order the labels came."""
+    import numpy as np
+
+    from pgdocket import cli, groups, multi, multiweight
+    rng = np.random.default_rng(31)
+    teams, N = ["billing", "technical", "sales"], 2000
+    team = rng.choice(teams, N, p=[0.02, 0.68, 0.30])
+    said = np.where(rng.random(N) < 0.9, team, rng.choice(teams, N))
+    orders = np.minimum(np.floor(rng.pareto(1.3, N)).astype(int) + 1, 300)
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.parcels (id int PRIMARY KEY, body text, team text)")
+        c.execute("CREATE TABLE shop.parcel_orders (parcel_id int)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.parcels VALUES (%s, %s, %s)",
+                            [(i + 1, str(said[i]), str(team[i])) for i in range(N)])
+            cur.executemany("INSERT INTO shop.parcel_orders VALUES (%s)",
+                            [(i + 1,) for i in range(N) for _ in range(orders[i])])
+    ledger.create(env["owner"], "parcels", "shop.parcels", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "parcels", column="team", sample=150, seed="31")
+    fanout = "(SELECT count(*) FROM shop.parcel_orders o WHERE o.parcel_id = s.id)"
+    keys = [str(i + 1) for i in range(N)]
+    u = np.array([groups.prn(k) for k in keys])
+    w, y = orders.astype(float), (team == "billing").astype(float)
+    with psycopg.connect(env["owner"]) as c:
+        d = groups.decision(c, "parcels")
+        random_keys = {k for (k,) in c.execute("SELECT row_key FROM docket.label WHERE decision_id = %s", (d["id"],))}
+        f = np.array([a == "billing" for (a,) in c.execute(
+            "SELECT v.answer FROM shop.parcels s JOIN docket.v_parcels v ON v.key = s.id ORDER BY s.id")], float)
+    path = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"run-{uuid.uuid4().hex[:6]}.csv")
+    with open(path, "w", newline="") as fh:                  # the first 60 rows of the ranking by weight, labelled
+        out = csv.writer(fh)
+        out.writerow(["key", "drawn", "body", "label"])
+        for i in np.argsort(u / w)[:60]:
+            if keys[i] not in random_keys:
+                out.writerow([keys[i], "by weight", said[i], team[i]])
+    cli.main(["label", "--dsn", env["owner"], "parcels", "--csv", path])
+    truth = float((w * y).sum() / w.sum())
+    with psycopg.connect(env["owner"]) as c:
+        r = groups.estimate_by(c, "parcels", None, "billing", weight=fanout, target=0.02)
+        g = r["groups"][0]
+        got = groups.drawn_rows(c, d, None, "billing", None, fanout, {groups.ALL: g["p_xi"]})[groups.ALL]
+        mw = multiweight.estimate_with(c, "parcels", "billing", [ledger.revise(env["owner"], "parcels", model="fake-2")[0]],
+                                       fanout)
+        with_ = multi.estimate_with(c, "parcels", "billing", [mw["versions"][1]["version"]])
+        rows = multi.labelled_rows(c, d, [1], "billing")[groups.ALL]
+        order = [k for (k,) in c.execute("SELECT row_key FROM docket.label WHERE decision_id = %s AND sampling = 'random' "
+                                         "ORDER BY labeled_at, md5(row_key)", (d["id"],))]
+    assert g["method"] == "weight" and min(g["effective"]) < groups.DRAWN_EACH_SIDE
+    want = groups.run_rows(w, f, y, u, g["p_xi"])
+    for k in ("y", "f", "w", "u"):
+        assert np.allclose(got[k], want[k], rtol=1e-12), k
+    assert np.allclose(np.sort(got["heavy"]), np.sort(want["heavy"])) and np.allclose(got["powers"], want["powers"])
+    assert g["interval"] == "betting" and g["reliable"] and g["ci"][0] <= truth <= g["ci"][1]
+    p = r["plan"]["groups"][0]
+    assert p["kind"] in ("target", "exact")
+    e = mw["groups"][0]["est"]
+    assert e["interval"] == "betting" and e["ci"] == g["ci"] and "(betting)" in multiweight.render(mw)
+    e = with_["estimate"]
+    share = float(y.mean())
+    assert e["interval"] == "betting" and e["bet_with"] == "v1" and e["ci"][0] <= share <= e["ci"][1]
+    assert list(rows[0]) == [float(team[int(k) - 1] == "billing") for k in order]   # the labels in the order drawn
+    capsys.readouterr()
+    cli.main(["estimate", "--dsn", env["owner"], "parcels", "--weight", fanout, "--answer", "billing"])
+    out = capsys.readouterr().out
+    assert "(betting)" in out and f"fewer than {groups.DRAWN_EACH_SIDE} rows drawn by weight" in out and "⚠" not in out
+    cli.main(["estimate", "--dsn", env["owner"], "parcels", "--answer", "billing", "--with", "2"])
+    out = capsys.readouterr().out
+    assert "(betting)" in out and "v1, which judged every row" in out and "⚠" not in out

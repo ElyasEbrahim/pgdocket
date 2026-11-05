@@ -27,6 +27,11 @@ CFPB join's draws with fewer, #26's held more often than this one without V (88�
 for Σ min(1, ξ0·w) labels and Σ min(1, ξ1·w) rows judged by V. The cheapest pair for ± target is found by search.
 With no certain rows and small samples it is multifidelity Monte Carlo's nested plan (#27), in the population where a
 row appears as often as its weight.
+
+**Below the floor (#31).** A group whose labelled rows drawn hold fewer than DRAWN_EACH_SIDE with or without the answer
+gets a betting interval from its labels and the active version (`betting.sps`, as `estimate --weight` gives it), and the
+plan for the labels and the active version alone takes whichever reaches the target first, the floor or betting. V
+counts only past MIN_EACH_SIDE each way, so it plays no part there.
 """
 import bisect
 import math
@@ -34,8 +39,9 @@ import math
 import numpy as np
 from psycopg import sql
 
+from . import betting
 from .estimate import MIN_EACH_SIDE
-from .groups import DRAWN_EACH_SIDE, PILOT, sps_estimate
+from .groups import DRAWN_EACH_SIDE, PILOT, _alpha, sps_estimate
 
 INF = math.inf
 _L0 = ("n", "y", "a", "ya")                         # sums over R's labelled rows (y, a: 0/1)
@@ -164,7 +170,7 @@ def sums(g, w, a, v, y, u):
 
 
 # ---------------------------------------------------------------- the cheapest thresholds for a target
-def plan(s, est, heavy, target, z, label_cost, cost_v, grid=72, with_v=True):
+def plan(s, est, heavy, target, z, label_cost, cost_v, grid=72, with_v=True, bet=True):
     """The cheapest (ξ0, ξ1) for ± `target`, among: labels and the active version alone; V on every row; and V on a
     run of the ranking (ratios ξ1 / ξ0 on a grid), each with the smallest ξ0 that reaches the target and expects
     DRAWN_EACH_SIDE labelled rows drawn with and without the answer. `heavy` is the group's heaviest rows as
@@ -172,7 +178,9 @@ def plan(s, est, heavy, target, z, label_cost, cost_v, grid=72, with_v=True):
     A group with fewer than PILOT labelled rows drawn gets a pilot first, V judging those rows; one whose V hasn't
     judged its labelled run has V judge it first; one already within the target needs nothing more. Returns the
     plans, cheapest first, each with its thresholds, labels and V's rows expected, what is still needed and its cost.
-    `with_v` False plans the labels for the active version alone (#26's design), for comparison."""
+    `with_v` False plans the labels for the active version alone (#26's design), for comparison. Below
+    DRAWN_EACH_SIDE each way, the labels with the active version alone may reach the target sooner by betting (`bet`):
+    how many rows drawn that takes is judged on a typical draw from the rows not certain (`betting.labels_for`)."""
     W, N, W2 = s["weight"], s["rows"], s["w2"]
     xi0, xi1 = s["xi0"], s["xi1"]
     hw = sorted((w for w, _ in heavy["rows"]), reverse=True)
@@ -246,11 +254,22 @@ def plan(s, est, heavy, target, z, label_cost, cost_v, grid=72, with_v=True):
     s1, s2, s2a = est["s1"], est["s2"], est["s2a"]
     # the sample may show more variance than the formula implies at the current thresholds: plan for that much more
     now = (s1 * G(xi1) + s2 * G(xi0)) if s2 is not None else s2a * G(xi0)
-    if est["se"] and now > 0:
-        f = max(1.0, (est["se"] * W) ** 2 / now)
+    se = est.get("normal_se") if est.get("interval") else est["se"]     # a betting interval is wider by design
+    if se and now > 0:
+        f = max(1.0, (se * W) ** 2 / now)
         s2a, s1, s2 = s2a * f, s1 and s1 * f, s2 and s2 * f
     at5 = floor(DRAWN_EACH_SIDE)
-    plans = [make("active", smallest(lambda x: s2a * G(x) <= V and at5(x)), xi1)]
+    x_active = smallest(lambda x: s2a * G(x) <= V and at5(x))
+    if bet and DRAWN_EACH_SIDE > min(k, n0 - k) and s["wr"] > 0:      # below the floor: would betting get there sooner?
+        L0, rest = s["L0"], N - s["c_n"]
+        q1, q0 = (L0["ya"] + 0.5) / (L0["a"] + 1), (L0["y"] - L0["ya"] + 0.5) / (L0["n"] - L0["a"] + 1)
+        route = betting.labels_for(target * W / s["wr"], rest, s["wra"] / s["wr"] * rest, q1, q0, _alpha(z),
+                                   start=n0 + 1)
+        if est.get("interval"):                         # no fewer than its own betting interval so far implies
+            route = max(route, math.ceil(n0 * (z * est["se"] / target) ** 2))
+        more = drawn(xi0) + route - n0
+        x_active = min(x_active, smallest(lambda x: drawn(x) >= more))
+    plans = [make("active", x_active, xi1)]
     if not with_v:
         return _step(plans, n0, smallest, drawn, make)
     if s2 is None:
@@ -395,7 +414,7 @@ def estimate_with(conn, name, answer, wanted, weight, where=None, level=0.95, ta
     """`pgdocket estimate NAME --answer A --with V --weight EXPR [--by COL]`: each group's weighted share from labels
     drawn by weight, the active version and V, and with --target and --label-cost each group's cheapest thresholds."""
     from .estimate import norm_ppf
-    from .groups import decision, heaviest_rows
+    from .groups import decision, drawn_rows, heaviest_rows
     from .multi import version_info
     d = decision(conn, name)
     if d["spec"]["kind"] == "noul":
@@ -410,6 +429,13 @@ def estimate_with(conn, name, answer, wanted, weight, where=None, level=0.95, ta
     names = (f"v{vs[0]['version']}", f"v{vs[1]['version']}")
     stats = ledger_sums(conn, d, vs[1]["version"], answer, where, weight, by, seed)
     gs = [{"g": s["g"], "s": s, "est": estimate(s, z, names), "plan": None} for s in stats]
+    unsure = {x["g"]: x["s"]["xi0"] for x in gs if x["est"] and not x["est"]["reliable"] and not x["est"]["exact"]
+              and x["est"]["labels"] and math.isfinite(x["s"]["xi0"])}
+    if unsure:                                          # below the floor: betting instead
+        rows = drawn_rows(conn, d, by, answer, where, weight, unsure, seed)
+        for x in gs:
+            if x["g"] in unsure:
+                bet(x, rows[x["g"]], z)
     totals = None
     if target and label_cost is not None:
         live = [x for x in gs if x["s"]["rows"]]
@@ -438,6 +464,23 @@ def estimate_with(conn, name, answer, wanted, weight, where=None, level=0.95, ta
             "totals": totals}
 
 
+def bet(x, r, z):
+    """Give a group below the floor a betting interval from its run of labels drawn by weight and the active version
+    (`groups.drawn_rows`, `betting.sps`). The estimate stays the usual one, kept inside it (the run's mean where there is
+    none); `se` becomes the half-width over z, for the plan and the all-groups line."""
+    s, e = x["s"], x["est"]
+    if not len(r["y"]):
+        return
+    ci = betting.sps(r["y"], r["f"], r["w"], r["u"], s["weight"], s["wa"], r["heavy"], r["powers"], s["xi0"], _alpha(z))
+    if ci is None:
+        return
+    L0 = s["L0"]
+    theta = e["theta"] if e["theta"] is not None else (
+        (s["c_wy"] + s["wr"] * (L0["y"] / L0["n"] if L0["n"] else 0.0)) / s["weight"])
+    e.update(theta=min(max(theta, ci[0]), ci[1]), ci=ci, normal_se=e["se"], se=(ci[1] - ci[0]) / (2 * z),
+             reliable=True, interval="betting")
+
+
 def _pick(plans, kind):
     """The plan of this kind, or the first if it is a pilot, a step or nothing more, which every way starts with."""
     if plans[0]["kind"] in ("met", "pilot", "learn", "exact"):
@@ -463,7 +506,8 @@ def render(r):
         e, s = x["est"], x["s"]
         L.append(f"{name(x['g']):<18.18} {s['rows']:>9,} {e['labels']:>7,} {100 * e['exact_share']:>4.0f} % "
                  f"{e['run']:>9,} {pct(s['wa'] / s['weight']):>8} {pct(e['v_share']):>8} {pct(e['theta']):>9} "
-                 f"{ci(e):>16}" + ("" if e["reliable"] or e["theta"] is None else "  ⚠"))
+                 f"{ci(e):>16}" + ("" if e["reliable"] or e["theta"] is None else "  ⚠")
+                 + ("  (betting)" if e.get("interval") else ""))
     o = r["overall"]
     if o:
         L.append(f"{'all groups':<18} {'':>9} {'':>7} {'':>6} {'':>9} {'':>8} {'':>8} {pct(o['theta']):>9} "
@@ -476,6 +520,10 @@ def render(r):
         left = [name(x["g"]) for x in gs if x["est"]["theta"] is not None and x["est"]["v_reason"] == reason]
         if left:
             L.append(f"{nv} left out" + (f" in {', '.join(left)}" if r["by"] else "") + f": {text}")
+    if any(x["est"].get("interval") for x in gs):
+        L.append(f"(betting): fewer than {DRAWN_EACH_SIDE} rows drawn by weight with or without the answer, so the "
+                 f"interval is by betting from the labels and {na}: valid at any number of labels, and wider than the "
+                 "usual one would be once there are enough")
     if any(x["est"]["theta"] is not None and not x["est"]["reliable"] for x in gs):
         L.append(f"⚠ fewer than {DRAWN_EACH_SIDE} rows drawn by weight with or without the answer: the interval may be "
                  "too narrow")

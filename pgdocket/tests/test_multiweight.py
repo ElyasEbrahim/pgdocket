@@ -109,3 +109,30 @@ def test_a_pilot_first_then_v_on_the_labels_then_nothing_more():
     assert second["kind"] == "pilot" and second["more_labels"] == 0 and second["more_rows"] > 0
     done = plan(r < 1e9, r < 1e9, 0.03)[0]                # every row labelled
     assert done["kind"] == "met" and done["cost"] == 0
+
+
+def test_below_the_floor_the_labels_and_the_active_version_get_a_betting_interval():
+    """A rare answer, 60 labels drawn by weight with fewer than 5 rows with it (#31): `bet` gives the labels and the
+    active version a betting interval, which holds, and the plan for them alone takes no more labels than the floor's;
+    its inflation keeps to the usual interval's spread, not betting's."""
+    rng = np.random.default_rng(314)
+    w = np.floor(rng.pareto(1.2, 6000)) + 1
+    y = (rng.random(6000) < 0.015).astype(float)
+    good = np.where(rng.random(6000) < 0.95, y, 1 - y)
+    cheap = np.where(rng.random(6000) < 0.9, y, 1 - y)
+    heavy = {"thr": 0.0, "rows": [(float(x), 0) for x in sorted(w, reverse=True)[:groups.HEAVY_CAP]]}
+    truth, hits, fewer = (w * y).sum() / w.sum(), [], []
+    for _ in range(30):
+        u, lab, run = _draw(rng, w, 60, 200)
+        s = multiweight.sums("all", w, cheap, np.where(run, good, NAN), np.where(lab, y, NAN), u)
+        e = multiweight.estimate(s, Z)
+        if e["reliable"] or e["exact"]:
+            continue
+        before = multiweight.plan(s, multiweight.estimate(s, Z), heavy, 0.02, Z, 1.0, 1e-5, bet=False)
+        multiweight.bet({"s": s, "est": e}, groups.run_rows(w, cheap, y, u, s["xi0"]), Z)
+        assert e["interval"] == "betting" and e["reliable"] and e["ci"][0] <= e["theta"] <= e["ci"][1]
+        hits.append(e["ci"][0] <= truth <= e["ci"][1])
+        after = multiweight.plan(s, e, heavy, 0.02, Z, 1.0, 1e-5)
+        pick = lambda ps: next(p for p in ps if p["kind"] in ("active", "met", "pilot", "learn"))
+        fewer.append(pick(after)["labels"] <= pick(before)["labels"])
+    assert len(hits) >= 15 and np.mean(hits) >= 0.95 and all(fewer)

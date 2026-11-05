@@ -31,10 +31,13 @@ row, and when they don't, neither the estimate nor its variance sees it. Two est
   the top of the ranking) with no record of the draw, valid for the data as it is now.
 With every weight 1 the estimate from random labels is the unweighted one.
 
-**Below the floor (#30).** A group whose labels hold fewer than MIN_EACH_SIDE rows with or without the answer gets a
+**Below the floor (#30, #31).** A group whose labels hold fewer than MIN_EACH_SIDE rows with or without the answer gets a
 betting interval instead (`betting.interval`): valid at any number of labels, and wider. The plan takes whichever way
 reaches the target with fewer labels: the normal interval, which needs the floor, or betting, which doesn't. Rare
-answers and small groups are where betting wins. Weighted shares keep their floors for now.
+answers and small groups are where betting wins. Weighted shares do the same below their floors (#31): labels drawn by
+weight, fewer than DRAWN_EACH_SIDE each way, get `betting.sps`, and labels drawn at random, fewer than MIN_EACH_SIDE
+each way counted by weight or with a heavy row unlabelled, `betting.weighted`, which allows for that row (and is wide
+for it: the cure is still to draw by weight).
 """
 import bisect
 import csv
@@ -185,6 +188,20 @@ def sums(g, w, f, y, labelled, uniform, u=None):
     return out
 
 
+def run_rows(w, f, y, u, xi):
+    """What `drawn_rows` returns for one group, from arrays over its rows (weight, the model's 0/1 answer, the label,
+    the permanent random number): the run with u / w < ξ in rank order, and the rest as `betting.hazard` takes it. For
+    the harness and tests."""
+    w, f, y, u = (np.asarray(x, float) for x in (w, f, y, u))
+    keep = w > 0
+    w, f, y, u = w[keep], f[keep], y[keep], u[keep]
+    r = u / w
+    run = np.flatnonzero(r < xi)
+    run = run[np.argsort(r[run], kind="stable")]
+    heavy, powers = betting.rest_sums(w[r >= xi], xi)
+    return {"y": y[run], "f": f[run], "w": w[run], "u": u[run], "heavy": heavy, "powers": powers}
+
+
 def summarise(stats, z):
     """Per-group estimates from `group_stats` (or `sums`) rows. A weighted group with a run of at least PILOT labels
     drawn by weight is estimated from them (`sps_estimate`), otherwise from labels drawn at random."""
@@ -256,19 +273,21 @@ def plan(groups, target, z, top=None, bet=True):
 
     Unweighted (`top` None): drawn at random within the group. A group with fewer than PILOT labels gets a pilot
     first: its disagreement rate isn't known yet. Otherwise it needs z² · (the per-label variance PPI++ leaves) /
-    target² labels, and at least MIN_EACH_SIDE with and without the answer for the interval to hold; never more than
-    its judged rows (then the share is exact). Also returns how many labels drawn at random across the whole scope
-    would give every group as many, when every group is past its pilot.
+    target² labels, and at least MIN_EACH_SIDE with and without the answer for the interval to hold, unless a betting
+    interval gets there with fewer (`bet`); never more than its judged rows (then the share is exact). Also returns how
+    many labels drawn at random across the whole scope would give every group as many, when every group is past its
+    pilot.
 
     Weighted (`top`: per group, its heaviest rows as (weight, model says it), every row down to a weight `thr`, from
     `heaviest_rows`): drawn by weight, `draw` rows that are not certain from the top of the ranking by u / w
-    (`_plan_weighted`). `more` is then the expected number of new labels, until `walk` takes the rows themselves."""
+    (`_plan_weighted`; below DRAWN_EACH_SIDE each way, betting too). `more` is then the expected number of new labels,
+    until `walk` takes the rows themselves."""
     rows = []
     for g in groups:
         if not g["judged"]:
             continue
         p = (_plan_group(g, target, z, bet) if top is None else
-             _plan_weighted(g, top.get(g["g"], {"thr": 0.0, "rows": []}), target, z))
+             _plan_weighted(g, top.get(g["g"], {"thr": 0.0, "rows": []}), target, z, bet=bet))
         rows.append({"group": g["g"], "judged": g["judged"], "labels": g["labels"], **p})
     total_judged = sum(r["judged"] for r in rows)
     uniform = setter = None
@@ -317,7 +336,7 @@ def _plan_group(g, target, z, bet=True):
     return {"need": need, "more": more, "kind": kind, "draw": g["candidates"] if kind == "exact" else more}
 
 
-def _plan_weighted(g, top, target, z, steps=400):
+def _plan_weighted(g, top, target, z, steps=400, bet=True):
     """How many rows drawn by weight (not certain) a weighted share needs for ± `target`: `draw`, which `walk` then
     takes from the top of the ranking by u / w.
 
@@ -330,7 +349,11 @@ def _plan_weighted(g, top, target, z, steps=400):
     target always asks for at least a quarter more than it has, and at most four times as many: rates
     measured on a small sample, a rare answer's above all, can ask for far too many. Before a pilot's worth of rows
     drawn by weight, the rates are unknown: the pilot is PILOT of them (and the certain rows). When nothing short of
-    labelling every row will do, every row is labelled."""
+    labelling every row will do, every row is labelled.
+
+    Below DRAWN_EACH_SIDE each way (#31), a betting interval (`betting.sps`) may get there with fewer rows than the
+    floor: how many, judged on a typical draw from the rows not certain (`betting.labels_for`, the target scaled by
+    their share of the weight), and the plan takes the smaller."""
     W, M, est = g["weight"], g["model"], g["est"]
     if est and (est["exact"] or (g["reliable"] and z * est["se"] <= target)):
         return {"need": g["labels"], "more": 0, "kind": "exact" if est["exact"] else "target", "draw": 0, "certain": 0}
@@ -339,7 +362,14 @@ def _plan_weighted(g, top, target, z, steps=400):
     if not pilot:
         q1 = (g["p_yf"] + 0.5) / (g["p_f"] + 1)            # P(people say it | the model said it), smoothed
         q0 = (g["p_k"] - g["p_yf"] + 0.5) / (n - g["p_f"] + 1)
-        lam = est["lam"] if est else 1.0
+        lam = est["lam"] if est and est.get("lam") is not None else 1.0
+    route = None                                           # rows drawn a betting interval needs, below the floor
+    if not pilot and bet and DRAWN_EACH_SIDE > min(g["p_k"], n - g["p_k"]) and g["p_wr"] > 0:
+        rest = g["judged"] - g["p_cn"]
+        route = betting.labels_for(target * W / g["p_wr"], rest, g["p_wrf"] / g["p_wr"] * rest, q1, q0,
+                                   2 * (1 - _cdf(z)), start=n + 1)
+        if g.get("interval"):                              # no fewer than its own betting interval so far implies
+            route = max(route, math.ceil(n * (z * est["se"] / target) ** 2))
     neg, cw, cwf = [], [0.0], [0.0]                       # `top` is heaviest first
     for w, f in top["rows"]:
         neg.append(-w)
@@ -358,7 +388,7 @@ def _plan_weighted(g, top, target, z, steps=400):
         return s1 * e1 + (1 - s1) * e0, s1 * q1 + (1 - s1) * q0
 
     inflate = 1.0
-    if not pilot and est and g["p_xi"]:
+    if not pilot and est and g["p_xi"] and est.get("res_var") is not None:
         v0, _ = variance(g["p_wr"], g["p_wrf"])
         inflate = max(1.0, (est["res_var"] / (g["p_wr"] / W) ** 2) / v0) if v0 > 0 else 1.0
     lo, rows = 1 / W, top["rows"]                         # at lo, about one row is drawn
@@ -381,6 +411,8 @@ def _plan_weighted(g, top, target, z, steps=400):
         else:
             v, p1 = variance(WR, WRf)
             needed = max(z * z * (WR / W) ** 2 * v * inflate / target ** 2, DRAWN_EACH_SIDE / min(p1, 1 - p1))
+            if route is not None:
+                needed = min(needed, route)
         needed = min(max(needed, least), most)
         if xi * WR >= needed or i == steps:
             # past hi the rows `top` leaves out count as drawn rather than certain: an estimate of how many labels;
@@ -399,18 +431,46 @@ def _cdf(z):
     return 0.5 * (1 + math.erf(z / math.sqrt(2)))
 
 
-def bet(g, y, f, z):
-    """Give a group below the floor a betting interval from its labels (`labelled_rows`), at the level z stands for.
-    The point estimate stays PPI++'s (the labels' share where PPI++ has none), kept inside the interval; `se` becomes
-    the half-width over z, for the plan, the all-groups line and the flags."""
-    ci = betting.interval(y, f, g["model"], g["judged"], 2 * (1 - _cdf(z)))
-    if ci is None or not len(y):
-        return
-    est = dict(g["est"]) if g["est"] else {"theta": float(np.mean(y)), "lam": 0.0, "res_var": None, "exact": False}
+def _alpha(z):
+    return 2 * (1 - _cdf(z))
+
+
+def _apply(g, ci, z, theta):
+    """Give group g the betting interval `ci`. The point estimate stays the usual one (`theta` where there is none),
+    kept inside the interval; `se` becomes the half-width over z, for the plan, the all-groups line and the flags."""
+    est = dict(g["est"]) if g["est"] else {"theta": theta, "lam": None, "res_var": None, "exact": False}
     est["theta"] = min(max(est["theta"], ci[0]), ci[1])
     est["normal_se"] = est.get("se")                     # the plan's other route: the normal interval, past the floor
     est["se"] = (ci[1] - ci[0]) / (2 * z)
     g.update(est=est, ci=ci, reliable=True, interval="betting")
+
+
+def bet(g, y, f, z):
+    """Give a group below the floor a betting interval from its labels (`labelled_rows`), at the level z stands for."""
+    ci = betting.interval(y, f, g["model"], g["judged"], _alpha(z))
+    if ci is not None and len(y):
+        _apply(g, ci, z, float(np.mean(y)))
+
+
+def bet_drawn(g, r, z):
+    """The same for a weighted group estimated from labels drawn by weight, from its run (`drawn_rows`) (#31)."""
+    if not len(r["y"]):
+        return
+    ci = betting.sps(r["y"], r["f"], r["w"], r["u"], g["weight"], g["model"], r["heavy"], r["powers"], g["p_xi"],
+                     _alpha(z))
+    if ci is not None:
+        drawn = g["p_k"] / g["p_n"] if g["p_n"] else 0.0
+        _apply(g, ci, z, (g["p_cwy"] + g["p_wr"] * drawn) / g["weight"])
+
+
+def bet_random(g, r, z):
+    """The same for a weighted group estimated from labels drawn at random (`weighted_rows`) (#31)."""
+    if not len(r["y"]):
+        return
+    ci = betting.weighted(r["y"], r["f"], r["w"], g["weight"], g["model"], g["judged"], r["heaviest"], _alpha(z))
+    if ci is not None:
+        mean = g["swy"] / g["sw"] if g["sw"] else 0.0
+        _apply(g, ci, z, (g["c_wy"] + (g["sw"] + g["swu"]) * mean) / g["weight"])
 
 
 def labelled_rows(conn, d, by, answer, where=None):
@@ -428,6 +488,80 @@ def labelled_rows(conn, d, by, answer, where=None):
         out[g][0].append(y)
         out[g][1].append(f)
     return {g: (np.array(y, float), np.array(f, float)) for g, (y, f) in out.items()}
+
+
+def drawn_rows(conn, d, by, answer, where, weight, cuts, seed="1"):
+    """What a betting interval from labels drawn by weight takes (`betting.sps`), for each group of `cuts` {group: ξ}:
+    its run (the rows with u / w < ξ, every one labelled) in rank order, as arrays y, f, w, u; and the rest of the group
+    as `betting.hazard` takes it: its rows with ξ·w > ½ one by one (`heavy`), power sums of ξ·w over the others
+    (`powers`)."""
+    gs = list(cuts)
+    p = {"g": gs, "xi": [float(cuts[g]) for g in gs], "ans": answer, "d": d["id"], "by": by, "seed": str(seed)}
+    head = sql.SQL("WITH want AS (SELECT * FROM unnest(%(g)s::text[], %(xi)s::float8[]) AS x(g, xi)), {scope} ").format(
+        scope=_scope(d, by, where, weight))
+    rows = conn.execute(head + sql.SQL("""
+        SELECT sc.g, sc.u / sc.w < x.xi, coalesce(sc.y, 0), sc.f, sc.w, sc.u
+        FROM scope sc JOIN want x ON x.g IS NOT DISTINCT FROM sc.g
+        WHERE sc.w > 0 AND (sc.u / sc.w < x.xi OR x.xi * sc.w > 0.5)
+        ORDER BY sc.g NULLS LAST, sc.u / sc.w, sc.k"""), p).fetchall()
+    powers = sql.SQL(", ").join(sql.SQL("coalesce(sum(power(x.xi * sc.w, {})), 0)").format(sql.Literal(q))
+                                for q in range(1, betting.POWERS + 1))
+    sums = conn.execute(head + sql.SQL("""
+        SELECT sc.g, {powers} FROM scope sc JOIN want x ON x.g IS NOT DISTINCT FROM sc.g
+        WHERE sc.w > 0 AND sc.u / sc.w >= x.xi AND x.xi * sc.w <= 0.5 GROUP BY sc.g""").format(powers=powers),
+                        p).fetchall()
+    out = {g: {"run": [], "heavy": [], "powers": [0.0] * betting.POWERS} for g in gs}
+    for g, run, y, f, w, u in rows:
+        if run:
+            out[g]["run"].append((y, f, w, u))
+        else:
+            out[g]["heavy"].append(w)
+    for g, *q in sums:
+        out[g]["powers"] = [float(x) for x in q]
+    for r in out.values():
+        a = np.array(r.pop("run"), float).reshape(-1, 4)
+        r.update(y=a[:, 0], f=a[:, 1], w=a[:, 2], u=a[:, 3], heavy=np.array(r["heavy"], float))
+    return out
+
+
+def weighted_rows(conn, d, by, answer, where, weight):
+    """What a betting interval from labels drawn at random with weights takes (`betting.weighted`), per group: the
+    labels that count as a sample (drawn at random from the table or within this column's groups) on rows of weight
+    above 0, in the order drawn, as arrays y, f, w; and the heaviest weight among the group's other rows."""
+    head = sql.SQL("WITH {scope} ").format(scope=_scope(d, by, where, weight))
+    p = {"ans": answer, "d": d["id"], "by": by, "seed": "1"}
+    rows = conn.execute(head + sql.SQL("""
+        SELECT sc.g, sc.y, sc.f, sc.w FROM scope sc JOIN docket.label l ON l.decision_id = %(d)s AND l.row_key = sc.k
+        WHERE sc.uni AND sc.w > 0 ORDER BY sc.g NULLS LAST, l.labeled_at, md5(sc.k)"""), p).fetchall()
+    top = dict(conn.execute(head + sql.SQL(
+        "SELECT g, coalesce(max(w) FILTER (WHERE w > 0 AND NOT uni), 0) FROM scope GROUP BY g"), p).fetchall())
+    out = {}
+    for g, y, f, w in rows:
+        out.setdefault(g, []).append((y, f, w))
+    return {g: {"y": a[:, 0], "f": a[:, 1], "w": a[:, 2], "heaviest": float(top.get(g) or 0.0)}
+            for g, a in ((g, np.array(v, float)) for g, v in out.items())}
+
+
+def _bet_groups(conn, d, by, answer, where, weight, seed, unsure, z):
+    """Betting intervals for the groups below their floor, each from the labels its estimate uses: drawn at random
+    (#30; with weights, #31) or by weight (#31)."""
+    if not weight:
+        rows = labelled_rows(conn, d, by, answer, where)
+        for g in unsure:
+            if g["g"] in rows:
+                bet(g, *rows[g["g"]], z)
+        return
+    drawn = [g for g in unsure if g["method"] == "weight" and g["p_xi"] is not None]
+    if drawn:
+        rows = drawn_rows(conn, d, by, answer, where, weight, {g["g"]: g["p_xi"] for g in drawn}, seed)
+        for g in drawn:
+            bet_drawn(g, rows[g["g"]], z)
+    rand = [g for g in unsure if g["method"] == "random"]
+    if rand:
+        rows = weighted_rows(conn, d, by, answer, where, weight)
+        for g in rand:
+            if g["g"] in rows:
+                bet_random(g, rows[g["g"]], z)
 
 
 def walk(ranking, draw):
@@ -603,11 +737,9 @@ def estimate_by(conn, name, by, answer=None, where=None, level=0.95, target=None
             raise SystemExit(f"{answer!r} is not an option of {name}: {', '.join(names)}")
     z = norm_ppf(0.5 + level / 2)
     groups = summarise(group_stats(conn, d, by, answer, where, weight, seed), z)
-    if not weight and any(g["judged"] and not g["reliable"] for g in groups):
-        rows = labelled_rows(conn, d, by, answer, where)            # below the floor: betting instead
-        for g in groups:
-            if g["judged"] and not g["reliable"] and not (g["est"] and g["est"]["exact"]) and g["g"] in rows:
-                bet(g, *rows[g["g"]], z)
+    unsure = [g for g in groups if g["judged"] and not g["reliable"] and not (g["est"] and g["est"]["exact"])]
+    if unsure:                                                      # below the floor: betting instead
+        _bet_groups(conn, d, by, answer, where, weight, seed, unsure, z)
     p = None
     if target:
         top = heaviest_rows(conn, d, by, answer, where, weight, groups, target, z, seed) if weight else None
@@ -699,9 +831,23 @@ def render(r):
     if weighted:
         L.append("drawn: how the labels the estimate uses were chosen; exact: the share of the weight in rows known "
                  "exactly from their labels")
-    if any(g.get("interval") for g in r["groups"]):
-        L.append(f"(betting): fewer than {MIN_EACH_SIDE} labelled rows with or without the answer, so the interval is by "
-                 "betting: valid at any number of labels, and wider than the usual one would be once there are enough")
+    bets = [g for g in r["groups"] if g.get("interval")]
+    if bets:
+        why = []
+        if any(g["method"] == "random" for g in bets):
+            why.append(f"fewer than {MIN_EACH_SIDE} labelled rows with or without the answer"
+                       + (" (counted by weight), or an unlabelled row heavy enough to move the share further than the "
+                          "usual interval's half-width" if weighted else ""))
+        if any(g["method"] == "weight" for g in bets):
+            why.append(f"fewer than {DRAWN_EACH_SIDE} rows drawn by weight with or without the answer")
+        L.append(f"(betting): {'; or '.join(why)}, so the interval is by betting: valid at any number of labels, and "
+                 "wider than the usual one would be once there are enough")
+        wide = [g for g in bets if weighted and g["method"] == "random" and g["heaviest"] > 0]
+        if wide:
+            top = max(wide, key=lambda g: g["heaviest"])
+            L.append(f"  the heaviest unlabelled row holds {100 * top['heaviest']:.1f} % of the weight"
+                     + (f" in {top['g']}" if r["by"] else "") + ": labels drawn at random can't rule out that it has "
+                     "the answer, and the interval allows for it. Draw by weight (--target --draw) to narrow it.")
     unsure = [g for g in r["groups"] if g["est"] and not g["reliable"]]
     if any(g["method"] == "random" and min(g["effective"]) < MIN_EACH_SIDE for g in unsure):
         L.append(f"⚠ fewer than {MIN_EACH_SIDE} labelled rows with or without the answer"

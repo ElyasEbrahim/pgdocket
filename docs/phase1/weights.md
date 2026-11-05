@@ -23,7 +23,7 @@ pgdocket label texts --csv next.csv          # the file marks the rows drawn by 
 - **`--target --draw` draws rows by weight.** This is sequential Poisson sampling. Each row has a permanent random number u from its key (`md5`, salted with `--seed`), rows are ranked by u / w, and the first ones are labelled. A row heavy enough is certain to be drawn and counts exactly; the others are drawn in proportion to weight. `label` imports them as `weighted` labels (migration 011). They are a sample of the query, not of the table, so calibration, plain estimates and drift ignore them.
 - **The estimate reads the sample back from the ledger**: the run of labelled rows at the top of the ranking. Rows certain to be drawn count exactly, and the mean residual of the others estimates the rest (a Hájek estimator).
   - **The variance** adds half a disagreement each way, so a model that agreed with every row drawn doesn't claim zero error.
-  - **The floor** is 5 rows drawn with the answer and 5 without.
+  - **The floor** is 5 rows drawn with the answer and 5 without. Below it, the interval is by betting (#31): valid at any number of labels. See [rare answers](rare-answers.md#weighted-shares-and-several-models-31).
   - **No record of the draw.** The ranking is recomputed from the data as it is now. More labels extend the same ranking, so rounds nest.
 - **The plan** says how many rows drawn by weight the target needs. It works from the weights and from the disagreement rates measured on rows drawn by weight. A pilot of 30 comes first; after that each round asks for at least a quarter more rows than it has and at most four times as many.
 
@@ -84,6 +84,7 @@ Three stored sets of answers judge the texts: Jev 1.13 at 20 rows per request, J
 - **Weights must be known for every row and be non-negative.** When they change, the ranking changes and the labelled run at its top may shorten. The estimate stays valid for the data as it is now.
 - **A row's label holds for all of its weight.** Exact copies share one truth (99.5 % here). A join whose rows differ in truth needs labels on those rows.
 - **Normal intervals.** The floor of 5 rows drawn with and without the answer was chosen on this data: from 5 up, every combination held 93 % or more; below 5, 96 % pooled. Labels drawn at random keep the floor of 10, counted by weight.
+- **Built since: betting below the floor** (#31). In #31's runs on this join, the usual interval below 5 rows drawn each way held 63–93 % of the time cell by cell (50–250 labels, three answers, three models), and betting 96–100 %. From labels drawn at random, betting is valid but wide whenever a heavy row is unlabelled. See [rare answers](rare-answers.md#weighted-shares-and-several-models-31).
 - **Rounds stop at the first interval that meets the target.** The final intervals held 92–100 % (mean 98 %).
 - **Not built.** Drawing the query's own rows, which was cheaper in some cells: its sample can't be read back from the labels alone. Groupings that live in the joined table run as one estimate per group.
 - **Built since:** a second version on a longer run of the same ranking (`--with V --weight`, #29). On this join it cut the planned cost of ± 2 points by 12–19 % for credit reporting and by up to 6 % for the rare answers. See [several models, weighted](models.md#weighted-shares).

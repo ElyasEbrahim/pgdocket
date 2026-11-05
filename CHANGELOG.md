@@ -4,6 +4,23 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-05
 
+### Added (rare answers in weighted shares and with several models, #31)
+- **`estimate --weight`** gives a betting interval, marked `(betting)`, below its floors.
+  - **Labels drawn by weight** (fewer than 5 drawn each way): `betting.sps`. Each label is scored by its chance of being drawn next, as in betting for weighted sampling without replacement (Shekhar, Xu, Lipton, Liang & Ramdas, 2023). Ranked by u / w, the row drawn at rank t is row i with probability in proportion to w / (1 − t·w), so each score carries the factor (1 − u).
+  - **What a candidate share implies** needs Σ w / (1 − t·w) over the rows not yet drawn. `groups.drawn_rows` reads it in SQL: the run, the heaviest of the rest row by row, and 40 power sums.
+  - **Labels drawn at random** (fewer than 10 each way counted by weight, or a heavy row unlabelled): `betting.weighted`, scaled by the heaviest row not yet drawn. It is valid, and wide while a heavy row is unlabelled; the table still points to drawing by weight.
+- **`estimate --with`** below 10 labelled rows each way: #30's interval from the labels and the first version that judged every row (the active one, normally), fixed before any label is looked at. **`--with --weight`**: the labels drawn by weight and the active version.
+- **The plans take betting where it needs fewer labels:** `--weight --target`, the active version's plan under `--with --weight`, and under `--with` the plan for the version betting uses.
+- **Validation** (`jevbench rarevalidate`, no API calls), on the CFPB join of #26 and the CFPB regions of #28, with Jev and Laya:
+  - **Coverage, labels drawn by weight.** Below the floor, the usual interval held 63–93 %; betting held 96.2–99.8 % in all 36 cells; what pgdocket reports held 95.0 % or more.
+  - **Labels drawn at random.** The flagged usual interval held 49–100 %; betting held every time, at ± 30–45 points.
+  - **Labels, in paired rounds** (each run on the same draws both ways): with several models by region, 57–61 % fewer for student loans, 4–8 % for mortgages, none for credit cards. With `--with --weight`, 22–28 % fewer for debt collection and 12–17 % for credit cards. With `--weight` alone, 0–16 % fewer. In no run did betting take more labels.
+  - Write-up: `docs/phase1/rare-answers.md`.
+
+### Fixed (#31)
+- **`--with` plans could ask more of betting than of the floor.** When a group's labels held no row with the answer, its betting estimate of 0 became the plan's share, and the floor asked for every row. The plan now takes the share from the usual estimate, never nearer 0 or 1 than 1 in (labels + 2). This was caught in validation, before release.
+- **`betting.interval` checks once more, after the last label, that what is left is possible.** A share already impossible given every label seen is never reported.
+
 ### Added (rare answers: betting intervals below the floor, #30)
 - **`pgdocket estimate`** gives a betting interval, marked `(betting)`, wherever the labels hold fewer than 10 rows with or without an answer. Before, such an answer got the normal interval marked ⚠, or none with no labelled example. **`estimate --by`** does the same group by group.
   - **The interval** (`pgdocket/betting.py`) is valid at any number of labels and wherever the labelling stops. It follows Waudby-Smith & Ramdas (2024) and PPI's nonasymptotic variant (Angelopoulos et al., 2023).

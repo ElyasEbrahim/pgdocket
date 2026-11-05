@@ -115,3 +115,100 @@ def test_labels_that_hold_every_row_with_the_answer_keep_the_truth():
         rng.shuffle(order)
         ci = betting.interval(y[order], f[order], f.sum(), N)
         assert ci is not None and ci[0] <= k / N <= ci[1]
+
+
+# ---------------------------------------------------------------- weighted shares (#31)
+def _weighted(rng, N, share, agree, tail=1.2):
+    """Heavy-tailed weights, as a join's fan-out gives them."""
+    y, f = _population(rng, N, share, agree)
+    return np.floor(rng.pareto(tail, N) + 1), y, f
+
+
+def _ranked(w, y, f, u, n):
+    """The first n rows of the ranking by u / w, as `groups.drawn_rows` gives them, and ξ."""
+    xi = np.sort(u / w)[n]
+    return groups.run_rows(w, f, y, u, xi), xi
+
+
+def test_the_next_rows_hazard_is_the_sum_over_every_row_not_yet_drawn():
+    rng = np.random.default_rng(310)
+    w, y, f = _weighted(rng, 2000, 0.03, 0.9)
+    u = rng.random(2000)
+    r, xi = _ranked(w, y, f, u, 150)
+    t = r["u"] / r["w"]
+    order = np.argsort(u / w)
+    exact = [(w[order[k:]] / (1 - t[k] * w[order[k:]])).sum() for k in range(150)]
+    assert np.allclose(betting.hazard(r["w"], t, r["heavy"], r["powers"], xi), exact, rtol=1e-10)
+    assert len(r["heavy"]) and len(r["heavy"]) < 2000 - 150                  # some rows one by one, most by the series
+
+
+def test_labels_drawn_by_weight_bet_fairly_and_hold_a_rare_weighted_share():
+    """Rows drawn in order of u / w: given the rows before, each score's mean is what the true share implies (and not
+    what a share 5 points off implies), and the interval holds a 3 % weighted share at 60 labels, below the floor of 5
+    rows drawn with the answer, in 95 % of draws or more."""
+    rng = np.random.default_rng(311)
+    w, y, f = _weighted(rng, 1500, 0.03, 0.9)
+    W, M, truth = w.sum(), (w * f).sum(), (w * y).sum() / w.sum()
+    fair, off, hits = [], [], []
+    for _ in range(400):
+        u = rng.random(len(w))
+        r, xi = _ranked(w, y, f, u, 60)
+        ci = betting.sps(r["y"], r["f"], r["w"], r["u"], W, M, r["heavy"], r["powers"], xi)
+        hits.append(ci is not None and ci[0] <= truth <= ci[1])
+        R = W - betting._before(r["w"])
+        rho = R / betting.hazard(r["w"], r["u"] / r["w"], r["heavy"], r["powers"], xi)
+        mf = (M - betting._before(r["w"] * r["f"])) / R
+        z = (1 - r["u"]) * (r["y"] - 0.5 * r["f"] + 0.5) / 1.5                 # λ = ½
+        for theta, out in ((truth, fair), (truth + 0.05, off)):
+            my = (theta * W - betting._before(r["w"] * r["y"])) / R
+            out.append(z - rho * (my - 0.5 * mf + 0.5) / 1.5)
+    assert abs(np.mean(fair)) < 0.005 and np.mean(off) < -0.02
+    assert np.mean(hits) >= 0.95
+
+
+def test_rows_drawn_by_weight_that_hold_all_the_weight_give_the_share_exactly():
+    w, y = np.array([5.0, 1, 1, 2]), np.array([1.0, 0, 1, 0])
+    u = np.array([0.1, 0.2, 0.3, 0.4])
+    assert betting.sps(y, y, w, u, w.sum(), w @ y, [], [0.0] * betting.POWERS, math.inf) == (6 / 9, 6 / 9)
+    assert betting.weighted(y, y, w, w.sum(), w @ y, 4, 0.0) == (6 / 9, 6 / 9)
+
+
+def test_labels_drawn_at_random_with_weights_hold_and_allow_for_a_heavy_row_not_yet_drawn():
+    rng = np.random.default_rng(312)
+    N = 1000
+    w = rng.integers(1, 6, N).astype(float)                              # amounts of 1 to 5: betting can narrow
+    y, f = _population(rng, N, 0.05, 0.9)
+    truth, hits, widths = (w * y).sum() / w.sum(), [], []
+    for _ in range(200):
+        idx = rng.permutation(N)
+        s, rest = idx[:150], idx[150:]
+        lo, hi = betting.weighted(y[s], f[s], w[s], w.sum(), (w * f).sum(), N, w[rest].max())
+        hits.append(lo <= truth <= hi)
+        widths.append((hi - lo) / 2)
+    assert np.mean(hits) >= 0.95 and np.mean(widths) < 0.08
+    w[0] = w[1:].sum()                                                    # one row as heavy as all the others, not drawn
+    s = 1 + rng.permutation(N - 1)[:150]
+    lo, hi = betting.weighted(y[s], f[s], w[s], w.sum(), (w * f).sum(), N, w[0])
+    assert lo < 0.05 and hi > 0.5                                         # it may or may not have the answer
+
+
+def test_a_weighted_group_below_its_floor_gets_a_betting_interval_and_plans_on_it():
+    """Labels drawn by weight with fewer than 5 rows with the answer (#26's floor): the group gets betting's interval,
+    which holds, and the plan for ± 2 points draws no more rows than the floor alone would have it draw."""
+    rng = np.random.default_rng(313)
+    w, y, f = _weighted(rng, 3000, 0.015, 0.95)
+    truth, hits, fewer = (w * y).sum() / w.sum(), [], []
+    top = {groups.ALL: {"thr": 0.0, "rows": sorted(((float(a), int(b)) for a, b in zip(w, f)), reverse=True)}}
+    for _ in range(40):
+        u = rng.random(3000)
+        lab = np.zeros(3000, bool)
+        lab[np.argsort(u / w)[:80]] = True
+        g = groups.summarise([groups.sums(groups.ALL, w, f, y, lab, np.zeros(3000, bool), u)], Z)[0]
+        if g["method"] != "weight" or g["reliable"]:
+            continue
+        floor = groups.plan([g], 0.02, Z, top, bet=False)["groups"][0]
+        groups.bet_drawn(g, groups.run_rows(w, f, y, u, g["p_xi"]), Z)
+        assert g["interval"] == "betting" and g["reliable"] and g["ci"][0] <= g["est"]["theta"] <= g["ci"][1]
+        hits.append(g["ci"][0] <= truth <= g["ci"][1])
+        fewer.append(groups.plan([g], 0.02, Z, top)["groups"][0]["draw"] <= floor["draw"])
+    assert len(hits) >= 20 and np.mean(hits) >= 0.95 and all(fewer)
