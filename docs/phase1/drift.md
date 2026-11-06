@@ -71,8 +71,8 @@ No API calls: `jevbench driftvalidate` replays the checks on stored Jev answers 
 **False alarms stayed under 5 %.**
 - **Rows, one check.** 1,000 random splits of each task's judged rows into a recent window and the rest gave 0.4–1.8 % false alarms across four tasks (500 to 2,000 rows) and windows of 50–400 rows. The check as it was gave 1.2–3.1 %.
 - **Rows, a series.** 12 weekly checks of 100 new rows, or 52 of 30, from an unchanging population: 0.5–4 % of 200 runs alarmed at least once, against 1–4.5 % for the check as it was.
-- **Model.** Real re-asks of the same model on the 300 labelled Kubernetes issues, two days after their stored answers: 0.0–0.7 % of anchor panels alarmed, at every panel size. All 300 together: 2 worse / 1 better, scores up 33 / down 33.
-- **Simulation (in CI).** On 1,000 simulated decisions, 20 weekly checks of an unchanging population alarmed at least once for 4.2 %, and a year of monthly model checks for 1.9 %.
+- **Model.** Real re-asks of the same model on the 300 labelled Kubernetes issues, two days after their stored answers: 0.0–0.6 % of anchor panels alarmed, at every panel size. All 300 together: 2 worse / 1 better, scores up 33 / down 33.
+- **Simulation (in CI).** On 1,000 simulated decisions, 20 weekly window tests of an unchanging population, on the whole budget as before #33, alarmed at least once for 4.2 %, and a year of monthly model checks for 1.9 %. The evidence, read after each of 40 days of 1,000 unchanging streams, never reached its threshold of 1/α = 20.
 
 **Real shifts were caught.** The most recent rows of each sample, against everything before (the check never sees the labels):
 
@@ -121,7 +121,7 @@ One check alone catches less than before: its window test has half the budget. Y
 | the options without their descriptions | 91.3 % → 89.3 % | 8 / 2 | 44 / 103 | scores moved | 64.9 % |
 
 - **The jev-latest switch was invisible,** as `compare` had found: 1.14 answers these issues like 1.13.
-- **Removing the descriptions changed how sure the model is.** Accuracy fell 2 points, too few rows to prove it, but the scores moved on 147 of 300 issues (p = 1.3 × 10⁻⁶). With 200 anchors the check caught it every time.
+- **Removing the descriptions changed how sure the model is.** Accuracy fell 2 points, too few rows to prove it, but the scores moved on 147 of 300 issues (p = 1.3 × 10⁻⁶). With 200 anchors the check caught it on 99.8 % of panels.
 - **A real accuracy drop needs about seven anchors' worth.** On the first check, the sign test needs about 7 more anchors answered worse than better (6 to 0 gives p = 0.016, just above the test's 0.015). That is a drop of 7 points on 100 anchors, or 3.5 points on 200. Making the real re-asks wrong on 5 % of the anchors was caught on 7 % of 100-anchor panels, and on all 200-anchor panels.
 
 ## Limits

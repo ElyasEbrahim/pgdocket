@@ -16,8 +16,8 @@ Checks are meant to run again and again, so the k-th check of a kind since the v
 alpha * 6 / (pi^2 k^2) of the error budget: over the whole series the chance of any false alarm stays at most alpha.
 Each check is stored in docket.drift_check.
 
-**Anytime-valid rows (#33).** A budget that shrinks with every check starves frequent checks: the 30th gets 0.00017.
-The rows check now runs two tests on half the budget each, and alarms if either does:
+**Anytime-valid rows (#33).** A budget that shrinks with every check starves frequent checks: the 30th got 0.000034,
+1/900 of the first's. The rows check now runs two tests on half the budget each, and alarms if either does:
 - the window test above, the recent window against the rows from before the series began (its first check's cut), not
   against everything before the window: once a shift has lasted, the shifted rows would otherwise become the reference,
   and the alarms stop;
