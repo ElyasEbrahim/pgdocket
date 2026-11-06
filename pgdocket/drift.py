@@ -6,7 +6,8 @@ it did when it was calibrated. Two checks watch those assumptions:
 - Data (free: no labels, no API calls). Recent rows against earlier ones, from the answers and scores already in the
   ledger: has any answer's share changed (a z-test per answer, Bonferroni over the answers), and have the scores moved
   (a two-sample Kolmogorov-Smirnov test). Two-sample tests on a classifier's own outputs are the strongest simple
-  shift detectors (Rabanser et al., "Failing Loudly", NeurIPS 2019). With many rows tiny shifts become significant, so an alarm also needs a shift big enough to matter.
+  shift detectors (Rabanser et al., "Failing Loudly", NeurIPS 2019). With many rows tiny shifts become significant,
+  so an alarm also needs a shift big enough to matter.
 - Model (N API calls). N anchors, labelled rows, are asked again on the same input. Without drift, a row's old and new
   answers are two draws from the same model, so they are exchangeable: exact sign tests then check whether accuracy
   fell (one-sided, on the rows where exactly one answer is right) and whether scores moved (two-sided). This is the
@@ -17,13 +18,17 @@ alpha * 6 / (pi^2 k^2) of the error budget: over the whole series the chance of 
 Each check is stored in docket.drift_check.
 
 **Anytime-valid rows (#33).** A budget that shrinks with every check starves frequent checks: the 30th got 0.000034,
-1/900 of the first's. The rows check now runs two tests on half the budget each, and alarms if either does:
-- the window test above, the recent window against the rows from before the series began (its first check's cut), not
-  against everything before the window: once a shift has lasted, the shifted rows would otherwise become the reference,
-  and the alarms stop;
-- evidence that never expires: one e-process per answer, and per decile of the reference's scores, over every row since
-  that cut (`log_evidence`). Its chance of ever reaching 1/alpha is at most alpha however often it is read, and a
-  shift that lasts piles it up instead of being tested afresh against a smaller budget each time.
+1/900 of the first's. The rows check now runs two tests, and alarms if either does:
+- the window test above, on 80 % of the budget spent over the checks (`WINDOW_SHARE`, #34): the recent window
+  against the rows from before the series began (its first check's cut), not against everything before the window.
+  Once a shift has lasted, the shifted rows would otherwise become the reference, and the alarms stop;
+- evidence that never expires, on the other 20 % once: one e-process per answer, and per decile of the reference's
+  scores, over every row since that cut (`log_evidence`). Its chance of ever reaching 1/alpha is at most alpha
+  however often it is read, and a shift that lasts piles it up instead of being tested afresh against a smaller budget
+  each time.
+#33 split the budget in half. #34 compared shares of 0.5 to 1 for the window test on the same simulated series and
+first checks, and chose 0.8 by a rule fixed beforehand, the smallest worst-case shortfall from the best share in any
+scenario (`jevbench driftsplit`): a single check catches more, and lasting shifts still pile up enough evidence.
 The model check keeps its budget: every check compares re-asks with the same stored answers, whose labels say whether
 they were right, so one check's outcome tells about the next and their e-values could not be multiplied.
 """
@@ -40,6 +45,7 @@ from . import metrics as M
 from .compare import sign_test
 
 ALPHA = 0.05
+WINDOW_SHARE = 0.8     # the rows check's window tests get this share of ALPHA over the checks; the evidence, the rest
 LOG_PI = math.log(math.pi)
 MIN_ROWS = 30
 MIN_SHIFT = 0.05       # an alarm on the answer mix needs an answer's share to move at least 5 points…
@@ -140,14 +146,15 @@ def evidence(ref, new, day, recent, kind, alpha, floor):
 
 def rows_check(ref_answers, ref_scores, new_answers, new_scores, day, recent, run):
     """The rows check (#33): the recent window (`recent`, a mask over the rows since the cut) against the reference
-    (`windows`, on half the error budget, spent over the series' checks), and the evidence over every row since the cut
-    (`evidence`, on the other half: a quarter on the answers, a quarter on the scores). Either can raise the alarm."""
+    (`windows`, on WINDOW_SHARE of the error budget, spent over the series' checks), and the evidence over every row
+    since the cut (`evidence`, on the rest: half on the answers, half on the scores). Either can raise the alarm."""
     rec = np.asarray(recent, bool)
     pick = lambda v: [x for x, r in zip(v, rec) if r]
-    out = windows(ref_answers, ref_scores, pick(new_answers), pick(new_scores), M.spent_alpha(ALPHA / 2, run))
+    out = windows(ref_answers, ref_scores, pick(new_answers), pick(new_scores),
+                  M.spent_alpha(WINDOW_SHARE * ALPHA, run))
     for part, values, ref, kind, floor in (("mix", new_answers, ref_answers, "answers", MIN_SHIFT),
                                            ("scores", new_scores, ref_scores, "scores", MIN_KS)):
-        ev = evidence(ref, values, day, rec, kind, ALPHA / 4, floor)
+        ev = evidence(ref, values, day, rec, kind, (1 - WINDOW_SHARE) * ALPHA / 2, floor)   # half each
         out[part]["evidence"] = ev
         out[part]["alarm"] = bool(out[part]["alarm"] or ev["alarm"])
     return out

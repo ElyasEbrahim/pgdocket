@@ -155,8 +155,9 @@ def test_evidence_piles_up_for_a_shift_that_lasts():
 def test_the_rows_check_keeps_alarming_after_a_shift_has_lasted():
     """Weekly checks of 60 rows; from week 2 a third answer makes up half the rows. The old window test compared each
     week with everything before it, so once the shifted weeks outnumbered the reference its alarms faded; against the
-    rows from before the series began, and with the evidence piling up, they don't. (Week 2's 60 rows, against 120,
-    aren't yet enough.)"""
+    rows from before the series began, and with the evidence piling up, they don't. (The first weeks of 60 rows,
+    against 120, aren't always enough: with the evidence on a fifth of the budget since #34, its log e-value reached
+    6.37 at week 4, for a threshold of 6.40. From week 5 on the shift has lasted, and every check alarms.)"""
     rng = np.random.default_rng(35)
     p0, p1 = [0.5, 0.3, 0.2], [0.3, 0.2, 0.5]
     ref = list(rng.choice(["a", "b", "c"], 120, p=p0))
@@ -173,7 +174,7 @@ def test_the_rows_check_keeps_alarming_after_a_shift_has_lasted():
         alarms.append(r["mix"]["alarm"])
         before = ref + new[:-n]                                 # the old reference: everything before the window
         old.append(drift.windows(before, ref_s + new_s[:-n], new[-n:], new_s[-n:], spent_alpha(0.05, week))["mix"]["alarm"])
-    assert all(alarms[2:]) and r["mix"]["evidence"]["item"] in ("a", "c") and r["mix"]["evidence"]["alarm"]
+    assert all(alarms[4:]) and r["mix"]["evidence"]["item"] in ("a", "c") and r["mix"]["evidence"]["alarm"]
     assert sum(old[-6:]) <= 1                                   # the old check had stopped seeing it
 
 

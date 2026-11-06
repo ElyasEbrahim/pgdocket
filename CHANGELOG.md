@@ -4,6 +4,14 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-06
 
+### Changed (the drift budget, rebalanced, #34)
+- **The rows check's window test gets 80 % of the false-alarm budget, the evidence that never expires 20 %** (half each in #33). `jevbench driftsplit` (new) compared window shares of 0.5 to 1 on the same simulated draws: the four tasks' injected first checks, and series of 12 checks of 100 rows and 52 of 30, with shifts from the first check or from halfway. A rule fixed before the first run chose the share: the smallest worst-case shortfall from the best share in any scenario, 5.5 points at 0.8 against 15.8 at 0.5. A first check's window test now needs p < 0.012 (0.0076 in #33); answers and scores each get 0.005 of evidence budget (0.0125).
+- **Validation** (`jevbench driftvalidate`, rerun on the same draws as #33):
+  - **A single check** caught 0.2–10 points more than with half and half, and is 0–7 points behind the check as it was (up to 16 with #33). The real Kubernetes feature-request shift (p = 0.0081) is caught again.
+  - **Lasting shifts.** Over 52 weekly checks of 30 rows, a 20-point shift from week 27 was caught by week 52 in 67.5–100 % of runs (74–100 % with #33, 3–32 % as it was), and 15 points from week 1 in 58.5–98 % (62.5–98 %).
+  - **False alarms** were 0.9–2.4 % at a first check and 0.5–4.5 % over a series.
+- **Tests.** CI checks `driftsplit`'s shortcut statistics against `drift.rows_check`, check by check, at both shares.
+
 ### Changed (drift checks that don't go blind, #33)
 - **The rows check of `pgdocket drift` keeps evidence that never expires.** Every row since the series' first check adds to one e-process per answer, and per decile of the reference's scores. Each is universal inference (Wasserman, Ramdas & Balakrishnan, 2020): the likelihood that a change began in some window, prior 1 / (b (b + 1)) over the windows, the share before and after it Krichevsky–Trofimov mixtures, against the maximum likelihood with none. Its chance of ever reaching 1/α is at most α however often it is read, so a shift that lasts piles up evidence instead of meeting a smaller budget each time.
 - **The window test compares the recent rows with the rows from before the series began,** the first check's cut, no longer with everything before the window. Once a shift had lasted, the shifted rows had become the reference and the alarms faded.
