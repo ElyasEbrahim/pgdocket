@@ -15,10 +15,22 @@ it did when it was calibrated. Two checks watch those assumptions:
 Checks are meant to run again and again, so the k-th check of a kind since the version was last calibrated spends
 alpha * 6 / (pi^2 k^2) of the error budget: over the whole series the chance of any false alarm stays at most alpha.
 Each check is stored in docket.drift_check.
+
+**Anytime-valid rows (#33).** A budget that shrinks with every check starves frequent checks: the 30th gets 0.00017.
+The rows check now runs two tests on half the budget each, and alarms if either does:
+- the window test above, the recent window against the rows from before the series began (its first check's cut), not
+  against everything before the window: once a shift has lasted, the shifted rows would otherwise become the reference,
+  and the alarms stop;
+- evidence that never expires: one e-process per answer, and per decile of the reference's scores, over every row since
+  that cut (`log_evidence`). Its chance of ever reaching 1/alpha is at most alpha however often it is read, and a
+  shift that lasts piles it up instead of being tested afresh against a smaller budget each time.
+The model check keeps its budget: every check compares re-asks with the same stored answers, whose labels say whether
+they were right, so one check's outcome tells about the next and their e-values could not be multiplied.
 """
 import json
+import math
 from collections import Counter
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from math import comb
 
 import numpy as np
@@ -28,6 +40,7 @@ from . import metrics as M
 from .compare import sign_test
 
 ALPHA = 0.05
+LOG_PI = math.log(math.pi)
 MIN_ROWS = 30
 MIN_SHIFT = 0.05       # an alarm on the answer mix needs an answer's share to move at least 5 points…
 MIN_KS = 0.10          # …and on scores a Kolmogorov-Smirnov distance of at least 0.10
@@ -61,6 +74,83 @@ def windows(ref_answers, ref_scores, new_answers, new_scores, alpha_run):
                               for c, x, y, p in sorted(hits or adj, key=lambda t: -abs(t[2] - t[1]))[:3]]},
             "scores": {"ks": d, "p": p_score, "alarm": bool(p_score < a2 and d >= MIN_KS),
                        "mean_before": float(np.mean(ref_scores)), "mean_after": float(np.mean(new_scores))}}
+
+
+def _log_kt(k, n):
+    """Krichevsky-Trofimov (Jeffreys mixture) log-probability of a 0/1 sequence with k ones among n."""
+    return math.lgamma(k + 0.5) + math.lgamma(n - k + 0.5) - math.lgamma(n + 1) - LOG_PI
+
+
+def _log_ml(k, n):
+    """Its maximum likelihood: k ones among n at the share k / n."""
+    return (k * math.log(k / n) if k else 0.0) + ((n - k) * math.log((n - k) / n) if k < n else 0.0)
+
+
+def log_evidence(k_ref, m, ks, ns):
+    """log e-value that one 0/1 feature of the rows (an answer, or a score at most some value) changed after the
+    reference: k_ref of the m reference rows have it, and ks[b] of the ns[b] rows of block b since the cut (b = 1, 2,
+    …: the check window's length, so that a change can begin with any window).
+
+    Universal inference (Wasserman, Ramdas & Balakrishnan, 2020): without a change, every row is one draw from the same
+    Bernoulli distribution, whose likelihood the maximum over all of them can only exceed. Against it, a change that
+    began with block b, b = 1, 2, … with prior 1 / (b (b + 1)), the share before and after it each a
+    Krichevsky-Trofimov mixture; blocks to come weigh what the prior has left. That mixture is one probability over the whole stream, so its
+    ratio to the true likelihood is a test martingale, and this ratio, to the maximum, is an e-process: by Ville's
+    inequality, the chance it ever reaches 1/alpha is at most alpha, however often it is read."""
+    ks, ns = [int(x) for x in ks], [int(x) for x in ns]
+    K, N = k_ref + sum(ks), m + sum(ns)
+    terms, k_pre, n_pre, k_post, n_post = [], k_ref, m, sum(ks), sum(ns)
+    for d in range(1, len(ks) + 1):                       # the change began with block d
+        terms.append(-math.log(d * (d + 1)) + _log_kt(k_pre, n_pre) + _log_kt(k_post, n_post))
+        k_pre, n_pre, k_post, n_post = k_pre + ks[d - 1], n_pre + ns[d - 1], k_post - ks[d - 1], n_post - ns[d - 1]
+    terms.append(-math.log(len(ks) + 1) + _log_kt(K, N))  # it hasn't begun yet
+    top = max(terms)
+    return top + math.log(sum(math.exp(t - top) for t in terms)) - _log_ml(K, N)
+
+
+def evidence(ref, new, day, recent, kind, alpha, floor):
+    """Anytime-valid evidence that the rows since the cut (`new`, in block `day` 1, 2, … since it) differ from the
+    reference rows (`ref`): an e-process (`log_evidence`) per answer (kind 'answers'; one for two answers) or per decile of the
+    reference's scores ('scores': the share scored at most it), Bonferroni over them at `alpha`. An alarm also needs the
+    recent window (`recent`, a mask over the new rows) to have moved that share by `floor`, as the window test does."""
+    ref, new = np.asarray(ref), np.asarray(new)
+    day, recent = np.asarray(day, int), np.asarray(recent, bool)
+    if kind == "answers":
+        items = sorted(set(ref.tolist()) | set(new.tolist()))
+        if len(items) == 2:
+            items = ["yes"] if "yes" in items else items[1:]
+        has = lambda v, c: v == c
+    else:
+        items = sorted(set(np.quantile(ref, np.linspace(0.1, 0.9, 9)).tolist()))
+        has = lambda v, c: v <= c
+    thr = math.log(len(items) / alpha)
+    D = int(day.max()) if len(day) else 0
+    best = None
+    for c in items:
+        x = has(new, c).astype(float)
+        k_ref = int(has(ref, c).sum())
+        e = log_evidence(k_ref, len(ref), np.bincount(day, weights=x, minlength=D + 1)[1:],
+                         np.bincount(day, minlength=D + 1)[1:])
+        before, after = k_ref / len(ref), (float(x[recent].mean()) if recent.any() else None)
+        alarm = bool(e >= thr and after is not None and abs(after - before) >= floor)
+        if best is None or (alarm, e) > best[0]:
+            best = ((alarm, e), {"item": c, "before": before, "after": after, "log_e": e, "alarm": alarm})
+    return {"threshold": thr, "alpha": alpha, "tests": len(items), **best[1]}
+
+
+def rows_check(ref_answers, ref_scores, new_answers, new_scores, day, recent, run):
+    """The rows check (#33): the recent window (`recent`, a mask over the rows since the cut) against the reference
+    (`windows`, on half the error budget, spent over the series' checks), and the evidence over every row since the cut
+    (`evidence`, on the other half: a quarter on the answers, a quarter on the scores). Either can raise the alarm."""
+    rec = np.asarray(recent, bool)
+    pick = lambda v: [x for x, r in zip(v, rec) if r]
+    out = windows(ref_answers, ref_scores, pick(new_answers), pick(new_scores), M.spent_alpha(ALPHA / 2, run))
+    for part, values, ref, kind, floor in (("mix", new_answers, ref_answers, "answers", MIN_SHIFT),
+                                           ("scores", new_scores, ref_scores, "scores", MIN_KS)):
+        ev = evidence(ref, values, day, rec, kind, ALPHA / 4, floor)
+        out[part]["evidence"] = ev
+        out[part]["alarm"] = bool(out[part]["alarm"] or ev["alarm"])
+    return out
 
 
 def anchors(orig_right, new_right, orig_scores, new_scores, alpha_run):
@@ -109,9 +199,29 @@ def store(conn, d, kind, result):
     return alarm
 
 
+def _series(conn, d, by):
+    """This rows check's number in its series (the checks since the active version was last calibrated), and its first
+    check dated the same way: where it divided the rows (the cut) and its window's length, the evidence's blocks (None
+    before that check)."""
+    done = conn.execute(
+        "SELECT c.result FROM docket.drift_check c JOIN docket.version v ON v.decision_id = c.decision_id "
+        "AND v.version = c.version WHERE c.decision_id = %s AND c.version = %s AND c.kind = 'data' "
+        "AND c.checked_at > coalesce((v.calibration->>'fitted_at')::timestamptz, '-infinity') ORDER BY c.id",
+        (d["id"], d["version"])).fetchall()
+    first = next((r for (r,) in done if r.get("by", "judged_at") == by and "cut" in r and "note" not in r), None)
+    return len(done) + 1, first
+
+
+def _like(text, sample):
+    """A stored cut, as the kind of value the rows are dated with (a date or a timestamp)."""
+    t = datetime.fromisoformat(text)
+    return t.date() if isinstance(sample, date) and not isinstance(sample, datetime) else t
+
+
 def data_check(conn, name, days=7, by=None):
-    """Rows of the active version from the last `days` days (counted back from the newest row) against earlier ones.
-    `by`: a timestamp column of the source table; default: when the row was judged."""
+    """Rows of the active version from the last `days` days (counted back from the newest row) against the rows from
+    before the series began, and the evidence over every row since (`rows_check`). `by`: a timestamp column of the
+    source table; default: when the row was judged."""
     d = _decision(conn, name)
     when = (sql.SQL("s.{}").format(sql.Identifier(by)) if by else sql.SQL("j.judged_at"))
     rows = conn.execute(sql.SQL(
@@ -120,17 +230,24 @@ def data_check(conn, name, days=7, by=None):
         w=when, t=sql.SQL(d["source"]), k=sql.Identifier(d["key"])), (d["id"], d["version"])).fetchall()
     if not rows:
         return d, {"note": "no judged rows yet"}
-    cut = max(r[2] for r in rows) - timedelta(days=days)
+    start = max(r[2] for r in rows) - timedelta(days=days)         # the recent window
+    k, first = _series(conn, d, by or "judged_at")
+    cut = _like(first["cut"], rows[0][2]) if first else start
+    block = float(first.get("block_days", first["window_days"])) if first else float(days)
     ref = [r for r in rows if r[2] < cut]
-    new = [r for r in rows if r[2] >= cut]
-    k, a = next_run(conn, d, "data")
-    out = {"window_days": days, "by": by or "judged_at", "cut": cut.isoformat(), "run": k}
-    if len(ref) < MIN_ROWS or len(new) < MIN_ROWS:
+    new = sorted((r for r in rows if r[2] >= cut), key=lambda r: r[2])
+    recent = [r[2] >= start for r in new]
+    out = {"window_days": days, "block_days": block, "by": by or "judged_at", "cut": cut.isoformat(),
+           "window_start": start.isoformat(), "run": k}
+    if len(ref) < MIN_ROWS or sum(recent) < MIN_ROWS:
         hint = "" if by else "; to date rows by a column of the table instead of when they were judged, pass --by COLUMN"
-        return d, out | {"note": f"{len(new):,} rows from the last {days:g} days and {len(ref):,} before them: the check "
-                                 f"needs at least {MIN_ROWS} on each side{hint}"}
-    out |= windows([_answer(d["spec"], v, s) for v, s, _ in ref], [s for _, s, _ in ref],
-                   [_answer(d["spec"], v, s) for v, s, _ in new], [s for _, s, _ in new], a)
+        return d, out | {"note": f"{sum(recent):,} rows from the last {days:g} days and {len(ref):,} before "
+                                 + ("them" if cut == start else f"the series began ({cut:%Y-%m-%d})")
+                                 + f": the check needs at least {MIN_ROWS} on each side{hint}"}
+    day = [int((r[2] - cut) / timedelta(days=block)) + 1 for r in new]
+    out |= rows_check([_answer(d["spec"], v, s) for v, s, _ in ref], [s for _, s, _ in ref],
+                      [_answer(d["spec"], v, s) for v, s, _ in new], [s for _, s, _ in new], day, recent, k)
+    out["rows_since_cut"] = len(new)
     out["alarm"] = store(conn, d, "data", out)
     return d, out
 
@@ -168,18 +285,30 @@ def pending(conn, d):
                         "AND attempts < 5", (d["id"], d["version"])).fetchone()[0]
 
 
+def _e(ev):
+    """An e-value as printed: its size, or its power of ten when huge."""
+    return f"{math.exp(ev['log_e']):.2g}" if ev["log_e"] < 690 else f"10^{ev['log_e'] / math.log(10):.0f}"
+
+
 def verdict_data(r):
     pct = lambda x: f"{100 * x:.1f} %"
     if "note" in r:
         return [f"data: {r['note']}"]
-    head = (f"data: {r['rows_new']:,} rows from the last {r['window_days']} days (by {r['by']}) against {r['rows_ref']:,} "
-            f"earlier · check {r['run']}, false-alarm budget {r['alpha']:.4f}")
+    since = r["cut"][:10]
+    first = r["cut"] == r.get("window_start", r["cut"])
+    head = (f"data: {r['rows_new']:,} rows from the last {r['window_days']} days (by {r['by']}) against "
+            f"{r['rows_ref']:,} " + ("earlier" if first else f"from before the series began ({since})")
+            + f" · check {r['run']}")
     m, s = r["mix"], r["scores"]
+    budget = f"needs p < {r['alpha'] / 2:.2g}"
+    ev = lambda e, what: (f" · evidence since {since}: {_e(e)} on {what} (needs {math.exp(e['threshold']):.0f})"
+                          if e else "")
     lines = [head,
              f"  answers: " + ("; ".join(f"{x['answer']} {pct(x['before'])} → {pct(x['after'])}" for x in m["moved"])
-                               or "no answer common enough to test") + f" · p = {m['p']:.2g}"
-             + ("  ⚠ shifted" if m["alarm"] else ""),
-             f"  scores: KS distance {s['ks']:.3f}, mean {s['mean_before']:.3f} → {s['mean_after']:.3f}, p = {s['p']:.2g}"
+                               or "no answer common enough to test") + f" · p = {m['p']:.2g} ({budget})"
+             + ev(m.get("evidence"), m.get("evidence", {}).get("item")) + ("  ⚠ shifted" if m["alarm"] else ""),
+             f"  scores: KS distance {s['ks']:.3f}, mean {s['mean_before']:.3f} → {s['mean_after']:.3f}, p = {s['p']:.2g} "
+             f"({budget})" + ev(s.get("evidence"), f"scores ≤ {s['evidence']['item']:.2f}" if s.get("evidence") else "")
              + ("  ⚠ shifted" if s["alarm"] else "")]
     lines.append("  → the recent rows don't look like the earlier ones: label a fresh random sample of recent rows, then "
                  "recalibrate and re-estimate" if r["alarm"] else "  → no shift detected")

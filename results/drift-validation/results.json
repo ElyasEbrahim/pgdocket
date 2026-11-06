@@ -5,61 +5,77 @@
       "rows": 500,
       "days": 90,
       "no_shift": {
-        "50": 0.023,
-        "100": 0.016
+        "50": {
+          "now": 0.018,
+          "before": 0.023
+        },
+        "100": {
+          "now": 0.007,
+          "before": 0.016
+        }
       },
       "injected": {
         "50": {
           "0.0": {
             "target": "api-machinery",
-            "detected": 0.012,
+            "detected": 0.004,
+            "detected_before": 0.012,
             "trials": 500
           },
           "0.05": {
             "target": "api-machinery",
-            "detected": 0.016,
+            "detected": 0.01,
+            "detected_before": 0.016,
             "trials": 500
           },
           "0.1": {
             "target": "api-machinery",
-            "detected": 0.006,
+            "detected": 0.004,
+            "detected_before": 0.006,
             "trials": 500
           },
           "0.15": {
             "target": "api-machinery",
-            "detected": 0.066,
+            "detected": 0.032,
+            "detected_before": 0.066,
             "trials": 500
           },
           "0.2": {
             "target": "api-machinery",
-            "detected": 0.376,
+            "detected": 0.234,
+            "detected_before": 0.376,
             "trials": 500
           }
         },
         "100": {
           "0.0": {
             "target": "api-machinery",
-            "detected": 0.018,
+            "detected": 0.014,
+            "detected_before": 0.018,
             "trials": 500
           },
           "0.05": {
             "target": "api-machinery",
-            "detected": 0.016,
+            "detected": 0.002,
+            "detected_before": 0.016,
             "trials": 500
           },
           "0.1": {
             "target": "api-machinery",
-            "detected": 0.028,
+            "detected": 0.006,
+            "detected_before": 0.028,
             "trials": 500
           },
           "0.15": {
             "target": "api-machinery",
-            "detected": 0.186,
+            "detected": 0.1,
+            "detected_before": 0.186,
             "trials": 500
           },
           "0.2": {
             "target": "api-machinery",
-            "detected": 0.7877551020408163,
+            "detected": 0.6408163265306123,
+            "detected_before": 0.7877551020408163,
             "trials": 490
           }
         }
@@ -67,7 +83,7 @@
       "by_date": {
         "rows_ref": 440,
         "rows_new": 60,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.01519817754635067,
         "mix": {
           "tv": 0.15454545454545454,
           "p": 0.08486795256824148,
@@ -91,51 +107,289 @@
               "after": 0.36666666666666664,
               "p": 1.0
             }
-          ]
+          ],
+          "evidence": {
+            "threshold": 6.684611727667927,
+            "alpha": 0.0125,
+            "tests": 10,
+            "item": "scheduling: kube-scheduler, pod placement, preemption, scheduling plugins",
+            "before": 0.1,
+            "after": 0.2,
+            "log_e": -3.3023187306713737,
+            "alarm": false
+          }
         },
         "scores": {
           "ks": 0.1803030303030303,
           "p": 0.056771316300624396,
           "alarm": false,
           "mean_before": 0.9327954545454546,
-          "mean_after": 0.9485
+          "mean_after": 0.9485,
+          "evidence": {
+            "threshold": 5.991464547107982,
+            "alpha": 0.0125,
+            "tests": 5,
+            "item": 0.99,
+            "before": 0.4636363636363636,
+            "after": 0.2833333333333333,
+            "log_e": -2.4034832901438676,
+            "alarm": false
+          }
         },
+        "alarm_before": false,
         "true_tv": 0.14166666666666666,
         "cut": "2026-04-01T16:04:33+00:00"
+      },
+      "series": {
+        "100 rows a check, 12 checks": {
+          "0.0@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.025,
+              "3": 0.035,
+              "6": 0.04,
+              "7": 0.04,
+              "12": 0.04
+            },
+            "now": {
+              "1": 0.01,
+              "3": 0.015,
+              "6": 0.02,
+              "7": 0.02,
+              "12": 0.025
+            }
+          },
+          "0.1@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.18,
+              "3": 0.27,
+              "6": 0.28,
+              "7": 0.28,
+              "12": 0.285
+            },
+            "now": {
+              "1": 0.125,
+              "3": 0.225,
+              "6": 0.29,
+              "7": 0.315,
+              "12": 0.405
+            }
+          },
+          "0.15@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.515,
+              "3": 0.675,
+              "6": 0.725,
+              "7": 0.73,
+              "12": 0.75
+            },
+            "now": {
+              "1": 0.435,
+              "3": 0.64,
+              "6": 0.82,
+              "7": 0.835,
+              "12": 0.965
+            }
+          },
+          "0.2@mid": {
+            "target": "api-machinery",
+            "start": 7,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.03,
+              "3": 0.04,
+              "6": 0.04,
+              "7": 0.51,
+              "12": 0.845
+            },
+            "now": {
+              "1": 0.015,
+              "3": 0.015,
+              "6": 0.015,
+              "7": 0.36,
+              "12": 0.98
+            }
+          }
+        },
+        "30 rows a check, 52 checks": {
+          "0.0@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.02,
+              "13": 0.04,
+              "26": 0.04,
+              "27": 0.04,
+              "52": 0.045
+            },
+            "now": {
+              "1": 0.015,
+              "13": 0.035,
+              "26": 0.035,
+              "27": 0.035,
+              "52": 0.04
+            }
+          },
+          "0.1@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.065,
+              "13": 0.125,
+              "26": 0.125,
+              "27": 0.125,
+              "52": 0.125
+            },
+            "now": {
+              "1": 0.035,
+              "13": 0.105,
+              "26": 0.215,
+              "27": 0.225,
+              "52": 0.405
+            }
+          },
+          "0.15@1": {
+            "target": "api-machinery",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.2,
+              "13": 0.4,
+              "26": 0.41,
+              "27": 0.41,
+              "52": 0.41
+            },
+            "now": {
+              "1": 0.165,
+              "13": 0.545,
+              "26": 0.835,
+              "27": 0.845,
+              "52": 0.97
+            }
+          },
+          "0.2@mid": {
+            "target": "api-machinery",
+            "start": 27,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.01,
+              "13": 0.03,
+              "26": 0.03,
+              "27": 0.065,
+              "52": 0.235
+            },
+            "now": {
+              "1": 0.005,
+              "13": 0.025,
+              "26": 0.025,
+              "27": 0.055,
+              "52": 0.995
+            }
+          }
+        }
       }
     },
     "Kubernetes: is it a feature request? (yes/no)": {
       "rows": 500,
       "days": 90,
       "no_shift": {
-        "50": 0.017,
-        "100": 0.008
+        "50": {
+          "now": 0.007,
+          "before": 0.027
+        },
+        "100": {
+          "now": 0.008,
+          "before": 0.021
+        }
       },
       "injected": {
         "50": {
           "0.0": {
             "target": "feature",
-            "detected": 0.004,
+            "detected": 0.0,
+            "detected_before": 0.0,
             "trials": 500
           },
           "0.05": {
             "target": "feature",
-            "detected": 0.004,
+            "detected": 0.0,
+            "detected_before": 0.006,
             "trials": 500
           },
           "0.1": {
             "target": "feature",
-            "detected": 0.038,
+            "detected": 0.028,
+            "detected_before": 0.044,
             "trials": 500
           },
           "0.15": {
             "target": "feature",
-            "detected": 0.196,
+            "detected": 0.092,
+            "detected_before": 0.202,
             "trials": 500
           },
           "0.2": {
             "target": "feature",
-            "detected": 0.528,
+            "detected": 0.406,
+            "detected_before": 0.566,
             "trials": 500
           }
         },
@@ -143,38 +397,43 @@
           "0.0": {
             "target": "feature",
             "detected": 0.0,
+            "detected_before": 0.0,
             "trials": 500
           },
           "0.05": {
             "target": "feature",
-            "detected": 0.01,
+            "detected": 0.002,
+            "detected_before": 0.006,
             "trials": 500
           },
           "0.1": {
             "target": "feature",
-            "detected": 0.106,
+            "detected": 0.052,
+            "detected_before": 0.106,
             "trials": 500
           },
           "0.15": {
             "target": "feature",
-            "detected": 0.5100806451612904,
-            "trials": 496
+            "detected": 0.342,
+            "detected_before": 0.504,
+            "trials": 500
           },
           "0.2": {
             "target": "feature",
-            "detected": 0.9310344827586207,
-            "trials": 493
+            "detected": 0.8004073319755601,
+            "detected_before": 0.9022403258655805,
+            "trials": 491
           }
         }
       },
       "by_date": {
         "rows_ref": 442,
         "rows_new": 58,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.01519817754635067,
         "mix": {
           "tv": 0.15361210797316277,
           "p": 0.00812893712434261,
-          "alarm": true,
+          "alarm": false,
           "moved": [
             {
               "answer": "yes",
@@ -182,211 +441,699 @@
               "after": 0.08620689655172414,
               "p": 0.00812893712434261
             }
-          ]
+          ],
+          "evidence": {
+            "threshold": 4.382026634673881,
+            "alpha": 0.0125,
+            "tests": 1,
+            "item": "yes",
+            "before": 0.2398190045248869,
+            "after": 0.08620689655172414,
+            "log_e": -1.9080915075947473,
+            "alarm": false
+          }
         },
         "scores": {
           "ks": 0.2017475425183336,
           "p": 0.026254908353716508,
           "alarm": false,
           "mean_before": 0.24864253393665153,
-          "mean_after": 0.12586206896551724
+          "mean_after": 0.12586206896551724,
+          "evidence": {
+            "threshold": 6.173786103901937,
+            "alpha": 0.0125,
+            "tests": 6,
+            "item": 0.06,
+            "before": 0.6085972850678733,
+            "after": 0.8103448275862069,
+            "log_e": -1.2554186379113048,
+            "alarm": false
+          }
         },
+        "alarm_before": true,
         "true_tv": 0.17210173193946013,
         "cut": "2026-04-01T18:56:45+00:00"
+      },
+      "series": {
+        "100 rows a check, 12 checks": {
+          "0.0@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.0,
+              "3": 0.01,
+              "6": 0.01,
+              "7": 0.01,
+              "12": 0.01
+            },
+            "now": {
+              "1": 0.0,
+              "3": 0.005,
+              "6": 0.005,
+              "7": 0.005,
+              "12": 0.005
+            }
+          },
+          "0.1@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.305,
+              "3": 0.435,
+              "6": 0.485,
+              "7": 0.485,
+              "12": 0.485
+            },
+            "now": {
+              "1": 0.245,
+              "3": 0.385,
+              "6": 0.475,
+              "7": 0.495,
+              "12": 0.585
+            }
+          },
+          "0.15@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.625,
+              "3": 0.885,
+              "6": 0.93,
+              "7": 0.93,
+              "12": 0.95
+            },
+            "now": {
+              "1": 0.525,
+              "3": 0.83,
+              "6": 0.93,
+              "7": 0.94,
+              "12": 0.985
+            }
+          },
+          "0.2@mid": {
+            "target": "feature",
+            "start": 7,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.015,
+              "3": 0.025,
+              "6": 0.03,
+              "7": 0.67,
+              "12": 0.96
+            },
+            "now": {
+              "1": 0.005,
+              "3": 0.01,
+              "6": 0.015,
+              "7": 0.565,
+              "12": 0.995
+            }
+          }
+        },
+        "30 rows a check, 52 checks": {
+          "0.0@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.02,
+              "13": 0.035,
+              "26": 0.035,
+              "27": 0.035,
+              "52": 0.035
+            },
+            "now": {
+              "1": 0.005,
+              "13": 0.02,
+              "26": 0.02,
+              "27": 0.02,
+              "52": 0.02
+            }
+          },
+          "0.1@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.11,
+              "13": 0.245,
+              "26": 0.26,
+              "27": 0.26,
+              "52": 0.26
+            },
+            "now": {
+              "1": 0.08,
+              "13": 0.23,
+              "26": 0.36,
+              "27": 0.36,
+              "52": 0.565
+            }
+          },
+          "0.15@1": {
+            "target": "feature",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.235,
+              "13": 0.545,
+              "26": 0.57,
+              "27": 0.57,
+              "52": 0.575
+            },
+            "now": {
+              "1": 0.165,
+              "13": 0.645,
+              "26": 0.94,
+              "27": 0.945,
+              "52": 0.98
+            }
+          },
+          "0.2@mid": {
+            "target": "feature",
+            "start": 27,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.02,
+              "13": 0.03,
+              "26": 0.035,
+              "27": 0.065,
+              "52": 0.32
+            },
+            "now": {
+              "1": 0.005,
+              "13": 0.015,
+              "26": 0.02,
+              "27": 0.045,
+              "52": 1.0
+            }
+          }
+        }
       }
     },
     "CFPB: which product? (9 options)": {
       "rows": 500,
       "days": 365,
       "no_shift": {
-        "50": 0.02,
-        "100": 0.018
+        "50": {
+          "now": 0.009,
+          "before": 0.022
+        },
+        "100": {
+          "now": 0.01,
+          "before": 0.019
+        }
       },
       "injected": {
         "50": {
           "0.0": {
             "target": "debt collection",
-            "detected": 0.008,
+            "detected": 0.012,
+            "detected_before": 0.024,
             "trials": 500
           },
           "0.05": {
             "target": "debt collection",
-            "detected": 0.006,
+            "detected": 0.01,
+            "detected_before": 0.016,
             "trials": 500
           },
           "0.1": {
             "target": "debt collection",
-            "detected": 0.042,
+            "detected": 0.022,
+            "detected_before": 0.058,
             "trials": 500
           },
           "0.15": {
             "target": "debt collection",
-            "detected": 0.13,
+            "detected": 0.078,
+            "detected_before": 0.112,
             "trials": 500
           },
           "0.2": {
             "target": "debt collection",
-            "detected": 0.306,
+            "detected": 0.208,
+            "detected_before": 0.294,
             "trials": 500
           }
         },
         "100": {
           "0.0": {
             "target": "debt collection",
-            "detected": 0.016,
+            "detected": 0.008,
+            "detected_before": 0.02,
             "trials": 500
           },
           "0.05": {
             "target": "debt collection",
-            "detected": 0.02404809619238477,
-            "trials": 499
+            "detected": 0.008048289738430584,
+            "detected_before": 0.018108651911468814,
+            "trials": 497
           },
           "0.1": {
             "target": "debt collection",
-            "detected": 0.06652806652806653,
-            "trials": 481
+            "detected": 0.03556485355648536,
+            "detected_before": 0.05439330543933055,
+            "trials": 478
           },
           "0.15": {
             "target": "debt collection",
-            "detected": 0.20190023752969122,
-            "trials": 421
+            "detected": 0.1595238095238095,
+            "detected_before": 0.25,
+            "trials": 420
           },
           "0.2": {
             "target": "debt collection",
-            "detected": 0.5467980295566502,
-            "trials": 203
+            "detected": 0.39823008849557523,
+            "detected_before": 0.5132743362831859,
+            "trials": 226
           }
         }
       },
       "by_date": {
         "rows_ref": 269,
         "rows_new": 231,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.01519817754635067,
         "mix": {
           "tv": 0.1819308324884533,
           "p": 0.005132544695764855,
           "alarm": true,
           "moved": [
             {
-              "answer": "credit reporting",
-              "before": 0.44609665427509293,
-              "after": 0.5844155844155844,
-              "p": 0.014268926946638668
-            },
-            {
               "answer": "debt collection",
               "before": 0.15613382899628253,
               "after": 0.06060606060606061,
               "p": 0.005132544695764855
             }
-          ]
+          ],
+          "evidence": {
+            "threshold": 6.579251212010101,
+            "alpha": 0.0125,
+            "tests": 9,
+            "item": "debt collection",
+            "before": 0.15613382899628253,
+            "after": 0.06060606060606061,
+            "log_e": -0.641177726678194,
+            "alarm": false
+          }
         },
         "scores": {
           "ks": 0.04111749464909317,
           "p": 0.9825743387803326,
           "alarm": false,
           "mean_before": 0.9237918215613382,
-          "mean_after": 0.9208225108225109
+          "mean_after": 0.9208225108225109,
+          "evidence": {
+            "threshold": 5.991464547107982,
+            "alpha": 0.0125,
+            "tests": 5,
+            "item": 0.87,
+            "before": 0.20817843866171004,
+            "after": 0.23376623376623376,
+            "log_e": -3.9402515685229673,
+            "alarm": false
+          }
         },
+        "alarm_before": true,
         "true_tv": 0.15698675549976668,
         "cut": "2023-02-05"
+      },
+      "series": {
+        "100 rows a check, 12 checks": {
+          "0.0@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.025,
+              "3": 0.03,
+              "6": 0.03,
+              "7": 0.035,
+              "12": 0.045
+            },
+            "now": {
+              "1": 0.01,
+              "3": 0.015,
+              "6": 0.015,
+              "7": 0.015,
+              "12": 0.015
+            }
+          },
+          "0.1@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.24,
+              "3": 0.315,
+              "6": 0.345,
+              "7": 0.35,
+              "12": 0.355
+            },
+            "now": {
+              "1": 0.17,
+              "3": 0.24,
+              "6": 0.3,
+              "7": 0.305,
+              "12": 0.395
+            }
+          },
+          "0.15@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.45,
+              "3": 0.65,
+              "6": 0.695,
+              "7": 0.7,
+              "12": 0.73
+            },
+            "now": {
+              "1": 0.365,
+              "3": 0.605,
+              "6": 0.72,
+              "7": 0.76,
+              "12": 0.875
+            }
+          },
+          "0.2@mid": {
+            "target": "debt collection",
+            "start": 7,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.005,
+              "3": 0.005,
+              "6": 0.005,
+              "7": 0.42,
+              "12": 0.81
+            },
+            "now": {
+              "1": 0.005,
+              "3": 0.005,
+              "6": 0.005,
+              "7": 0.33,
+              "12": 0.94
+            }
+          }
+        },
+        "30 rows a check, 52 checks": {
+          "0.0@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.02,
+              "13": 0.02,
+              "26": 0.02,
+              "27": 0.02,
+              "52": 0.02
+            },
+            "now": {
+              "1": 0.015,
+              "13": 0.015,
+              "26": 0.015,
+              "27": 0.015,
+              "52": 0.015
+            }
+          },
+          "0.1@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.03,
+              "13": 0.05,
+              "26": 0.05,
+              "27": 0.05,
+              "52": 0.05
+            },
+            "now": {
+              "1": 0.02,
+              "13": 0.05,
+              "26": 0.095,
+              "27": 0.095,
+              "52": 0.195
+            }
+          },
+          "0.15@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.08,
+              "13": 0.13,
+              "26": 0.13,
+              "27": 0.135,
+              "52": 0.145
+            },
+            "now": {
+              "1": 0.03,
+              "13": 0.245,
+              "26": 0.545,
+              "27": 0.58,
+              "52": 0.795
+            }
+          },
+          "0.2@mid": {
+            "target": "debt collection",
+            "start": 27,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.02,
+              "13": 0.03,
+              "26": 0.035,
+              "27": 0.035,
+              "52": 0.035
+            },
+            "now": {
+              "1": 0.015,
+              "13": 0.025,
+              "26": 0.025,
+              "27": 0.025,
+              "52": 0.905
+            }
+          }
+        }
       }
     },
     "CFPB, 2,000 complaints: which product? (9 options)": {
       "rows": 2000,
       "days": 365,
       "no_shift": {
-        "100": 0.022,
-        "200": 0.026,
-        "400": 0.008
+        "100": {
+          "now": 0.017,
+          "before": 0.031
+        },
+        "200": {
+          "now": 0.006,
+          "before": 0.012
+        },
+        "400": {
+          "now": 0.004,
+          "before": 0.012
+        }
       },
       "injected": {
         "100": {
           "0.0": {
             "target": "debt collection",
-            "detected": 0.016,
+            "detected": 0.012,
+            "detected_before": 0.022,
             "trials": 500
           },
           "0.05": {
             "target": "debt collection",
-            "detected": 0.038,
+            "detected": 0.018,
+            "detected_before": 0.032,
             "trials": 500
           },
           "0.1": {
             "target": "debt collection",
-            "detected": 0.108,
+            "detected": 0.078,
+            "detected_before": 0.106,
             "trials": 500
           },
           "0.15": {
             "target": "debt collection",
-            "detected": 0.292,
+            "detected": 0.232,
+            "detected_before": 0.31,
             "trials": 500
           },
           "0.2": {
             "target": "debt collection",
-            "detected": 0.632,
+            "detected": 0.508,
+            "detected_before": 0.62,
             "trials": 500
           }
         },
         "200": {
           "0.0": {
             "target": "debt collection",
-            "detected": 0.026,
+            "detected": 0.002,
+            "detected_before": 0.004,
             "trials": 500
           },
           "0.05": {
             "target": "debt collection",
-            "detected": 0.032,
+            "detected": 0.014,
+            "detected_before": 0.03,
             "trials": 500
           },
           "0.1": {
             "target": "debt collection",
-            "detected": 0.206,
+            "detected": 0.136,
+            "detected_before": 0.208,
             "trials": 500
           },
           "0.15": {
             "target": "debt collection",
-            "detected": 0.606,
+            "detected": 0.482,
+            "detected_before": 0.574,
             "trials": 500
           },
           "0.2": {
             "target": "debt collection",
-            "detected": 0.888,
+            "detected": 0.83,
+            "detected_before": 0.894,
             "trials": 500
           }
         },
         "400": {
           "0.0": {
             "target": "debt collection",
-            "detected": 0.004,
+            "detected": 0.008,
+            "detected_before": 0.01,
             "trials": 500
           },
           "0.05": {
             "target": "debt collection",
-            "detected": 0.046,
+            "detected": 0.024,
+            "detected_before": 0.028,
             "trials": 500
           },
           "0.1": {
             "target": "debt collection",
-            "detected": 0.364,
-            "trials": 500
+            "detected": 0.2565130260521042,
+            "detected_before": 0.33266533066132264,
+            "trials": 499
           },
           "0.15": {
             "target": "debt collection",
-            "detected": 0.8377777777777777,
-            "trials": 450
+            "detected": 0.8092105263157895,
+            "detected_before": 0.8552631578947368,
+            "trials": 456
           },
           "0.2": {
             "target": "debt collection",
-            "detected": 1.0,
-            "trials": 92
+            "detected": 0.9897959183673469,
+            "detected_before": 1.0,
+            "trials": 98
           }
         }
       },
       "by_date": {
         "rows_ref": 1073,
         "rows_new": 927,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.01519817754635067,
         "mix": {
           "tv": 0.12935734529306675,
           "p": 4.631803099885077e-06,
@@ -404,17 +1151,244 @@
               "after": 0.05825242718446602,
               "p": 2.6812170048677054e-05
             }
-          ]
+          ],
+          "evidence": {
+            "threshold": 6.579251212010101,
+            "alpha": 0.0125,
+            "tests": 9,
+            "item": "credit reporting",
+            "before": 0.516309412861137,
+            "after": 0.627831715210356,
+            "log_e": 4.60235370116834,
+            "alarm": false
+          }
         },
         "scores": {
           "ks": 0.08102377570070907,
           "p": 0.002711948737332539,
           "alarm": false,
           "mean_before": 0.842482890413925,
-          "mean_after": 0.8665605352336745
+          "mean_after": 0.8665605352336745,
+          "evidence": {
+            "threshold": 6.461468176353717,
+            "alpha": 0.0125,
+            "tests": 8,
+            "item": 0.98,
+            "before": 0.7110904007455732,
+            "after": 0.6343042071197411,
+            "log_e": -1.3353694370241556,
+            "alarm": false
+          }
         },
+        "alarm_before": true,
         "true_tv": 0.13499337972053072,
         "cut": "2023-02-05"
+      },
+      "series": {
+        "100 rows a check, 12 checks": {
+          "0.0@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.015,
+              "3": 0.03,
+              "6": 0.03,
+              "7": 0.03,
+              "12": 0.04
+            },
+            "now": {
+              "1": 0.01,
+              "3": 0.015,
+              "6": 0.015,
+              "7": 0.015,
+              "12": 0.02
+            }
+          },
+          "0.1@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.16,
+              "3": 0.225,
+              "6": 0.265,
+              "7": 0.27,
+              "12": 0.28
+            },
+            "now": {
+              "1": 0.115,
+              "3": 0.185,
+              "6": 0.25,
+              "7": 0.265,
+              "12": 0.3
+            }
+          },
+          "0.15@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.335,
+              "3": 0.485,
+              "6": 0.535,
+              "7": 0.535,
+              "12": 0.54
+            },
+            "now": {
+              "1": 0.28,
+              "3": 0.46,
+              "6": 0.58,
+              "7": 0.6,
+              "12": 0.715
+            }
+          },
+          "0.2@mid": {
+            "target": "debt collection",
+            "start": 7,
+            "marks": [
+              1,
+              3,
+              6,
+              7,
+              12
+            ],
+            "before": {
+              "1": 0.035,
+              "3": 0.045,
+              "6": 0.05,
+              "7": 0.32,
+              "12": 0.635
+            },
+            "now": {
+              "1": 0.015,
+              "3": 0.015,
+              "6": 0.015,
+              "7": 0.205,
+              "12": 0.72
+            }
+          }
+        },
+        "30 rows a check, 52 checks": {
+          "0.0@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.025,
+              "13": 0.03,
+              "26": 0.03,
+              "27": 0.03,
+              "52": 0.03
+            },
+            "now": {
+              "1": 0.005,
+              "13": 0.01,
+              "26": 0.01,
+              "27": 0.01,
+              "52": 0.01
+            }
+          },
+          "0.1@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.045,
+              "13": 0.06,
+              "26": 0.06,
+              "27": 0.06,
+              "52": 0.06
+            },
+            "now": {
+              "1": 0.03,
+              "13": 0.045,
+              "26": 0.065,
+              "27": 0.065,
+              "52": 0.105
+            }
+          },
+          "0.15@1": {
+            "target": "debt collection",
+            "start": 1,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.06,
+              "13": 0.105,
+              "26": 0.105,
+              "27": 0.105,
+              "52": 0.105
+            },
+            "now": {
+              "1": 0.035,
+              "13": 0.13,
+              "26": 0.405,
+              "27": 0.42,
+              "52": 0.625
+            }
+          },
+          "0.2@mid": {
+            "target": "debt collection",
+            "start": 27,
+            "marks": [
+              1,
+              13,
+              26,
+              27,
+              52
+            ],
+            "before": {
+              "1": 0.03,
+              "13": 0.03,
+              "26": 0.03,
+              "27": 0.03,
+              "52": 0.03
+            },
+            "now": {
+              "1": 0.01,
+              "13": 0.01,
+              "26": 0.01,
+              "27": 0.01,
+              "52": 0.74
+            }
+          }
+        }
       }
     }
   },
@@ -442,13 +1416,13 @@
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.003,
-          "any_alarm": 0.003
+          "score_alarm": 0.004,
+          "any_alarm": 0.004
         },
         "100": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.001,
-          "any_alarm": 0.001
+          "score_alarm": 0.002,
+          "any_alarm": 0.002
         },
         "200": {
           "accuracy_alarm": 0.0,
@@ -480,13 +1454,13 @@
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.007,
-          "any_alarm": 0.007
+          "score_alarm": 0.006,
+          "any_alarm": 0.006
         },
         "100": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.002,
-          "any_alarm": 0.002
+          "score_alarm": 0.001,
+          "any_alarm": 0.001
         },
         "200": {
           "accuracy_alarm": 0.0,
@@ -518,8 +1492,8 @@
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.001,
-          "any_alarm": 0.001
+          "score_alarm": 0.004,
+          "any_alarm": 0.004
         },
         "100": {
           "accuracy_alarm": 0.0,
@@ -528,8 +1502,8 @@
         },
         "200": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.002,
-          "any_alarm": 0.002
+          "score_alarm": 0.001,
+          "any_alarm": 0.001
         }
       }
     },
@@ -556,28 +1530,29 @@
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.255,
-          "any_alarm": 0.255
+          "score_alarm": 0.27,
+          "any_alarm": 0.27
         },
         "100": {
-          "accuracy_alarm": 0.004,
-          "score_alarm": 0.647,
+          "accuracy_alarm": 0.002,
+          "score_alarm": 0.649,
           "any_alarm": 0.649
         },
         "200": {
-          "accuracy_alarm": 0.019,
-          "score_alarm": 1.0,
-          "any_alarm": 1.0
+          "accuracy_alarm": 0.023,
+          "score_alarm": 0.998,
+          "any_alarm": 0.998
         }
       }
     }
   },
+  "series_trials": 200,
   "model_injected": {
     "0.02": {
       "50": {
         "accuracy_alarm": 0.0,
-        "score_alarm": 0.002,
-        "any_alarm": 0.002
+        "score_alarm": 0.0,
+        "any_alarm": 0.0
       },
       "100": {
         "accuracy_alarm": 0.0,
@@ -597,9 +1572,9 @@
         "any_alarm": 0.002
       },
       "100": {
-        "accuracy_alarm": 0.09,
-        "score_alarm": 0.002,
-        "any_alarm": 0.092
+        "accuracy_alarm": 0.072,
+        "score_alarm": 0.004,
+        "any_alarm": 0.076
       },
       "200": {
         "accuracy_alarm": 1.0,
@@ -609,13 +1584,13 @@
     },
     "0.1": {
       "50": {
-        "accuracy_alarm": 0.03,
-        "score_alarm": 0.004,
-        "any_alarm": 0.034
+        "accuracy_alarm": 0.02,
+        "score_alarm": 0.002,
+        "any_alarm": 0.022
       },
       "100": {
         "accuracy_alarm": 1.0,
-        "score_alarm": 0.002,
+        "score_alarm": 0.004,
         "any_alarm": 1.0
       },
       "200": {

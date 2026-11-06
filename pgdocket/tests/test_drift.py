@@ -113,3 +113,75 @@ def test_one_sided_sign_test_is_exact():
     assert drift.sign_test_one_sided(0, 8) == 1.0
     assert drift.sign_test_one_sided(0, 0) == 1.0
     assert drift.sign_test_one_sided(6, 4) == pytest.approx(sum(math.comb(10, i) for i in range(6, 11)) / 1024)
+
+
+# ---------------------------------------------------------------- anytime-valid rows (#33)
+def test_evidence_read_every_day_rarely_reaches_its_threshold_without_a_change():
+    """1,000 streams from one unchanging population, the e-value read after every one of 40 days: the chance it ever
+    reaches 1/α stays at most α (here it is far below: universal inference is conservative)."""
+    rng = np.random.default_rng(33)
+    ever = 0
+    for _ in range(1000):
+        p = rng.uniform(0.05, 0.6)
+        k_ref, m = int(rng.binomial(400, p)), 400
+        ks, ns = [], []
+        for _ in range(40):
+            ns.append(int(rng.integers(5, 40)))
+            ks.append(int(rng.binomial(ns[-1], p)))
+            if drift.log_evidence(k_ref, m, ks, ns) >= math.log(1 / 0.05):
+                ever += 1
+                break
+    assert ever / 1000 <= 0.05
+
+
+def test_evidence_piles_up_for_a_shift_that_lasts():
+    """A share that moves from 30 % to 45 % on day 11, 30 rows a day: no single day's rows show it reliably, but the
+    evidence since the cut does within three weeks, most of the time; before day 11 it stays low."""
+    rng = np.random.default_rng(34)
+    caught, early = 0, 0
+    for _ in range(200):
+        k_ref, m = int(rng.binomial(1000, 0.3)), 1000
+        ks, ns = [], []
+        for d in range(1, 32):
+            ns.append(30)
+            ks.append(int(rng.binomial(30, 0.3 if d < 11 else 0.45)))
+            e = drift.log_evidence(k_ref, m, ks, ns)
+            if d == 10:
+                early += e >= math.log(20)
+        caught += e >= math.log(20)
+    assert caught / 200 >= 0.8 and early / 200 <= 0.05
+
+
+def test_the_rows_check_keeps_alarming_after_a_shift_has_lasted():
+    """Weekly checks of 60 rows; from week 2 a third answer makes up half the rows. The old window test compared each
+    week with everything before it, so once the shifted weeks outnumbered the reference its alarms faded; against the
+    rows from before the series began, and with the evidence piling up, they don't. (Week 2's 60 rows, against 120,
+    aren't yet enough.)"""
+    rng = np.random.default_rng(35)
+    p0, p1 = [0.5, 0.3, 0.2], [0.3, 0.2, 0.5]
+    ref = list(rng.choice(["a", "b", "c"], 120, p=p0))
+    ref_s = list(np.round(rng.beta(4, 2, 120), 2))
+    new, new_s, day = [], [], []
+    alarms, old = [], []
+    for week in range(1, 13):
+        n = 60
+        new += list(rng.choice(["a", "b", "c"], n, p=p0 if week < 2 else p1))
+        new_s += list(np.round(rng.beta(4, 2, n), 2))
+        day += [7 * (week - 1) + 1] * n
+        recent = [d == 7 * (week - 1) + 1 for d in day]
+        r = drift.rows_check(ref, ref_s, new, new_s, day, recent, week)
+        alarms.append(r["mix"]["alarm"])
+        before = ref + new[:-n]                                 # the old reference: everything before the window
+        old.append(drift.windows(before, ref_s + new_s[:-n], new[-n:], new_s[-n:], spent_alpha(0.05, week))["mix"]["alarm"])
+    assert all(alarms[2:]) and r["mix"]["evidence"]["item"] in ("a", "c") and r["mix"]["evidence"]["alarm"]
+    assert sum(old[-6:]) <= 1                                   # the old check had stopped seeing it
+
+
+def test_two_answers_are_one_test_and_scores_are_tested_at_the_reference_deciles():
+    rng = np.random.default_rng(36)
+    ref, new = list(rng.choice(["no", "yes"], 300, p=[0.7, 0.3])), list(rng.choice(["no", "yes"], 100, p=[0.4, 0.6]))
+    ev = drift.evidence(ref, new, [1] * 100, [True] * 100, "answers", 0.0125, drift.MIN_SHIFT)
+    assert ev["tests"] == 1 and ev["item"] == "yes" and ev["alarm"]
+    scores = drift.evidence(list(rng.beta(4, 2, 300)), list(rng.beta(2, 4, 100)), [1] * 100, [True] * 100, "scores",
+                            0.0125, drift.MIN_KS)
+    assert scores["tests"] == 9 and scores["alarm"] and scores["after"] > scores["before"]

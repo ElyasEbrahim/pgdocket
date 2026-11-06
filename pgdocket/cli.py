@@ -170,7 +170,9 @@ def main(argv=None):
     dt = sub.add_parser("drift", help="have the rows or the model shifted? (exit status 1 on an alarm)")
     dsn_arg(dt)
     dt.add_argument("name")
-    dt.add_argument("--days", type=float, default=7, help="recent rows (the last DAYS days) against all earlier ones")
+    dt.add_argument("--days", type=float, default=7,
+                    help="recent rows (the last DAYS days) against the rows from before the series of checks began; "
+                         "the series' first check also sets the blocks its evidence counts in")
     dt.add_argument("--by", metavar="COLUMN",
                     help="a timestamp column of the source table that dates each row (default: when it was judged)")
     dt.add_argument("--anchors", type=int, default=0, metavar="N",

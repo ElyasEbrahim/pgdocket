@@ -8,6 +8,10 @@ complaints), every label known:
   share raised by delta, a label shift as in Rabanser et al. (2019). The detection rate shows what each window catches.
 - By date: the most recent rows against everything before (issues by created_at, the last 90 days; complaints by
   date_received, the last 365).
+- Series (#33): checks again and again, the reference and every check's new rows drawn from the same rows, with and
+  without a lasting shift: the check as it was (#22: the window against everything before it, the whole budget
+  spent over the checks) against the check as it is (the window against the rows from before the series began on half
+  the budget, and anytime-valid evidence over every row since on the other half).
 
 Model check, on the 300 Kubernetes issues of `k8s_route` (every one labelled), with re-asks stored in the ledger:
 - The same model asked again, twice, two days after its stored answers: every alarm is false.
@@ -27,7 +31,7 @@ from pgdocket.metrics import spent_alpha
 from .db import connect
 
 OUT = "results/drift-validation"
-ALPHA = spent_alpha(0.05, 1)                    # the first check's budget; later checks spend less
+ALPHA = spent_alpha(0.05, 1)                    # the first check's budget as it was (#22); later checks spend less
 # task: (stored answers, how rows are dated, recent-window sizes, days in the by-date window)
 TASKS = {"Kubernetes: which SIG? (10 options)": ("check-k8s-sig", "issues", (50, 100), 90),
          "Kubernetes: is it a feature request? (yes/no)": ("check-k8s-feature", "issues", (50, 100), 90),
@@ -36,6 +40,8 @@ TASKS = {"Kubernetes: which SIG? (10 options)": ("check-k8s-sig", "issues", (50,
 DELTAS = (0.0, 0.05, 0.10, 0.15, 0.20)
 ANCHORS = (50, 100, 200)
 DROPS = (0.02, 0.05, 0.10)
+SCHEDULES = ((100, 12), (30, 52))               # rows per check, checks: weekly for a quarter, weekly for a year
+SERIES = ((0.0, 1), (0.10, 1), (0.15, 1), (0.20, "mid"))   # shift, from which check
 
 
 def load_check(folder):
@@ -69,24 +75,29 @@ def any_alarm(r):
     return r["mix"]["alarm"] or r["scores"]["alarm"]
 
 
-def split(rows, ref_idx, new_idx):
+def split(rows, ref_idx, new_idx, old=False):
+    """A first check: the window against the reference, as the check is (#33: `drift.rows_check`) or as it was."""
     pick = lambda idx, j: [rows[i][j] for i in idx]
-    return drift.windows(pick(ref_idx, 1), pick(ref_idx, 2), pick(new_idx, 1), pick(new_idx, 2), ALPHA)
+    if old:
+        return drift.windows(pick(ref_idx, 1), pick(ref_idx, 2), pick(new_idx, 1), pick(new_idx, 2), ALPHA)
+    n = len(new_idx)
+    return drift.rows_check(pick(ref_idx, 1), pick(ref_idx, 2), pick(new_idx, 1), pick(new_idx, 2), [1] * n, [True] * n, 1)
 
 
 def no_shift(rows, m, trials, rng):
-    hits = 0
+    hits, old = 0, 0
     for _ in range(trials):
         idx = rng.permutation(len(rows))
         hits += any_alarm(split(rows, idx[m:], idx[:m]))
-    return hits / trials
+        old += any_alarm(split(rows, idx[m:], idx[:m], old=True))
+    return {"now": hits / trials, "before": old / trials}
 
 
 def injected(rows, m, delta, trials, rng):
     """Window of m rows whose true-answer mix has one answer (the second most common) delta more often."""
     labels = np.array([r[3] for r in rows])
     target = Counter(labels).most_common(2)[1][0]
-    hits = done = 0
+    hits = done = old = 0
     for _ in range(trials):
         idx = rng.permutation(len(rows))
         ref, pool = idx[: len(rows) // 2], idx[len(rows) // 2:]
@@ -96,8 +107,10 @@ def injected(rows, m, delta, trials, rng):
             continue
         new = np.r_[rng.choice(yes, k, replace=False), rng.choice(no, m - k, replace=False)]
         hits += any_alarm(split(rows, ref, new))
+        old += any_alarm(split(rows, ref, new, old=True))
         done += 1
-    return {"target": str(target), "detected": hits / done if done else None, "trials": done}
+    return {"target": str(target), "detected": hits / done if done else None,
+            "detected_before": old / done if done else None, "trials": done}
 
 
 def by_date(rows, dates, days=90):
@@ -106,6 +119,7 @@ def by_date(rows, dates, days=90):
     new = [i for i in keep if dates[rows[i][0]] >= cut]
     ref = [i for i in keep if dates[rows[i][0]] < cut]
     r = split(rows, ref, new)
+    r["alarm_before"] = any_alarm(split(rows, ref, new, old=True))
     ta, tb = Counter(rows[i][3] for i in ref), Counter(rows[i][3] for i in new)
     r["true_tv"] = 0.5 * sum(abs(tb.get(c, 0) / len(new) - ta.get(c, 0) / len(ref)) for c in set(ta) | set(tb))
     r["cut"] = cut.isoformat()
@@ -118,6 +132,58 @@ def dates_for(kind, keys):
          "hashes": "SELECT text_hash, date_received FROM bench.complaints WHERE text_hash = ANY(%s)"}[kind]
     with connect() as conn:
         return dict(conn.execute(q, (keys,)).fetchall())
+
+
+def _first_old(R, batches):
+    """The first check at which the check as it was (#22) alarms: each window against everything before it."""
+    before = list(R)
+    for j, win in enumerate(batches, 1):
+        r = drift.windows([x[0] for x in before], [x[1] for x in before], [x[0] for x in win], [x[1] for x in win],
+                          spent_alpha(0.05, j))
+        if any_alarm(r):
+            return j
+        before += win
+    return None
+
+
+def _first_now(R, batches):
+    """The first check at which the check as it is alarms (`drift.rows_check`): blocks of one window each."""
+    new, day = [], []
+    for j, win in enumerate(batches, 1):
+        new += win
+        day += [j] * len(win)
+        recent = [d == j for d in day]
+        r = drift.rows_check([x[0] for x in R], [x[1] for x in R], [x[0] for x in new], [x[1] for x in new], day,
+                             recent, j)
+        if any_alarm(r):
+            return j
+    return None
+
+
+def series(rows, b, checks, delta, start, trials, rng, m=1000):
+    """Checks again and again: a reference of m rows and every check's b new rows drawn from the task's rows, from
+    check `start` on with one true answer (the second most common) delta more often, the others in proportion. The
+    share of runs that alarmed by each check, for the check as it was and as it is."""
+    labels = np.array([r[3] for r in rows])
+    target = Counter(labels).most_common(2)[1][0]
+    yes, no = np.flatnonzero(labels == target), np.flatnonzero(labels != target)
+    base = len(yes) / len(rows)
+    start = checks // 2 + 1 if start == "mid" else start
+    first = {"before": [], "now": []}
+    for _ in range(trials):
+        R = [(rows[i][1], rows[i][2]) for i in rng.integers(0, len(rows), m)]
+        batches = []
+        for j in range(1, checks + 1):
+            k = rng.binomial(b, min(1.0, base + (delta if j >= start else 0.0)))
+            pick = np.r_[rng.choice(yes, k), rng.choice(no, b - k)]
+            rng.shuffle(pick)                                  # a check's rows come in no particular order
+            batches.append([(rows[i][1], rows[i][2]) for i in pick])
+        first["before"].append(_first_old(R, batches))
+        first["now"].append(_first_now(R, batches))
+    marks = sorted({1, max(1, checks // 4), checks // 2, checks // 2 + 1, checks})   # the same for every shift
+    by = lambda f, j: float(np.mean([x is not None and x <= j for x in f]))
+    return {"target": str(target), "start": start, "marks": marks,
+            **{k: {j: by(f, j) for j in marks} for k, f in first.items()}}
 
 
 # ---------------------------------------------------------------- model check
@@ -169,9 +235,9 @@ def model_rates(orig, new, trials, rng, drop=0.0):
     return out
 
 
-def run(trials=1000, seed=0):
+def run(trials=1000, seed=0, series_trials=200):
     rng = np.random.default_rng(seed)
-    res = {"alpha": ALPHA, "data": {}, "model": {}}
+    res = {"alpha": ALPHA, "data": {}, "model": {}, "series_trials": series_trials}
     for title, (source, kind, sizes, days) in TASKS.items():
         rows = load_phase0() if source == "phase0" else load_check(source)
         res["data"][title] = {
@@ -179,7 +245,10 @@ def run(trials=1000, seed=0):
             "no_shift": {m: no_shift(rows, m, trials, rng) for m in sizes},
             "injected": {m: {d: injected(rows, m, d, trials // 2, rng) for d in DELTAS} for m in sizes},
             "by_date": by_date(rows, dates_for(kind, [r[0] for r in rows]), days),
+            "series": {f"{b} rows a check, {c} checks": {f"{d}@{st}": series(rows, b, c, d, st, series_trials, rng)
+                                                         for d, st in SERIES} for b, c in SCHEDULES},
         }
+        print(title, "done", flush=True)
     orig, changes = load_anchors()
     for title, new in changes.items():
         full = drift.anchors(orig[0], new[0], orig[1], new[1], ALPHA)
@@ -197,34 +266,52 @@ def run(trials=1000, seed=0):
 def render(res):
     pct = lambda x: "–" if x is None else f"{100 * x:.1f} %"
     L = ["# Does the drift check alarm when it should, and only then?", "",
-         "No API calls. Generated by `jevbench driftvalidate` from stored Jev answers. Every check uses the first run's "
-         f"false-alarm budget ({ALPHA:.4f}, split between the two tests of each check); later runs spend less, so they "
-         "alarm less often.", "", "## Data check (free)", "",
-         "**No shift.** 1,000 random splits of each task's judged rows into a recent window and the rest. Every "
-         "alarm is false (at most 5 % allowed).", "",
-         "| task | rows | recent window | false alarms |", "| --- | ---: | ---: | ---: |"]
+         "No API calls. Generated by `jevbench driftvalidate` from stored Jev answers. The rows check is shown as it is "
+         "(#33: the recent window against the rows from before the series began, on half the error budget spent over "
+         "the checks, and anytime-valid evidence over every row since, on the other half) and as it was (#22: the "
+         f"window against everything before it, the whole budget spent over the checks; {ALPHA:.4f} at the first).", "",
+         "## Data check (free)", "",
+         "**No shift.** 1,000 random splits of each task's judged rows into a recent window and the rest, as a first "
+         "check. Every alarm is false (at most 5 % allowed).", "",
+         "| task | rows | recent window | false alarms | as it was |", "| --- | ---: | ---: | ---: | ---: |"]
     for t, d in res["data"].items():
         for m, rate in d["no_shift"].items():
-            L.append(f"| {t} | {d['rows']:,} | {m} rows | {pct(rate)} |")
+            L.append(f"| {t} | {d['rows']:,} | {m} rows | {pct(rate['now'])} | {pct(rate['before'])} |")
     L += ["", "**Injected shift.** Half the rows are the reference; the window is drawn from the other half with one "
-          "true answer (the second most common) δ more frequent. Share of 500 trials with an alarm:", "",
+          "true answer (the second most common) δ more frequent. Share of 500 first checks with an alarm, as it is "
+          "(as it was):", "",
           "| task | answer made more frequent | window | " + " | ".join(f"δ = {100 * d:.0f} pp" for d in DELTAS) + " |",
           "| --- | --- | ---: | " + " | ".join("---:" for _ in DELTAS) + " |"]
     for t, d in res["data"].items():
         for m, cells in d["injected"].items():
             L.append(f"| {t} | {cells[DELTAS[0]]['target'].split(':')[0]} | {m} | "
-                     + " | ".join(pct(cells[x]["detected"]) for x in DELTAS) + " |")
+                     + " | ".join(f"{pct(cells[x]['detected'])} ({pct(cells[x]['detected_before'])})" for x in DELTAS)
+                     + " |")
+    L += ["", f"**Series.** Checks again and again, {res.get('series_trials', '')} runs per row: a reference of 1,000 "
+          "rows and every check's new rows drawn from the task's rows, with one true answer (the second most common) "
+          "made δ more frequent from a given check on. Share of runs with an alarm by each check, as it is (as it was):",
+          ""]
+    for t, d in res["data"].items():
+        for sched, cells in d.get("series", {}).items():
+            L += [f"*{t}, {sched}:*", "", "| shift | " + " | ".join(f"by check {j}" for j in next(iter(cells.values()))["marks"])
+                  + " |", "| --- | " + " | ".join("---:" for _ in next(iter(cells.values()))["marks"]) + " |"]
+            for key, c in cells.items():
+                d_, _ = key.split("@")
+                what = "none" if float(d_) == 0 else f"δ = {100 * float(d_):.0f} pp from check {c['start']}"
+                L.append(f"| {what} | " + " | ".join(f"{pct(c['now'][j])} ({pct(c['before'][j])})" for j in c["marks"])
+                         + " |")
+            L.append("")
     L += ["", "**By date.** The most recent rows of each sample (the last 90 days of issues, the last 365 days of "
           "complaints) against everything before. *True shift* is the total variation between the two windows' human "
           "labels, which the check never sees.", "",
-          "| task | rows: earlier → recent | answer that moved most (p) | scores: KS (p) | true shift | alarm |",
+          "| task | rows: earlier → recent | answer that moved most (p) | scores: KS (p) | true shift | alarm (as it was) |",
           "| --- | --- | --- | --- | ---: | --- |"]
     for t, d in res["data"].items():
         b = d["by_date"]
         mv = b["mix"]["moved"][0]
         L.append(f"| {t} | {b['rows_ref']} → {b['rows_new']} | {mv['answer'].split(':')[0]} {pct(mv['before'])} → "
                  f"{pct(mv['after'])} ({b['mix']['p']:.2g}) | {b['scores']['ks']:.3f} ({b['scores']['p']:.2g}) | {pct(b['true_tv'])} | "
-                 f"{'yes' if any_alarm(b) else 'no'} |")
+                 f"{'yes' if any_alarm(b) else 'no'} ({'yes' if b['alarm_before'] else 'no'}) |")
     L += ["", "## Model check (N API calls)", "",
           "The 300 Kubernetes issues of `k8s_route`, each with a human label. The stored answers (jev-1.13, 20 Oct) "
           "against what came back when the same rows were asked again (22 Oct), and against two real changes. "

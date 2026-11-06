@@ -547,6 +547,25 @@ def test_drift_sees_recent_rows_that_look_different(env, capsys):
     code = _drift(env)                                        # by judged_at: every row was judged just now
     assert code == 0 and "needs at least 30 on each side; to date rows by a column" in capsys.readouterr().out
 
+    # four days on (#33): 60 more rows, still mostly sales. The window is tested against the rows from before the
+    # series began, not against last week's shifted ones, and the evidence since the series' cut has piled up
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.stream VALUES (%s, %s, %s, now() + make_interval(days => 4) "
+                            "+ make_interval(hours => %s))",
+                            [(i, "sales" if i % 5 else "billing", "sales" if i % 5 else "billing", i - 300)
+                             for i in range(301, 361)])
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    code = _drift(env, "--by", "created_at", "--days", "7")
+    out = capsys.readouterr().out
+    assert code == 1 and "against 240 from before the series began" in out and "check 2" in out   # a note isn't a check
+    with psycopg.connect(env["owner"]) as c:
+        r = c.execute("SELECT result FROM docket.drift_check WHERE kind = 'data' AND decision_id = "
+                      "(SELECT id FROM docket.decision WHERE name = 'stream') ORDER BY id DESC LIMIT 1").fetchone()[0]
+    ev = r["mix"]["evidence"]
+    assert r["rows_since_cut"] == 120 and ev["alarm"] and ev["item"] in ("sales", "technical")
+    assert "evidence since" in out and ev["log_e"] > ev["threshold"]
+
 
 def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
     """Model check (#22): the same anchors asked again; the model starts answering sales tickets as technical."""

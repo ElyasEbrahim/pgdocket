@@ -77,6 +77,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] Rows that steer the model: `check --steer` measures it; `--untrusted` tells the model to ignore instructions in rows; `calibrate --harden` keeps a row out of `auto` until erase-and-check passes it (#24)
 - [ ] Keep-one voting against payloads repeated across a row, and the two defences measured together
 - [x] `pgdocket drift`: the rows (free: answer shares and scores, recent against earlier) and the model (a fixed panel of labelled rows asked again), one false-alarm budget across repeated checks (#22)
+- [x] Drift checks that don't go blind (#33): the rows check keeps anytime-valid evidence (universal inference per answer and score decile, a change beginning in any window), and tests its window against the rows from before the series began. Over 52 weekly checks a 20-point shift arriving halfway was caught in 74–100 % of runs (3–32 % before), with false alarms of 0.5–4 % ([write-up](docs/phase1/drift.md))
 - [x] `pgdocket audit`: blind spot checks of the rows marked `auto`, with an anytime-valid alarm (an e-process; Podkopaev & Ramdas) (#23)
 - [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)
 - [ ] Audits with fewer labels: use the model's own scores on every accepted row (prediction-powered risk monitoring)

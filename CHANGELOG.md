@@ -2,7 +2,17 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
-## 2026-11-05
+## 2026-11-06
+
+### Changed (drift checks that don't go blind, #33)
+- **The rows check of `pgdocket drift` keeps evidence that never expires.** Every row since the series' first check adds to one e-process per answer, and per decile of the reference's scores. Each is universal inference (Wasserman, Ramdas & Balakrishnan, 2020): the likelihood that a change began in some window, prior 1 / (b (b + 1)) over the windows, the share before and after it Krichevsky–Trofimov mixtures, against the maximum likelihood with none. Its chance of ever reaching 1/α is at most α however often it is read, so a shift that lasts piles up evidence instead of meeting a smaller budget each time.
+- **The window test compares the recent rows with the rows from before the series began,** the first check's cut, no longer with everything before the window. Once a shift had lasted, the shifted rows had become the reference and the alarms faded.
+- **The budget is split.** The window tests spend 0.025 · 6 / (π² k²) at the k-th check; the evidence has the other 0.025 once. Either can raise the alarm, and the 5-point and KS 0.10 effect floors stay. The series' first check fixes the cut and the evidence's blocks (its `--days`). The model check keeps its budget: its checks compare re-asks with the same stored answers, so their e-values couldn't be multiplied.
+- **Validation** (`jevbench driftvalidate`, no API calls, four tasks of stored Jev answers):
+  - **False alarms.** Over 12 or 52 weekly checks of an unchanging population, 0.5–4 % of runs alarmed (1–4.5 % before).
+  - **Lasting shifts.** Over 52 weekly checks of 30 rows, a 20-point shift arriving at week 27 was caught by week 52 in 74–100 % of runs, against 3–32 % before; a 15-point shift from the start in 62.5–98 %, against 10.5–57.5 %.
+  - **The price.** One check alone catches less, its window test having half the budget: 9–15 points less at the first check after a change. The real Kubernetes feature-request shift (p = 0.0081) is now just missed at a first check.
+  - **Tried and set aside:** the evidence alone (slow to show a fresh shift); the window test alone against the fixed reference (blind to late shifts in long series); betting against a band around the reference's share (Shekhar & Ramdas), close to universal inference but behind it everywhere, and dependent on the order rows arrive in.
 
 ### Added (betting intervals in SQL, #32)
 - **`docket.estimate()` gives the betting interval itself** below the floor of 10 labelled rows with or without an answer (migration 012), from labels drawn at random only. A new column, `method`, says `normal` or `betting`; such rows are `reliable`. Before, SQL clients got the normal interval with `reliable = false`, and only the CLI replaced it.
