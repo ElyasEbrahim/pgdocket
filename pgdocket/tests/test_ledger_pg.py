@@ -63,7 +63,7 @@ def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
     assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011",
-                                            "012"]
+                                            "012", "013"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -568,10 +568,12 @@ def test_drift_sees_recent_rows_that_look_different(env, capsys):
 
 
 def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
-    """Model check (#22): the same anchors asked again; the model starts answering sales tickets as technical."""
+    """Model check (#22, #35): each check re-asks the next labelled rows the series hasn't asked yet, and every row's
+    first re-ask adds to the evidence; then the model starts answering sales tickets as technical."""
     code = _drift(env, "--anchors", "60", "--run")
     out = capsys.readouterr().out
     assert code == 0 and "60 labelled rows queued" in out and "no change in the model detected" in out
+    assert "check 1" in out and "(needs p < 0.011)" in out and "evidence from 60 first re-asks" in out
     FakeSystemOne.answer_override = {"s": "t"}
     try:
         code = _drift(env, "--anchors", "60", "--run")
@@ -580,15 +582,21 @@ def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
     out = capsys.readouterr().out
     assert code == 1 and "⚠ dropped" in out and "compare a new version" in out
     with psycopg.connect(env["owner"]) as c:
-        runs = c.execute("SELECT alarm, (result->>'run')::int, (result->'accuracy'->>'worse')::int FROM docket.drift_check "
-                         "WHERE kind = 'model' AND decision_id = (SELECT id FROM docket.decision WHERE name = 'stream') "
-                         "ORDER BY id").fetchall()
+        runs = c.execute("SELECT alarm, (result->>'run')::int, (result->'accuracy'->>'worse')::int, result "
+                         "FROM docket.drift_check WHERE kind = 'model' AND decision_id = "
+                         "(SELECT id FROM docket.decision WHERE name = 'stream') ORDER BY id").fetchall()
+        asked = c.execute("SELECT count(DISTINCT row_key), count(*) FROM docket.judgment WHERE purpose = 'probe' AND "
+                          "decision_id = (SELECT id FROM docket.decision WHERE name = 'stream')").fetchone()
         current = c.execute("SELECT count(*) FROM docket.v_stream WHERE answer = 'technical'").fetchone()[0]
-    assert [(a, k) for a, k, _ in runs] == [(False, 1), (True, 2)] and runs[1][2] > 10
+    assert [(a, k) for a, k, _, _ in runs] == [(False, 1), (True, 2)] and runs[1][2] > 10
+    assert tuple(asked) == (120, 120)                         # the second check re-asked 60 other rows (#35)
+    second = runs[1][3]
+    assert second["evidence_rows"] == 120 and second["accuracy"]["evidence"]["alarm"]
     assert current == 80                                      # re-asks are probes: the view's answers didn't change
     ledger.calibrate(env["owner"], "stream")                  # recalibrating starts a new series of checks
     code = _drift(env, "--model")                             # the anchors asked last time, reported again
-    assert code == 1 and "check 1, false-alarm budget 0.0304" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert code == 1 and "check 1" in out and "(needs p < 0.011)" in out and "evidence from 0 first re-asks" in out
 
 
 

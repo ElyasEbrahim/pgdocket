@@ -29,8 +29,19 @@ Each check is stored in docket.drift_check.
 #33 split the budget in half. #34 compared shares of 0.5 to 1 for the window test on the same simulated series and
 first checks, and chose 0.8 by a rule fixed beforehand, the smallest worst-case shortfall from the best share in any
 scenario (`jevbench driftsplit`): a single check catches more, and lasting shifts still pile up enough evidence.
-The model check keeps its budget: every check compares re-asks with the same stored answers, whose labels say whether
-they were right, so one check's outcome tells about the next and their e-values could not be multiplied.
+
+**Anytime-valid model checks (#35).** Re-asking a fixed panel of anchors gave each check the same rows to compare, so
+their e-values could not be multiplied, and a mostly deterministic model gave each re-ask little that was new.
+Conformal test martingales on each anchor's asks (Vovk) fail for the same reason: an anchor's asks nearly all tie, the
+p-values are then randomised, and the bets mostly pay noise. So the panel now rotates (migration 013): each check
+re-asks the next labelled rows, in the seed's order, that the series has not asked yet. A row's first re-ask in a
+series is a fresh comparison: its stored answer and that re-ask are two exchangeable draws, independent of every other
+row's, so where they differ each sign is a fair coin. The model check now alarms if either test does:
+- the sign tests on this check's re-asks, on 70 % of the budget spent over the checks (`MODEL_SHARE`);
+- evidence that never expires, on the other 30 % once: betting on the signs of every first re-ask in the series
+  (`model_evidence`), worse against better and scores down against up.
+`jevbench driftmodel` chose the design and the share by the rule of #34, on real re-asks of 300 Kubernetes issues
+and 2,000 CFPB complaints.
 """
 import json
 import math
@@ -50,6 +61,8 @@ LOG_PI = math.log(math.pi)
 MIN_ROWS = 30
 MIN_SHIFT = 0.05       # an alarm on the answer mix needs an answer's share to move at least 5 points…
 MIN_KS = 0.10          # …and on scores a Kolmogorov-Smirnov distance of at least 0.10
+MODEL_SHARE = 0.7      # the model check's sign tests get this share of ALPHA over the checks; its evidence, the rest
+BETS = np.arange(1, 20) / 20   # the bets the model check's evidence mixes (#35)
 
 
 def sign_test_one_sided(worse, better):
@@ -174,6 +187,49 @@ def anchors(orig_right, new_right, orig_scores, new_scores, alpha_run):
             "scores": {"up": up, "down": down, "mean_change": float(diff.mean()), "p": p_score, "alarm": bool(p_score < a2)}}
 
 
+def log_bets(pos, neg, two_sided=False):
+    """log e-value for signs that are fair coins when nothing changed: `pos` of them landed one way, `neg` the other.
+    An equal mixture of the betting martingales prod (1 + lam s) over the bets lam in BETS (and their negatives when
+    two-sided): each is a test martingale, so their mean is one too, and by Ville's inequality its chance of ever
+    reaching 1/alpha is at most alpha, however often it is read (#35)."""
+    lams = np.r_[-BETS[::-1], BETS] if two_sided else BETS
+    t = pos * np.log1p(lams) + neg * np.log1p(-lams)
+    top = t.max()
+    return float(top + math.log(np.exp(t - top).mean()))
+
+
+def signs(orig_right, new_right, orig_scores, new_scores):
+    """(worse, better, up, down): re-asks answered worse or better than the stored answers, and whose scores rose or
+    fell."""
+    o, n = np.asarray(orig_right, bool), np.asarray(new_right, bool)
+    diff = np.asarray(new_scores, float) - np.asarray(orig_scores, float)
+    return int((o & ~n).sum()), int((~o & n).sum()), int((diff > 1e-9).sum()), int((diff < -1e-9).sum())
+
+
+def model_rows(orig_right, new_right, orig_scores, new_scores, run, first):
+    """The model check (#35): this check's re-asks against their stored answers, by sign tests on MODEL_SHARE of the
+    budget spent over the series' checks (`anchors`), and the evidence from every labelled row's first re-ask in the
+    series (`first`, as `signs` counts them) on the rest, once. Either can raise the alarm. Pure function."""
+    out = anchors(orig_right, new_right, orig_scores, new_scores, M.spent_alpha(MODEL_SHARE * ALPHA, run))
+    ev = model_evidence(*first, (1 - MODEL_SHARE) * ALPHA)
+    for part in ("accuracy", "scores"):
+        out[part]["evidence"] = ev[part]
+        out[part]["alarm"] = bool(out[part]["alarm"] or ev[part]["alarm"])
+    return out
+
+
+def model_evidence(worse, better, up, down, alpha):
+    """Evidence that never expires for the model check (#35), from each labelled row's first re-ask in the series: how
+    many were answered worse or better than their stored answer, and how many scores went up or down. Without a change,
+    a row's stored answer and that re-ask are two exchangeable draws, independent of every other row's, so where they
+    differ each sign is a fair coin. Accuracy bets on 'worse' (one-sided), scores on either direction; `alpha` is split
+    between them."""
+    thr = math.log(2 / alpha)
+    acc, sc = log_bets(worse, better), log_bets(down, up, two_sided=True)
+    return {"accuracy": {"worse": worse, "better": better, "log_e": acc, "threshold": thr, "alarm": bool(acc >= thr)},
+            "scores": {"up": up, "down": down, "log_e": sc, "threshold": thr, "alarm": bool(sc >= thr)}}
+
+
 # ---------------------------------------------------------------- database
 def _decision(conn, name):
     r = conn.execute("SELECT d.id, d.active_version, d.source, d.key_column, v.spec FROM docket.decision d "
@@ -189,14 +245,15 @@ def _answer(spec, value, score):
 
 
 def next_run(conn, d, kind):
-    """The k-th check of this kind since the active version was last calibrated, and its false-alarm budget.
-    Recalibrating (the usual answer to an alarm) starts a new series."""
+    """The k-th check of this kind since the active version was last calibrated, and its sign tests' false-alarm
+    budget (the model check's: MODEL_SHARE of ALPHA over the checks). Recalibrating (the usual answer to an alarm)
+    starts a new series."""
     k = conn.execute(
         "SELECT count(*) FROM docket.drift_check c JOIN docket.version v ON v.decision_id = c.decision_id "
         "AND v.version = c.version WHERE c.decision_id = %s AND c.version = %s AND c.kind = %s "
         "AND c.checked_at > coalesce((v.calibration->>'fitted_at')::timestamptz, '-infinity')",
         (d["id"], d["version"], kind)).fetchone()[0] + 1
-    return k, M.spent_alpha(ALPHA, k)
+    return k, M.spent_alpha(MODEL_SHARE * ALPHA, k)
 
 
 def store(conn, d, kind, result):
@@ -260,7 +317,9 @@ def data_check(conn, name, days=7, by=None):
 
 
 def model_check(conn, name, since=None):
-    """Each anchor's current answer against its newest re-ask on the same input (made at or after `since`, when given)."""
+    """Each anchor's current answer against its newest re-ask on the same input (made at or after `since`, when given),
+    by sign tests on MODEL_SHARE of the budget spent over the series' checks; and the evidence that never expires
+    (#35) from every labelled row's first re-ask in the series, on the rest."""
     d = _decision(conn, name)
     rows = conn.execute("""
         SELECT l.label, jo.value, jo.score, pr.value, pr.score, extract(epoch FROM pr.judged_at - jo.judged_at) / 86400
@@ -273,17 +332,41 @@ def model_check(conn, name, since=None):
                         AND j.judged_at >= coalesce(%(since)s::timestamptz, '-infinity')
                       ORDER BY j.id DESC LIMIT 1) pr ON true
         WHERE c.decision_id = %(d)s AND c.version = %(v)s""", {"since": since, "d": d["id"], "v": d["version"]}).fetchall()
-    k, a = next_run(conn, d, "model")
+    k, _ = next_run(conn, d, "model")
     if len(rows) < 10:
         return d, {"run": k, "note": f"only {len(rows)} labelled rows have been asked again; queue anchors with "
                                      f"`pgdocket drift {name} --anchors 100 --run` (needs at least 10)"}
     spec = d["spec"]
     right = lambda label, v, s: _answer(spec, v, s) == label
-    out = {"run": k, "days_apart": float(np.median([r[5] for r in rows]))} | anchors(
+    began, first = first_reasks(conn, d)
+    out = {"run": k, "days_apart": float(np.median([r[5] for r in rows])), "evidence_rows": len(first),
+           "series_began": began} | model_rows(
         [right(r[0], r[1], r[2]) for r in rows], [right(r[0], r[3], r[4]) for r in rows],
-        [r[2] for r in rows], [r[4] for r in rows], a)
+        [r[2] for r in rows], [r[4] for r in rows], k,
+        signs([right(r[0], r[1], r[2]) for r in first], [right(r[0], r[3], r[4]) for r in first],
+              [r[2] for r in first], [r[4] for r in first]))
     out["alarm"] = store(conn, d, "model", out)
     return d, out
+
+
+def first_reasks(conn, d):
+    """When the series began (the active version's last calibration; None if never), and every labelled row's first
+    re-ask since then on the input of its current answer: (label, stored value, stored score, value, score). Each row
+    counts once in a series, however often it is asked again (#35)."""
+    began = conn.execute("SELECT calibration->>'fitted_at' FROM docket.version WHERE decision_id = %s AND version = %s",
+                         (d["id"], d["version"])).fetchone()[0]
+    rows = conn.execute("""
+        SELECT l.label, jo.value, jo.score, pr.value, pr.score
+        FROM docket.current c
+        JOIN docket.judgment jo ON jo.id = c.judgment_id
+        JOIN docket.label l ON l.decision_id = c.decision_id AND l.row_key = c.row_key AND l.sampling IN ('random', 'all')
+        JOIN LATERAL (SELECT j.value, j.score FROM docket.judgment j
+                      WHERE j.decision_id = c.decision_id AND j.version = c.version AND j.row_key = c.row_key
+                        AND j.purpose = 'probe' AND j.input_hash = jo.input_hash AND j.id > jo.id
+                        AND j.judged_at > coalesce(%(began)s::timestamptz, '-infinity')
+                      ORDER BY j.id LIMIT 1) pr ON true
+        WHERE c.decision_id = %(d)s AND c.version = %(v)s""", {"began": began, "d": d["id"], "v": d["version"]}).fetchall()
+    return began, rows
 
 
 def pending(conn, d):
@@ -327,12 +410,17 @@ def verdict_model(r):
         return [f"model: {r['note']}"]
     acc, s = r["accuracy"], r["scores"]
     pct = lambda x: f"{100 * x:.1f} %"
+    budget = f"needs p < {r['alpha'] / 2:.2g}"
+    since = f" since {r['series_began'][:10]}" if r.get("series_began") else ""
+    ev = lambda e, lead: (f" · {lead}: {_e(e)} (needs {math.exp(e['threshold']):.0f})" if e else "")
     lines = [f"model: {r['anchors']} labelled rows asked again, {r['days_apart']:.1f} days after their stored answer "
-             f"(median) · check {r['run']}, false-alarm budget {r['alpha']:.4f}",
+             f"(median) · check {r['run']}",
              f"  accuracy {pct(acc['before'])} → {pct(acc['after'])}: worse on {acc['worse']}, better on {acc['better']}, "
-             f"p = {acc['p']:.2g}" + ("  ⚠ dropped" if acc["alarm"] else ""),
-             f"  scores: up on {s['up']}, down on {s['down']}, mean change {s['mean_change']:+.3f}, p = {s['p']:.2g}"
-             + ("  ⚠ shifted" if s["alarm"] else "")]
+             f"p = {acc['p']:.2g} ({budget})"
+             + ev(acc.get("evidence"), f"evidence from {r.get('evidence_rows', 0)} first re-asks{since}")
+             + ("  ⚠ dropped" if acc["alarm"] else ""),
+             f"  scores: up on {s['up']}, down on {s['down']}, mean change {s['mean_change']:+.3f}, p = {s['p']:.2g} "
+             f"({budget})" + ev(s.get("evidence"), "evidence") + ("  ⚠ shifted" if s["alarm"] else "")]
     if acc["alarm"]:
         lines.append("  → the model answers worse than when it was calibrated: compare a new version, or pin another model")
     elif s["alarm"]:

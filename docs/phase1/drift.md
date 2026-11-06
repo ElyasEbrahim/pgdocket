@@ -1,6 +1,6 @@
 # Drift checks: have the rows or the model changed?
 
-*2026-10-25, 2026-11-05, 2026-11-06 · issues #22, #33, #34 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: Failing Loudly (Rabanser et al., NeurIPS 2019), canary re-asks of API models ("Who Drifted", 2026), universal inference (Wasserman, Ramdas & Balakrishnan, PNAS 2020) · evidence: [results/drift-validation](../../results/drift-validation/report.md)*
+*2026-10-25, 2026-11-05, 2026-11-06 · issues #22, #33, #34, #35 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: Failing Loudly (Rabanser et al., NeurIPS 2019), canary re-asks of API models ("Who Drifted", 2026), universal inference (Wasserman, Ramdas & Balakrishnan, PNAS 2020), betting martingales (Waudby-Smith & Ramdas, 2024) · evidence: [results/drift-validation](../../results/drift-validation/report.md), [results/drift-model](../../results/drift-model/report.md)*
 
 Every number pgdocket gives (thresholds, counts, review plans) rests on two assumptions:
 - **New rows look like the labelled ones.** If customers start writing about a new product, the mix of answers changes, and a precision measured on last month's labels may not hold for this month's rows.
@@ -10,7 +10,7 @@ Every number pgdocket gives (thresholds, counts, review plans) rests on two assu
 
 ```bash
 pgdocket drift tickets --by created_at              # the rows: free, no API calls
-pgdocket drift tickets --anchors 60 --run           # also the model: re-asks 60 labelled rows (60 API calls)
+pgdocket drift tickets --anchors 60 --run           # also the model: re-asks the next 60 labelled rows (60 API calls)
 ```
 
 On toy data where the last week's tickets are mostly about sales, then four days on with 60 more such tickets, and then after the model started routing sales tickets to the technical team:
@@ -30,9 +30,9 @@ data: 60 rows from the last 7 days (by created_at) against 240 from before the s
 $ pgdocket drift tickets --anchors 60 --run
 60 labelled rows queued to be asked again
 …
-model: 60 labelled rows asked again, 0.0 days after their stored answer (median) · check 2, false-alarm budget 0.0076
-  accuracy 100.0 % → 58.3 %: worse on 25, better on 0, p = 3e-08  ⚠ dropped
-  scores: up on 0, down on 0, mean change +0.000, p = 1
+model: 60 labelled rows asked again, 0.0 days after their stored answer (median) · check 2
+  accuracy 100.0 % → 58.3 %: worse on 25, better on 0, p = 3e-08 (needs p < 0.0027) · evidence from 120 first re-asks: 1.9e+06 (needs 133)  ⚠ dropped
+  scores: up on 0, down on 0, mean change +0.000, p = 1 (needs p < 0.0027) · evidence: 1 (needs 133)
   → the model answers worse than when it was calibrated: compare a new version, or pin another model
 ```
 
@@ -53,14 +53,15 @@ The data are the integration test's. The command exits with status 1 when either
 
 Tests on a classifier's own outputs were the most reliable simple shift detectors in Rabanser et al. With many rows, tiny shifts become significant, so an alarm also needs an effect that matters: an answer's share moving by at least 5 points, or a KS distance of at least 0.10. In a side experiment, a per-answer test caught more than one chi-square test over all answers: on Kubernetes routing, a 20-point shift in one SIG with a 100-row window was caught 72 % of the time against 49 %, at the same 1.4 % false-alarm rate.
 
-**The model (N API calls).** `--anchors N` queues N rows that have representative labels (a random sample or the whole column) to be asked again by the active version. The same seed picks the same panel each time. The re-asks are *probes*: they are recorded in the ledger but never change what the view shows. Each anchor's stored answer is then compared with its newest re-ask on the identical input; rows whose text changed since are skipped. Without a change, the old and new answers are two draws from the same model, so either is equally likely to be the right one:
+**The model (N API calls).** `--anchors N` queues N rows that have representative labels (a random sample or the whole column) to be asked again by the active version: the next N, in the seed's order, that this series of checks has not asked yet, and once all have been asked, those asked longest ago (#35). The re-asks are *probes*: they are recorded in the ledger but never change what the view shows. Each anchor's stored answer is then compared with its newest re-ask on the identical input; rows whose text changed since are skipped. Without a change, the old and new answers are two draws from the same model, so either is equally likely to be the right one:
 - **Accuracy.** An exact one-sided sign test on the anchors where exactly one of the two answers is right. The alarm means the model now answers worse.
 - **Scores.** An exact two-sided sign test on whether each anchor's score went up or down. The alarm means the model behaves differently, even if accuracy has held, so the calibration may be stale.
+- **The evidence (#35).** Every labelled row's first re-ask in the series counts once, at whichever check it came. Such comparisons are independent of one another, and where the two answers differ, each sign is a fair coin without a change. So betting on the signs, worse against better and scores down against up, with a mixture of betting martingales (Waudby-Smith & Ramdas, 2024), gives evidence that piles up over the series and may be read whenever you like. A fixed panel couldn't do this: every check compared the same rows' re-asks with the same stored answers.
 
 **Repeated checks.** Drift checks are meant to run on a schedule, and every run is another chance of a false alarm. Over the whole series the chance of any false alarm stays at most 5 %:
 - **The window tests** of the k-th check spend 0.04 · 6 / (π² k²): 0.024 for the first, 0.0061 for the second, 0.0027 for the third. Those budgets sum to 0.04 (a union bound), split equally between answers and scores.
 - **The evidence** gets the other 0.01 once, for the whole series, however often it is read.
-- **The model check** is not split: its k-th check spends 0.05 · 6 / (π² k²), as before.
+- **The model check's sign tests** spend 0.035 · 6 / (π² k²) at its k-th check, 0.021 for the first. **Its evidence** gets the other 0.015 once, half for accuracy and half for scores (#35).
 
 Recalibrating, the usual answer to an alarm, starts a new series with a new cut; so does promoting a new version.
 
@@ -69,6 +70,14 @@ Recalibrating, the usual answer to an alarm, starts a new series with a new cut;
 - **What it costs.** The evidence needs a little more to reach its threshold. Over 52 weekly checks of 30 rows, a lasting shift was caught up to 5.5 points less often by the end: 81.5 % → 76 % for 15 points on the 500 complaints.
 - **False alarms** stayed at most 4.5 % over a whole series, and 1.8 % at a first check.
 - **Not used to choose:** the real Kubernetes feature-request shift (p = 0.0081) is caught again at a first check, which now needs p < 0.012.
+
+**How the model check got its evidence (#35).** `jevbench driftmodel` compared five designs on real re-asks ([report](../../results/drift-model/report.md)). The data were the 300 labelled Kubernetes issues (a stored answer and two real re-asks; jev-1.14, and the options without their descriptions, as real changes) and the 2,000 labelled CFPB complaints of Phase 0 (a stored run and three repeats; shuffled batches, and one row per request, as real changes). Each run made 12 checks of 50 or 100 anchors; 500 runs per scenario. The rule of #34 chose the rotating panel with evidence, its sign tests on 70 % of the budget.
+- **The fixed panel stopped learning.** A change it missed at the first check, it missed at the twelfth: 24 % for the options without their descriptions, at both. The rotating panel's evidence caught it by the twelfth every time.
+- **A change halfway through:** a 5-point accuracy drop from check 7 on the complaints was caught by check 12 in 81 % of runs, against 2 %.
+- **Conformal test martingales failed** (Vovk, 2021). Betting on each anchor's conformal p-values among its own asks caught at most 10 % of anything. The model answers mostly the same each time, so the p-values are randomised over ties and the bets mostly pay noise.
+- **The price:** the first check after a change catches up to 5 points less (77 % against 82 % for one row per request from check 7).
+- **False alarms:** at most 0.6 % of runs over 12 checks, whatever the design.
+- **Labels are the limit.** Each labelled row counts once per series. With 300 labels and 50 anchors a check, the evidence stops growing after six checks: a change from check 7 on the Kubernetes issues was caught by check 12 in 8 % of runs (3 % with the fixed panel).
 
 ## Evidence
 
@@ -120,26 +129,26 @@ One check alone catches a little less than before #33: its window test has 80 % 
 
 **Model changes.**
 
-| new answers on the 300 issues | accuracy | worse / better | scores up / down | alarm | alarm rate, 100 anchors |
+| new answers on the 300 issues | accuracy | worse / better | scores up / down | alarm | first-check alarm rate, 100 anchors (as it was) |
 | --- | --- | --- | --- | --- | ---: |
-| the same model, asked again | 91.3 % → 91.0 % | 2 / 1 | 33 / 33 | no | 0.2 % |
-| jev-1.14 in place of jev-1.13 | 91.3 % → 91.7 % | 1 / 2 | 43 / 50 | no | 0.3 % |
-| the options without their descriptions | 91.3 % → 89.3 % | 8 / 2 | 44 / 103 | scores moved | 64.9 % |
+| the same model, asked again | 91.3 % → 91.0 % | 2 / 1 | 33 / 33 | no | 0.1 % (0.2 %) |
+| jev-1.14 in place of jev-1.13 | 91.3 % → 91.7 % | 1 / 2 | 43 / 50 | no | 0.2 % (0.3 %) |
+| the options without their descriptions | 91.3 % → 89.3 % | 8 / 2 | 44 / 103 | scores moved | 59.1 % (64.9 %) |
 
 - **The jev-latest switch was invisible,** as `compare` had found: 1.14 answers these issues like 1.13.
 - **Removing the descriptions changed how sure the model is.** Accuracy fell 2 points, too few rows to prove it, but the scores moved on 147 of 300 issues (p = 1.3 × 10⁻⁶). With 200 anchors the check caught it on 99.8 % of panels.
-- **A real accuracy drop needs about seven anchors' worth.** On the first check, the sign test needs about 7 more anchors answered worse than better (6 to 0 gives p = 0.016, just above the test's 0.015). That is a drop of 7 points on 100 anchors, or 3.5 points on 200. Making the real re-asks wrong on 5 % of the anchors was caught on 7 % of 100-anchor panels, and on all 200-anchor panels.
+- **A real accuracy drop needs about seven anchors' worth.** On the first check, the sign test needs about 7 more anchors answered worse than better (6 to 0 gives p = 0.016, above the test's 0.011). That is a drop of 7 points on 100 anchors, or 3.5 points on 200. Making the real re-asks wrong on 5 % of the anchors was caught on 7 % of 100-anchor panels, and on all 200-anchor panels.
 
 ## Limits
 
 - **Small windows catch only large shifts.** With 100 recent rows, a 10-point shift in one answer usually goes unnoticed. Choose `--days` so that the recent window holds a few hundred rows.
 - **The window test's budget still shrinks with every check, the evidence's doesn't (#33).** The evidence carries a lasting shift however often the check runs, but it is slow to show a fresh one: it pays for not knowing when a change began, and for the reference's own sampling error. So a shift is usually first seen by the window test, and a long series relies on the evidence.
 - **The first look after a change is a little weaker than before #33.** The window test has 80 % of the budget it had, so a first check caught up to 7 points less than the check as it was. #33's half and half lost up to 16, and just missed the real Kubernetes feature-request shift.
-- **The model check keeps its budget.** Every model check compares re-asks with the same stored answers, and their labels say whether those were right. So one check's outcome tells about the next, and their e-values couldn't be multiplied into evidence that never expires. A union bound holds under any such dependence.
+- **The model check's evidence needs labelled rows it hasn't asked yet.** Each counts once per series (#35). Once every labelled row has been asked, the evidence stops growing, and later checks rely on their sign tests, whose budget shrinks. With 300 labels and 50 anchors a check, that is six checks: label more rows at random, or ask fewer each time, to keep the evidence growing.
 - **Keep `--days` while a series runs.** Its first check sets the evidence's blocks; later checks keep them, and change only the window.
-- **Run it on a schedule, not when something looks odd.** The window tests' budgets, and the model check's, assume each check's timing does not depend on the data it tests. The evidence may be read whenever you like.
+- **Run it on a schedule, not when something looks odd.** The window tests' budgets, and the model check's sign tests', assume each check's timing does not depend on the data it tests. The evidence may be read whenever you like.
 - **The rows check sees only the model's outputs.** A change in the inputs that leaves answers and scores alone is invisible to it, and a shift in answers is not proof that accuracy fell. Only labels can show that: after an alarm, label a fresh random sample of recent rows, or keep a running [audit](audit.md) of the accepted rows.
-- **Anchors are a fixed panel.** They show whether the model changed on those rows, not on every kind of row. Labels drawn at random keep the panel representative. Use more anchors when answers are rare.
+- **Anchors are labelled rows.** They show whether the model changed on those rows, not on every kind of row; rotating through them covers more of the labelled rows over a series. Labels drawn at random keep them representative. Use more anchors when answers are rare.
 - **Exchangeability assumes the stored answers were not cherry-picked.** That is why anchors use `random` and `all` labels only, never `manual` ones such as the disagreements `compare` exports.
 
 ## Sources
@@ -157,4 +166,7 @@ Every source the project uses, with what it was used for: [REFERENCES.md](../../
 - Krichevsky & Trofimov. *The performance of universal encoding.* IEEE Transactions on Information Theory, 1981. [doi:10.1109/tit.1981.1056331](https://doi.org/10.1109/tit.1981.1056331)
 - Shin, Ramdas & Rinaldo. *E-detectors: a nonparametric framework for sequential change detection.* 2022. [arXiv:2203.03532](https://arxiv.org/abs/2203.03532)
 - Shekhar & Ramdas. *Nonparametric Two-Sample Testing by Betting.* 2021. [arXiv:2112.09162](https://arxiv.org/abs/2112.09162)
+- Waudby-Smith & Ramdas. *Estimating means of bounded random variables by betting.* JRSS Series B, 2024. [arXiv:2010.09686](https://arxiv.org/abs/2010.09686)
+- Vovk. *Testing Randomness Online.* Statistical Science, 2021. [doi:10.1214/20-sts817](https://doi.org/10.1214/20-sts817)
+- Vovk, Petej, Nouretdinov, Ahlberg, Carlsson & Gammerman. *Retrain or not retrain: Conformal test martingales for change-point detection.* 2021. [arXiv:2102.10439](https://arxiv.org/abs/2102.10439)
 - Zhang, Cai, Yu & Simeone. *Prediction-Powered Risk Monitoring of Deployed Models for Detecting Harmful Distribution Shifts.* ICML 2026. [arXiv:2602.02229](https://arxiv.org/abs/2602.02229)

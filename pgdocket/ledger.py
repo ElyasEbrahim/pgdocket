@@ -249,7 +249,8 @@ def compare_enqueue(dsn, name, version, n, seed="1"):
 
 
 def drift_enqueue(dsn, name, n, seed="1"):
-    """Queue re-asks of the active version on up to n labelled rows. Returns (rows queued, database time before)."""
+    """Queue re-asks of the active version on the next n labelled rows, in the seed's order, that this series of
+    checks has not asked yet; then those asked longest ago (#35). Returns (rows queued, database time before)."""
     with connect(dsn) as conn:
         since = conn.execute("SELECT clock_timestamp()").fetchone()[0]
         return conn.execute("SELECT docket.drift_enqueue(%s, %s, %s)", (name, n, str(seed))).fetchone()[0], since

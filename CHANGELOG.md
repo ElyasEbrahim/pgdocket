@@ -4,6 +4,16 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-06
 
+### Changed (model checks that keep collecting evidence, #35)
+- **The model check's anchors rotate** (migration 013). Each `pgdocket drift --anchors N` re-asks the next N labelled rows, in the seed's order, that the series hasn't asked yet; once all have been asked, those asked longest ago. A fixed panel compared the same rows' re-asks with the same stored answers at every check: a mostly deterministic model told it little new, and its e-values couldn't be multiplied.
+- **Evidence that never expires.** Every labelled row's first re-ask in a series counts once. Its stored answer and that re-ask are exchangeable and independent of every other row's, so where they differ each sign is a fair coin. A mixture of betting martingales on the signs, worse against better and scores down against up, gets 30 % of the model check's budget once. The sign tests on each check's re-asks keep 70 %, spent over the checks (`drift.MODEL_SHARE`). The output shows the evidence and what it needs.
+- **Chosen by `jevbench driftmodel`** (new, no API calls), by #34's rule fixed beforehand, on real re-asks: 300 labelled Kubernetes issues and 2,000 labelled CFPB complaints, with real model changes and injected accuracy drops, 500 runs per scenario. Over 12 checks:
+  - **A fixed panel stopped learning.** A change it missed at the first check, it missed at the twelfth (24 % for the options without their descriptions). The rotating panel's evidence caught it by the twelfth every time.
+  - **A 5-point accuracy drop from check 7** on the complaints was caught by check 12 in 81 % of runs, against 2 %.
+  - **Conformal test martingales** (Vovk) on a fixed panel caught at most 10 % of anything: a mostly deterministic model's asks tie, so the p-values are randomised and the bets mostly pay noise. Set aside.
+  - **The price.** The first check after a change catches up to 5 points less. False alarms stayed at most 0.6 %. With 300 labels and 50 anchors a check, the evidence stops growing after six checks.
+- **`jevbench driftvalidate`** now shows a first model check as it is and as it was. On the 300 issues, the options without their descriptions were caught on 59 % of 100-anchor panels (65 % before) and on 99.8 % of 200-anchor panels either way; the same model asked again alarmed on at most 0.5 %.
+
 ### Changed (the drift budget, rebalanced, #34)
 - **The rows check's window test gets 80 % of the false-alarm budget, the evidence that never expires 20 %** (half each in #33). `jevbench driftsplit` (new) compared window shares of 0.5 to 1 on the same simulated draws: the four tasks' injected first checks, and series of 12 checks of 100 rows and 52 of 30, with shifts from the first check or from halfway. A rule fixed before the first run chose the share: the smallest worst-case shortfall from the best share in any scenario, 5.5 points at 0.8 against 15.8 at 0.5. A first check's window test now needs p < 0.012 (0.0076 in #33); answers and scores each get 0.005 of evidence budget (0.0125).
 - **Validation** (`jevbench driftvalidate`, rerun on the same draws as #33):

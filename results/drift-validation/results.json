@@ -1396,152 +1396,236 @@
     "the same model asked again (first re-ask)": {
       "all_300": {
         "anchors": 300,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.02127744856489093,
         "accuracy": {
           "before": 0.9133333333333333,
           "after": 0.91,
           "worse": 2,
           "better": 1,
           "p": 0.5,
-          "alarm": false
+          "alarm": false,
+          "evidence": {
+            "worse": 2,
+            "better": 1,
+            "log_e": -0.06453852113757122,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
         },
         "scores": {
           "up": 33,
           "down": 33,
           "mean_change": 0.00024242424242424342,
           "p": 1.0,
-          "alarm": false
-        }
+          "alarm": false,
+          "evidence": {
+            "up": 33,
+            "down": 33,
+            "log_e": -2.0079813997492426,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
+        },
+        "alarm_before": false
       },
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.004,
-          "any_alarm": 0.004
+          "score_alarm": 0.002,
+          "any_alarm": 0.002,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.004
         },
         "100": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.002,
-          "any_alarm": 0.002
+          "score_alarm": 0.001,
+          "any_alarm": 0.001,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.002
         },
         "200": {
           "accuracy_alarm": 0.0,
           "score_alarm": 0.0,
-          "any_alarm": 0.0
+          "any_alarm": 0.0,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.0
         }
       }
     },
     "the same model asked again (second re-ask)": {
       "all_300": {
         "anchors": 300,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.02127744856489093,
         "accuracy": {
           "before": 0.9133333333333333,
           "after": 0.9166666666666666,
           "worse": 1,
           "better": 2,
           "p": 0.875,
-          "alarm": false
+          "alarm": false,
+          "evidence": {
+            "worse": 1,
+            "better": 2,
+            "log_e": -0.8855190732074012,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
         },
         "scores": {
           "up": 35,
           "down": 39,
           "mean_change": -0.0010488215488215487,
           "p": 0.72754708348947,
-          "alarm": false
-        }
+          "alarm": false,
+          "evidence": {
+            "up": 35,
+            "down": 39,
+            "log_e": -1.9476249614125156,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
+        },
+        "alarm_before": false
       },
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.006,
-          "any_alarm": 0.006
+          "score_alarm": 0.005,
+          "any_alarm": 0.005,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.006
         },
         "100": {
           "accuracy_alarm": 0.0,
           "score_alarm": 0.001,
-          "any_alarm": 0.001
+          "any_alarm": 0.001,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.001
         },
         "200": {
           "accuracy_alarm": 0.0,
           "score_alarm": 0.0,
-          "any_alarm": 0.0
+          "any_alarm": 0.0,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.0
         }
       }
     },
     "jev-1.14 in place of jev-1.13": {
       "all_300": {
         "anchors": 300,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.02127744856489093,
         "accuracy": {
           "before": 0.9133333333333333,
           "after": 0.9166666666666666,
           "worse": 1,
           "better": 2,
           "p": 0.875,
-          "alarm": false
+          "alarm": false,
+          "evidence": {
+            "worse": 1,
+            "better": 2,
+            "log_e": -0.8855190732074012,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
         },
         "scores": {
           "up": 43,
           "down": 50,
           "mean_change": -0.0012077441077441087,
           "p": 0.5340598617346067,
-          "alarm": false
-        }
+          "alarm": false,
+          "evidence": {
+            "up": 43,
+            "down": 50,
+            "log_e": -1.8981471527128173,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
+        },
+        "alarm_before": false
       },
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.004,
-          "any_alarm": 0.004
+          "score_alarm": 0.0,
+          "any_alarm": 0.0,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.004
         },
         "100": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.003,
-          "any_alarm": 0.003
+          "score_alarm": 0.002,
+          "any_alarm": 0.002,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.003
         },
         "200": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.001,
-          "any_alarm": 0.001
+          "score_alarm": 0.0,
+          "any_alarm": 0.0,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.001
         }
       }
     },
     "options without their descriptions": {
       "all_300": {
         "anchors": 300,
-        "alpha": 0.03039635509270134,
+        "alpha": 0.02127744856489093,
         "accuracy": {
           "before": 0.9133333333333333,
           "after": 0.8933333333333333,
           "worse": 8,
           "better": 2,
           "p": 0.0546875,
-          "alarm": false
+          "alarm": false,
+          "evidence": {
+            "worse": 8,
+            "better": 2,
+            "log_e": 1.4314985037265056,
+            "threshold": 4.892852258439873,
+            "alarm": false
+          }
         },
         "scores": {
           "up": 44,
           "down": 103,
           "mean_change": -0.022536363636363632,
           "p": 1.255080378394871e-06,
-          "alarm": true
-        }
+          "alarm": true,
+          "evidence": {
+            "up": 44,
+            "down": 103,
+            "log_e": 9.86987224982207,
+            "threshold": 4.892852258439873,
+            "alarm": true
+          }
+        },
+        "alarm_before": true
       },
       "subsets": {
         "50": {
           "accuracy_alarm": 0.0,
-          "score_alarm": 0.27,
-          "any_alarm": 0.27
+          "score_alarm": 0.229,
+          "any_alarm": 0.229,
+          "accuracy_alarm_before": 0.0,
+          "any_alarm_before": 0.27
         },
         "100": {
           "accuracy_alarm": 0.002,
-          "score_alarm": 0.649,
-          "any_alarm": 0.649
+          "score_alarm": 0.591,
+          "any_alarm": 0.591,
+          "accuracy_alarm_before": 0.002,
+          "any_alarm_before": 0.649
         },
         "200": {
           "accuracy_alarm": 0.023,
           "score_alarm": 0.998,
-          "any_alarm": 0.998
+          "any_alarm": 0.998,
+          "accuracy_alarm_before": 0.023,
+          "any_alarm_before": 0.998
         }
       }
     }
@@ -1552,51 +1636,69 @@
       "50": {
         "accuracy_alarm": 0.0,
         "score_alarm": 0.0,
-        "any_alarm": 0.0
+        "any_alarm": 0.0,
+        "accuracy_alarm_before": 0.0,
+        "any_alarm_before": 0.0
       },
       "100": {
         "accuracy_alarm": 0.0,
         "score_alarm": 0.0,
-        "any_alarm": 0.0
+        "any_alarm": 0.0,
+        "accuracy_alarm_before": 0.0,
+        "any_alarm_before": 0.0
       },
       "200": {
         "accuracy_alarm": 0.0,
         "score_alarm": 0.0,
-        "any_alarm": 0.0
+        "any_alarm": 0.0,
+        "accuracy_alarm_before": 0.0,
+        "any_alarm_before": 0.0
       }
     },
     "0.05": {
       "50": {
         "accuracy_alarm": 0.0,
         "score_alarm": 0.002,
-        "any_alarm": 0.002
+        "any_alarm": 0.002,
+        "accuracy_alarm_before": 0.0,
+        "any_alarm_before": 0.002
       },
       "100": {
         "accuracy_alarm": 0.072,
-        "score_alarm": 0.004,
-        "any_alarm": 0.076
+        "score_alarm": 0.002,
+        "any_alarm": 0.074,
+        "accuracy_alarm_before": 0.072,
+        "any_alarm_before": 0.076
       },
       "200": {
         "accuracy_alarm": 1.0,
         "score_alarm": 0.0,
-        "any_alarm": 1.0
+        "any_alarm": 1.0,
+        "accuracy_alarm_before": 1.0,
+        "any_alarm_before": 1.0
       }
     },
     "0.1": {
       "50": {
         "accuracy_alarm": 0.02,
         "score_alarm": 0.002,
-        "any_alarm": 0.022
+        "any_alarm": 0.022,
+        "accuracy_alarm_before": 0.02,
+        "any_alarm_before": 0.022
       },
       "100": {
         "accuracy_alarm": 1.0,
-        "score_alarm": 0.004,
-        "any_alarm": 1.0
+        "score_alarm": 0.002,
+        "any_alarm": 1.0,
+        "accuracy_alarm_before": 1.0,
+        "any_alarm_before": 1.0
       },
       "200": {
         "accuracy_alarm": 1.0,
         "score_alarm": 0.0,
-        "any_alarm": 1.0
+        "any_alarm": 1.0,
+        "accuracy_alarm_before": 1.0,
+        "any_alarm_before": 1.0
       }
     }
   }

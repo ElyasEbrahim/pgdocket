@@ -186,3 +186,57 @@ def test_two_answers_are_one_test_and_scores_are_tested_at_the_reference_deciles
     scores = drift.evidence(list(rng.beta(4, 2, 300)), list(rng.beta(2, 4, 100)), [1] * 100, [True] * 100, "scores",
                             0.0125, drift.MIN_KS)
     assert scores["tests"] == 9 and scores["alarm"] and scores["after"] > scores["before"]
+
+
+def _first_reasks(rng, n, q, turn=0.0):
+    """n labelled rows asked again for the first time: per row a chance q of a right answer, the stored answer and the
+    re-ask two draws from it (a re-ask that was right turns wrong with chance `turn`), and scores on a 0.01 grid."""
+    stored = rng.random(n) < q
+    new = (rng.random(n) < q) & ~(rng.random(n) < turn)
+    s0, s1 = np.round(rng.beta(8, 2, n), 2), np.round(rng.beta(8, 2, n), 2)
+    worse, better = int((stored & ~new).sum()), int((~stored & new).sum())
+    return worse, better, int((s1 > s0).sum()), int((s1 < s0).sum())
+
+
+def test_model_evidence_read_after_every_check_rarely_alarms_without_a_change():
+    """#35: 1,000 series of 20 checks, 50 rows asked for the first time at each, nothing changed. Each row's stored
+    answer and re-ask are exchangeable, so the evidence, read after every check, alarms at most (1 - MODEL_SHARE) *
+    ALPHA of the time (far less: the mixture of bets is cautious)."""
+    rng = np.random.default_rng(351)
+    alpha = (1 - drift.MODEL_SHARE) * drift.ALPHA
+    ever = 0
+    for _ in range(1000):
+        tot = np.zeros(4, int)
+        for _ in range(20):
+            tot += _first_reasks(rng, 50, q=rng.uniform(0.6, 0.98))
+            ev = drift.model_evidence(*tot, alpha)
+            if ev["accuracy"]["alarm"] or ev["scores"]["alarm"]:
+                ever += 1
+                break
+    assert ever / 1000 <= alpha + 0.01
+
+
+def test_model_evidence_piles_up_where_one_check_cannot_see_a_change():
+    """A tenth of right answers turn wrong: a single check of 50 rows rarely shows it, twenty checks of fresh rows do
+    (ten caught it in about two runs of three)."""
+    rng = np.random.default_rng(352)
+    alpha = (1 - drift.MODEL_SHARE) * drift.ALPHA
+    one = caught = 0
+    for _ in range(200):
+        tot = np.zeros(4, int)
+        for k in range(1, 21):
+            c = _first_reasks(rng, 50, q=0.9, turn=0.1)
+            one += k == 1 and drift.sign_test_one_sided(c[0], c[1]) < spent_alpha(drift.MODEL_SHARE * drift.ALPHA, 1) / 2
+            tot += c
+        caught += drift.model_evidence(*tot, alpha)["accuracy"]["alarm"]
+    assert one / 200 <= 0.35 and caught / 200 >= 0.9
+
+
+def test_log_bets_is_a_mixture_of_fair_coin_bets():
+    assert drift.log_bets(0, 0) == 0.0 and drift.log_bets(0, 0, two_sided=True) == 0.0
+    assert drift.log_bets(5, 0) > drift.log_bets(4, 0) > drift.log_bets(4, 1)
+    assert abs(drift.log_bets(7, 2, two_sided=True) - drift.log_bets(2, 7, two_sided=True)) < 1e-12
+    lams = drift.BETS
+    assert abs(drift.log_bets(6, 3) - math.log(np.mean((1 + lams) ** 6 * (1 - lams) ** 3))) < 1e-12
+    # each bet is a fair game: its expected factor on one fair coin is 1
+    assert np.allclose(0.5 * (1 + lams) + 0.5 * (1 - lams), 1.0)

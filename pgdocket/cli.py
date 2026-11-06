@@ -176,9 +176,10 @@ def main(argv=None):
     dt.add_argument("--by", metavar="COLUMN",
                     help="a timestamp column of the source table that dates each row (default: when it was judged)")
     dt.add_argument("--anchors", type=int, default=0, metavar="N",
-                    help="also re-ask the active version on N labelled rows to check the model (N API calls)")
+                    help="also re-ask the active version on N labelled rows to check the model (N API calls): the next N this "
+                         "series of checks has not asked yet, so every check adds fresh evidence")
     dt.add_argument("--model", action="store_true", help="check the model on anchors already asked again")
-    dt.add_argument("--seed", default="1", help="picks the anchors; the same seed gives the same panel each time")
+    dt.add_argument("--seed", default="1", help="orders the labelled rows the anchors are taken from, in turn")
     dt.add_argument("--run", action="store_true", help="with --anchors: run the worker until they are answered")
     dt.add_argument("--wait", type=float, default=0, metavar="SECONDS",
                     help="with --anchors: wait up to this long for a running worker to answer them")

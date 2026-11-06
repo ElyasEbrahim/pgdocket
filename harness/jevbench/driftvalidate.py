@@ -17,6 +17,8 @@ Model check, on the 300 Kubernetes issues of `k8s_route` (every one labelled), w
 - The same model asked again, twice, two days after its stored answers: every alarm is false.
 - Real changes: jev-1.14 in place of jev-1.13 (what the jev-latest alias did), and the options' descriptions removed.
 - Injected: the re-ask made wrong on a share of the anchors it got right; the detection rate by number of anchors.
+Each as a first check, as it is (#35: sign tests on `drift.MODEL_SHARE` of the budget, and the evidence from the
+panel's first re-asks on the rest) and as it was. Series of model checks: `jevbench driftmodel`.
 """
 import json
 import os
@@ -217,21 +219,31 @@ def load_anchors(name="k8s_route"):
     }
 
 
+def first_model(o_right, n_right, o_scores, n_scores):
+    """A first model check as it is (#35): the sign tests on MODEL_SHARE of the budget, and the evidence from these
+    rows, each asked for the first time in the series."""
+    return drift.model_rows(o_right, n_right, o_scores, n_scores, 1, drift.signs(o_right, n_right, o_scores, n_scores))
+
+
 def model_rates(orig, new, trials, rng, drop=0.0):
     out = {}
     for n in ANCHORS:
-        acc = score = either = 0
+        now = {"acc": 0, "score": 0, "any": 0}
+        was = {"acc": 0, "score": 0, "any": 0}
         for _ in range(trials):
             idx = rng.choice(len(orig[0]), n, replace=False)
             nr = new[0][idx].copy()
             if drop:
                 ok = np.flatnonzero(nr)
                 nr[rng.choice(ok, min(len(ok), round(drop * n)), replace=False)] = False
-            r = drift.anchors(orig[0][idx], nr, orig[1][idx], new[1][idx], ALPHA)
-            acc += r["accuracy"]["alarm"]
-            score += r["scores"]["alarm"]
-            either += r["accuracy"]["alarm"] or r["scores"]["alarm"]
-        out[n] = {"accuracy_alarm": acc / trials, "score_alarm": score / trials, "any_alarm": either / trials}
+            for tally, r in ((now, first_model(orig[0][idx], nr, orig[1][idx], new[1][idx])),
+                             (was, drift.anchors(orig[0][idx], nr, orig[1][idx], new[1][idx], ALPHA))):
+                tally["acc"] += r["accuracy"]["alarm"]
+                tally["score"] += r["scores"]["alarm"]
+                tally["any"] += r["accuracy"]["alarm"] or r["scores"]["alarm"]
+        out[n] = {"accuracy_alarm": now["acc"] / trials, "score_alarm": now["score"] / trials,
+                  "any_alarm": now["any"] / trials, "accuracy_alarm_before": was["acc"] / trials,
+                  "any_alarm_before": was["any"] / trials}
     return out
 
 
@@ -251,7 +263,9 @@ def run(trials=1000, seed=0, series_trials=200):
         print(title, "done", flush=True)
     orig, changes = load_anchors()
     for title, new in changes.items():
-        full = drift.anchors(orig[0], new[0], orig[1], new[1], ALPHA)
+        full = first_model(orig[0], new[0], orig[1], new[1])
+        was = drift.anchors(orig[0], new[0], orig[1], new[1], ALPHA)
+        full["alarm_before"] = bool(was["accuracy"]["alarm"] or was["scores"]["alarm"])
         res["model"][title] = {"all_300": full, "subsets": model_rates(orig, new, trials, rng)}
     base = changes["the same model asked again (first re-ask)"]
     res["model_injected"] = {d: model_rates(orig, base, trials // 2, rng, drop=d) for d in DROPS}
@@ -316,7 +330,9 @@ def render(res):
     L += ["", "## Model check (N API calls)", "",
           "The 300 Kubernetes issues of `k8s_route`, each with a human label. The stored answers (jev-1.13, 20 Oct) "
           "against what came back when the same rows were asked again (22 Oct), and against two real changes. "
-          "*Worse/better*: rows where only the stored answer / only the new one is right.", "",
+          "*Worse/better*: rows where only the stored answer / only the new one is right. A first check, as it is "
+          f"(#35: sign tests on {100 * drift.MODEL_SHARE:.0f} % of the budget, and the evidence from these rows' first "
+          "re-asks on the rest) and as it was (#22: sign tests on the whole first-check budget).", "",
           "| new answers | accuracy | worse / better | p (accuracy) | scores up / down | p (scores) | alarm on 300 | "
           + " | ".join(f"alarm rate, {n} anchors" for n in ANCHORS) + " |",
           "| --- | --- | --- | --- | --- | --- | --- | " + " | ".join("---:" for _ in ANCHORS) + " |"]
@@ -325,13 +341,16 @@ def render(res):
         alarm = ("accuracy dropped" if a["accuracy"]["alarm"] else "") or ("scores moved" if a["scores"]["alarm"] else "no")
         L.append(f"| {t} | {pct(a['accuracy']['before'])} → {pct(a['accuracy']['after'])} | {a['accuracy']['worse']} / "
                  f"{a['accuracy']['better']} | {a['accuracy']['p']:.2g} | {a['scores']['up']} / {a['scores']['down']} | "
-                 f"{a['scores']['p']:.2g} | {alarm} | "
-                 + " | ".join(pct(m["subsets"][n]["any_alarm"]) for n in ANCHORS) + " |")
-    L += ["", "*Alarm rate* is the share of 1,000 random anchor panels of that size on which either test alarms.", "",
+                 f"{a['scores']['p']:.2g} | {alarm} ({'yes' if a.get('alarm_before') else 'no'}) | "
+                 + " | ".join(f"{pct(m['subsets'][n]['any_alarm'])} ({pct(m['subsets'][n]['any_alarm_before'])})"
+                              for n in ANCHORS) + " |")
+    L += ["", "*Alarm rate* is the share of 1,000 random anchor panels of that size on which the check alarms, as it is "
+          "(as it was).", "",
           "**Injected drop.** The first re-ask, made wrong on a share of the anchors it got right. Share of 500 panels "
-          "on which the accuracy test alarms:", "",
+          "on which the accuracy test alarms at a first check, as it is (as it was):", "",
           "| accuracy drop | " + " | ".join(f"{n} anchors" for n in ANCHORS) + " |",
           "| ---: | " + " | ".join("---:" for _ in ANCHORS) + " |"]
     for dr, rates in res["model_injected"].items():
-        L.append(f"| {100 * float(dr):.0f} pp | " + " | ".join(pct(rates[n]["accuracy_alarm"]) for n in ANCHORS) + " |")
+        L.append(f"| {100 * float(dr):.0f} pp | " + " | ".join(
+            f"{pct(rates[n]['accuracy_alarm'])} ({pct(rates[n]['accuracy_alarm_before'])})" for n in ANCHORS) + " |")
     return "\n".join(L) + "\n"
