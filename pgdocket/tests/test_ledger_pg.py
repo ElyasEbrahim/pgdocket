@@ -63,7 +63,7 @@ def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
     assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011",
-                                            "012", "013"]
+                                            "012", "013", "014"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -597,6 +597,37 @@ def test_drift_re_asks_labelled_rows_and_catches_a_changed_model(env, capsys):
     code = _drift(env, "--model")                             # the anchors asked last time, reported again
     out = capsys.readouterr().out
     assert code == 1 and "check 1" in out and "(needs p < 0.011)" in out and "evidence from 0 first re-asks" in out
+
+
+def test_drift_probes_re_ask_rows_without_labels(env, capsys):
+    """#36: --probes M also re-asks M rows without labels, those the series hasn't asked yet. They add to the scores test
+    and its evidence, never to accuracy; and once every labelled row has been asked, the check says so."""
+    ledger.calibrate(env["owner"], "stream")                  # a new series
+    code = _drift(env, "--anchors", "60", "--probes", "100", "--run")
+    out = capsys.readouterr().out
+    assert code == 0 and "100 rows without labels queued" in out and "60 labelled rows and 100 without labels" in out
+    with psycopg.connect(env["owner"]) as c:
+        r = c.execute("SELECT result FROM docket.drift_check WHERE kind = 'model' AND decision_id = "
+                      "(SELECT id FROM docket.decision WHERE name = 'stream') ORDER BY id DESC LIMIT 1").fetchone()[0]
+        probed = c.execute("""
+            SELECT count(*) FILTER (WHERE l.row_key IS NULL), count(*) FROM docket.judgment j
+            LEFT JOIN docket.label l ON l.decision_id = j.decision_id AND l.row_key = j.row_key
+                                    AND l.sampling IN ('random', 'all')
+            WHERE j.purpose = 'probe' AND j.decision_id = (SELECT id FROM docket.decision WHERE name = 'stream')
+              AND j.judged_at > (SELECT (v.calibration->>'fitted_at')::timestamptz FROM docket.version v
+                                 JOIN docket.decision d ON d.id = v.decision_id AND v.version = d.active_version
+                                 WHERE d.name = 'stream')""").fetchone()
+    assert tuple(probed) == (100, 160)                         # 100 rows without labels, 60 anchors
+    assert r["probes"] == 100 and r["evidence_rows"] == 60 and r["evidence_rows_scores"] == 160 and r["labelled_left"] == 90
+    assert r["scores"]["up"] + r["scores"]["down"] <= 160
+    _drift(env, "--anchors", "60", "--run")
+    assert "every labelled row has been asked" not in capsys.readouterr().out
+    _drift(env, "--anchors", "60", "--run")                   # 150 labelled rows: the third check asks the last 30
+    out = capsys.readouterr().out
+    assert "every labelled row has been asked in this series" in out and "--probes M keeps the scores evidence" in out
+    with pytest.raises(SystemExit, match="--probes goes with --anchors"):
+        from pgdocket import cli
+        cli.main(["drift", "--dsn", env["owner"], "stream", "--probes", "10"])
 
 
 

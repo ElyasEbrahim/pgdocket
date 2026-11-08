@@ -1,0 +1,1179 @@
+{
+  "seed": 36,
+  "runs": 500,
+  "tasks": {
+    "CFPB: which product? 2,000 complaints, 300 labelled, 50 anchors a check, 18 checks": {
+      "labelled": 300,
+      "anchors": 50,
+      "checks": 18,
+      "labels_run_out": 7,
+      "cells": {
+        "no change \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.6,
+            "end": 1.4000000000000001
+          },
+          "twice the anchors": {
+            "at": 0.8,
+            "end": 1.0
+          },
+          "anchors + as many probes": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + twice as many probes": {
+            "at": 0.6,
+            "end": 1.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.4
+          }
+        },
+        "shuffled batches, on 100 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.8,
+            "end": 1.2
+          },
+          "twice the anchors": {
+            "at": 1.4000000000000001,
+            "end": 2.4
+          },
+          "anchors + as many probes": {
+            "at": 0.6,
+            "end": 1.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.8,
+            "end": 1.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 2.1999999999999997,
+            "end": 3.2
+          }
+        },
+        "shuffled batches, on 100 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "twice the anchors": {
+            "at": 1.6,
+            "end": 1.6
+          },
+          "anchors + as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + twice as many probes": {
+            "at": 1.2,
+            "end": 1.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.8,
+            "end": 1.0
+          }
+        },
+        "shuffled batches, on 100 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "twice the anchors": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "anchors + as many probes": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          }
+        },
+        "shuffled batches, on 50 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.4,
+            "end": 0.8
+          },
+          "twice the anchors": {
+            "at": 0.2,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 1.4000000000000001,
+            "end": 2.0
+          },
+          "anchors + twice as many probes": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.2,
+            "end": 1.7999999999999998
+          }
+        },
+        "shuffled batches, on 50 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 1.4000000000000001,
+            "end": 1.4000000000000001
+          },
+          "twice the anchors": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + as many probes": {
+            "at": 0.6,
+            "end": 0.8
+          },
+          "anchors + twice as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.8,
+            "end": 1.0
+          }
+        },
+        "shuffled batches, on 50 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "twice the anchors": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + twice as many probes": {
+            "at": 1.6,
+            "end": 1.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.2,
+            "end": 1.2
+          }
+        },
+        "shuffled batches, on 25 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.2,
+            "end": 0.8
+          },
+          "twice the anchors": {
+            "at": 1.2,
+            "end": 1.6
+          },
+          "anchors + as many probes": {
+            "at": 0.6,
+            "end": 1.0
+          },
+          "anchors + twice as many probes": {
+            "at": 0.8,
+            "end": 1.4000000000000001
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.6,
+            "end": 1.0
+          }
+        },
+        "shuffled batches, on 25 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 1.0,
+            "end": 1.2
+          },
+          "twice the anchors": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "anchors + as many probes": {
+            "at": 2.1999999999999997,
+            "end": 2.1999999999999997
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.6,
+            "end": 1.6
+          }
+        },
+        "shuffled batches, on 25 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 1.2,
+            "end": 1.2
+          },
+          "twice the anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.6,
+            "end": 0.6
+          }
+        },
+        "one row per request, on 100 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 70.8,
+            "end": 100.0
+          },
+          "twice the anchors": {
+            "at": 97.8,
+            "end": 100.0
+          },
+          "anchors + as many probes": {
+            "at": 98.0,
+            "end": 100.0
+          },
+          "anchors + twice as many probes": {
+            "at": 100.0,
+            "end": 100.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 100.0,
+            "end": 100.0
+          }
+        },
+        "one row per request, on 100 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 28.000000000000004,
+            "end": 75.6
+          },
+          "twice the anchors": {
+            "at": 78.4,
+            "end": 98.8
+          },
+          "anchors + as many probes": {
+            "at": 79.2,
+            "end": 100.0
+          },
+          "anchors + twice as many probes": {
+            "at": 98.2,
+            "end": 100.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 100.0,
+            "end": 100.0
+          }
+        },
+        "one row per request, on 100 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 12.8,
+            "end": 57.199999999999996
+          },
+          "twice the anchors": {
+            "at": 64.60000000000001,
+            "end": 97.0
+          },
+          "anchors + as many probes": {
+            "at": 65.4,
+            "end": 100.0
+          },
+          "anchors + twice as many probes": {
+            "at": 94.6,
+            "end": 100.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 100.0,
+            "end": 100.0
+          }
+        },
+        "one row per request, on 50 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 13.8,
+            "end": 63.0
+          },
+          "twice the anchors": {
+            "at": 38.800000000000004,
+            "end": 70.8
+          },
+          "anchors + as many probes": {
+            "at": 38.800000000000004,
+            "end": 100.0
+          },
+          "anchors + twice as many probes": {
+            "at": 60.199999999999996,
+            "end": 100.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 87.0,
+            "end": 100.0
+          }
+        },
+        "one row per request, on 50 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 2.1999999999999997,
+            "end": 6.0
+          },
+          "twice the anchors": {
+            "at": 5.4,
+            "end": 21.6
+          },
+          "anchors + as many probes": {
+            "at": 6.6000000000000005,
+            "end": 63.2
+          },
+          "anchors + twice as many probes": {
+            "at": 14.399999999999999,
+            "end": 98.8
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 48.6,
+            "end": 99.6
+          }
+        },
+        "one row per request, on 50 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 1.4000000000000001,
+            "end": 2.4
+          },
+          "twice the anchors": {
+            "at": 2.4,
+            "end": 7.000000000000001
+          },
+          "anchors + as many probes": {
+            "at": 4.8,
+            "end": 15.2
+          },
+          "anchors + twice as many probes": {
+            "at": 9.2,
+            "end": 41.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 33.2,
+            "end": 91.60000000000001
+          }
+        },
+        "one row per request, on 25 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 2.0,
+            "end": 7.000000000000001
+          },
+          "twice the anchors": {
+            "at": 6.4,
+            "end": 12.0
+          },
+          "anchors + as many probes": {
+            "at": 5.2,
+            "end": 56.00000000000001
+          },
+          "anchors + twice as many probes": {
+            "at": 11.200000000000001,
+            "end": 94.39999999999999
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 19.0,
+            "end": 93.60000000000001
+          }
+        },
+        "one row per request, on 25 % of rows \u00b7 from check 7": {
+          "anchors": {
+            "at": 1.7999999999999998,
+            "end": 2.6
+          },
+          "twice the anchors": {
+            "at": 1.0,
+            "end": 1.6
+          },
+          "anchors + as many probes": {
+            "at": 1.0,
+            "end": 3.0
+          },
+          "anchors + twice as many probes": {
+            "at": 1.4000000000000001,
+            "end": 7.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 2.1999999999999997,
+            "end": 11.0
+          }
+        },
+        "one row per request, on 25 % of rows \u00b7 from check 13": {
+          "anchors": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "twice the anchors": {
+            "at": 1.4000000000000001,
+            "end": 1.7999999999999998
+          },
+          "anchors + as many probes": {
+            "at": 1.6,
+            "end": 2.4
+          },
+          "anchors + twice as many probes": {
+            "at": 2.0,
+            "end": 2.1999999999999997
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 2.6,
+            "end": 6.0
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 1": {
+          "anchors": {
+            "at": 2.1999999999999997,
+            "end": 54.0
+          },
+          "twice the anchors": {
+            "at": 17.0,
+            "end": 54.6
+          },
+          "anchors + as many probes": {
+            "at": 2.6,
+            "end": 53.0
+          },
+          "anchors + twice as many probes": {
+            "at": 3.5999999999999996,
+            "end": 56.00000000000001
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 2.1999999999999997,
+            "end": 54.0
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 7": {
+          "anchors": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "twice the anchors": {
+            "at": 1.2,
+            "end": 1.7999999999999998
+          },
+          "anchors + as many probes": {
+            "at": 1.4000000000000001,
+            "end": 1.4000000000000001
+          },
+          "anchors + twice as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 13": {
+          "anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "twice the anchors": {
+            "at": 1.2,
+            "end": 1.2
+          },
+          "anchors + as many probes": {
+            "at": 1.4000000000000001,
+            "end": 1.4000000000000001
+          },
+          "anchors + twice as many probes": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.7999999999999998,
+            "end": 1.7999999999999998
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 1": {
+          "anchors": {
+            "at": 21.6,
+            "end": 99.2
+          },
+          "twice the anchors": {
+            "at": 67.80000000000001,
+            "end": 99.8
+          },
+          "anchors + as many probes": {
+            "at": 22.0,
+            "end": 99.6
+          },
+          "anchors + twice as many probes": {
+            "at": 21.2,
+            "end": 99.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 20.0,
+            "end": 99.4
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 7": {
+          "anchors": {
+            "at": 1.7999999999999998,
+            "end": 2.1999999999999997
+          },
+          "twice the anchors": {
+            "at": 15.6,
+            "end": 43.6
+          },
+          "anchors + as many probes": {
+            "at": 1.7999999999999998,
+            "end": 2.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.6,
+            "end": 1.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.6,
+            "end": 1.2
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 13": {
+          "anchors": {
+            "at": 0.2,
+            "end": 0.4
+          },
+          "twice the anchors": {
+            "at": 8.6,
+            "end": 23.799999999999997
+          },
+          "anchors + as many probes": {
+            "at": 1.6,
+            "end": 1.6
+          },
+          "anchors + twice as many probes": {
+            "at": 1.0,
+            "end": 1.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.6,
+            "end": 1.7999999999999998
+          }
+        }
+      },
+      "verdict": {
+        "late_more_often": [
+          "shuffled batches, on 25 % of rows \u00b7 from check 7",
+          "one row per request, on 100 % of rows \u00b7 from check 7",
+          "one row per request, on 100 % of rows \u00b7 from check 13",
+          "one row per request, on 50 % of rows \u00b7 from check 7",
+          "one row per request, on 50 % of rows \u00b7 from check 13",
+          "one row per request, on 25 % of rows \u00b7 from check 7",
+          "one row per request, on 25 % of rows \u00b7 from check 13",
+          "5-point accuracy drop injected \u00b7 from check 13"
+        ],
+        "late_less_often": [
+          "shuffled batches, on 100 % of rows \u00b7 from check 7",
+          "shuffled batches, on 50 % of rows \u00b7 from check 7",
+          "5-point accuracy drop injected \u00b7 from check 7",
+          "10-point accuracy drop injected \u00b7 from check 7",
+          "10-point accuracy drop injected \u00b7 from check 13"
+        ],
+        "first_check_loss_vs_twice": 45.80000000000001,
+        "false_alarms": {
+          "anchors": 1.4000000000000001,
+          "twice the anchors": 1.0,
+          "anchors + as many probes": 0.6,
+          "anchors + twice as many probes": 1.0,
+          "anchors + 4\u00d7 as many probes": 0.4
+        },
+        "adding_probes_worst_loss": 1.6000000000000014
+      }
+    },
+    "Kubernetes: which SIG? 300 issues, 100 labelled, 25 anchors a check, 12 checks": {
+      "labelled": 100,
+      "anchors": 25,
+      "checks": 12,
+      "labels_run_out": 5,
+      "cells": {
+        "no change \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.2
+          },
+          "twice the anchors": {
+            "at": 0.0,
+            "end": 0.2
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.4,
+            "end": 0.6
+          }
+        },
+        "the options without their descriptions, on 100 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 8.0,
+            "end": 26.0
+          },
+          "twice the anchors": {
+            "at": 23.200000000000003,
+            "end": 34.4
+          },
+          "anchors + as many probes": {
+            "at": 21.2,
+            "end": 100.0
+          },
+          "anchors + twice as many probes": {
+            "at": 39.0,
+            "end": 100.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 80.4,
+            "end": 100.0
+          }
+        },
+        "the options without their descriptions, on 100 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.4,
+            "end": 1.0
+          },
+          "twice the anchors": {
+            "at": 2.6,
+            "end": 4.2
+          },
+          "anchors + as many probes": {
+            "at": 1.6,
+            "end": 10.2
+          },
+          "anchors + twice as many probes": {
+            "at": 7.6,
+            "end": 23.400000000000002
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 29.2,
+            "end": 63.4
+          }
+        },
+        "the options without their descriptions, on 100 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.4
+          },
+          "twice the anchors": {
+            "at": 0.8,
+            "end": 2.0
+          },
+          "anchors + as many probes": {
+            "at": 1.2,
+            "end": 3.5999999999999996
+          },
+          "anchors + twice as many probes": {
+            "at": 3.2,
+            "end": 10.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 13.8,
+            "end": 42.0
+          }
+        },
+        "the options without their descriptions, on 50 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 1.4000000000000001,
+            "end": 4.2
+          },
+          "twice the anchors": {
+            "at": 4.3999999999999995,
+            "end": 6.0
+          },
+          "anchors + as many probes": {
+            "at": 4.8,
+            "end": 22.6
+          },
+          "anchors + twice as many probes": {
+            "at": 9.8,
+            "end": 26.400000000000002
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 18.6,
+            "end": 32.2
+          }
+        },
+        "the options without their descriptions, on 50 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.8
+          },
+          "anchors + as many probes": {
+            "at": 0.8,
+            "end": 1.6
+          },
+          "anchors + twice as many probes": {
+            "at": 0.6,
+            "end": 2.1999999999999997
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 2.0,
+            "end": 7.199999999999999
+          }
+        },
+        "the options without their descriptions, on 50 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.4,
+            "end": 1.0
+          },
+          "anchors + as many probes": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + twice as many probes": {
+            "at": 0.6,
+            "end": 1.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.6,
+            "end": 2.8000000000000003
+          }
+        },
+        "the options without their descriptions, on 25 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.4,
+            "end": 1.0
+          },
+          "twice the anchors": {
+            "at": 1.0,
+            "end": 2.0
+          },
+          "anchors + as many probes": {
+            "at": 0.8,
+            "end": 2.4
+          },
+          "anchors + twice as many probes": {
+            "at": 1.6,
+            "end": 2.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 3.0,
+            "end": 5.2
+          }
+        },
+        "the options without their descriptions, on 25 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + as many probes": {
+            "at": 1.0,
+            "end": 1.0
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          }
+        },
+        "the options without their descriptions, on 25 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.4,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.4,
+            "end": 0.6
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "twice the anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.6
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "twice the anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.2
+          },
+          "twice the anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.8
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.6,
+            "end": 1.0
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.4
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + twice as many probes": {
+            "at": 0.4,
+            "end": 0.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.8,
+            "end": 0.8
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          }
+        },
+        "jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.0,
+            "end": 3.2
+          },
+          "twice the anchors": {
+            "at": 2.1999999999999997,
+            "end": 5.4
+          },
+          "anchors + as many probes": {
+            "at": 0.0,
+            "end": 4.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 4.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 3.2
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.8,
+            "end": 0.8
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          }
+        },
+        "5-point accuracy drop injected \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "anchors + as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 1": {
+          "anchors": {
+            "at": 0.8,
+            "end": 43.2
+          },
+          "twice the anchors": {
+            "at": 22.0,
+            "end": 46.0
+          },
+          "anchors + as many probes": {
+            "at": 1.2,
+            "end": 43.0
+          },
+          "anchors + twice as many probes": {
+            "at": 1.2,
+            "end": 42.6
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 1.0,
+            "end": 41.0
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 5": {
+          "anchors": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 1.0
+          },
+          "anchors + as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + twice as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.2,
+            "end": 0.2
+          }
+        },
+        "10-point accuracy drop injected \u00b7 from check 9": {
+          "anchors": {
+            "at": 0.4,
+            "end": 0.4
+          },
+          "twice the anchors": {
+            "at": 0.6,
+            "end": 0.6
+          },
+          "anchors + as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + twice as many probes": {
+            "at": 0.0,
+            "end": 0.0
+          },
+          "anchors + 4\u00d7 as many probes": {
+            "at": 0.4,
+            "end": 0.4
+          }
+        }
+      },
+      "verdict": {
+        "late_more_often": [
+          "the options without their descriptions, on 100 % of rows \u00b7 from check 5",
+          "the options without their descriptions, on 100 % of rows \u00b7 from check 9",
+          "the options without their descriptions, on 50 % of rows \u00b7 from check 5",
+          "the options without their descriptions, on 25 % of rows \u00b7 from check 5",
+          "jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 9",
+          "jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 5",
+          "jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 5"
+        ],
+        "late_less_often": [
+          "the options without their descriptions, on 50 % of rows \u00b7 from check 9",
+          "the options without their descriptions, on 25 % of rows \u00b7 from check 9",
+          "jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 9",
+          "5-point accuracy drop injected \u00b7 from check 5",
+          "5-point accuracy drop injected \u00b7 from check 9",
+          "10-point accuracy drop injected \u00b7 from check 5",
+          "10-point accuracy drop injected \u00b7 from check 9"
+        ],
+        "first_check_loss_vs_twice": 20.8,
+        "false_alarms": {
+          "anchors": 0.2,
+          "twice the anchors": 0.2,
+          "anchors + as many probes": 0.4,
+          "anchors + twice as many probes": 0.6,
+          "anchors + 4\u00d7 as many probes": 0.6
+        },
+        "adding_probes_worst_loss": 2.200000000000003
+      }
+    }
+  }
+}

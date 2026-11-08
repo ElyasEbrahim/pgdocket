@@ -240,3 +240,27 @@ def test_log_bets_is_a_mixture_of_fair_coin_bets():
     assert abs(drift.log_bets(6, 3) - math.log(np.mean((1 + lams) ** 6 * (1 - lams) ** 3))) < 1e-12
     # each bet is a fair game: its expected factor on one fair coin is 1
     assert np.allclose(0.5 * (1 + lams) + 0.5 * (1 - lams), 1.0)
+
+
+def test_rows_without_labels_count_towards_scores_but_never_accuracy():
+    """#36: 4 labelled anchors and 6 rows without labels asked again together. Accuracy is the anchors'; the scores test
+    and the scores evidence take all ten rows."""
+    o_right, n_right = [True, True, False, True], [False, True, True, True]
+    o_scores = [0.9, 0.8, 0.7, 0.9] + [0.6] * 6
+    n_scores = [0.8, 0.8, 0.9, 0.9] + [0.5] * 6
+    r = drift.anchors(o_right, n_right, o_scores, n_scores, 0.05)
+    assert r["anchors"] == 4 and (r["accuracy"]["worse"], r["accuracy"]["better"]) == (1, 1)
+    assert (r["scores"]["up"], r["scores"]["down"]) == (1, 7)
+    assert drift.signs(o_right, n_right, o_scores, n_scores) == (1, 1, 1, 7)
+
+
+def test_the_model_verdict_names_rows_without_labels_and_says_when_the_labels_ran_out():
+    r = drift.model_rows([True] * 20, [True] * 20, [0.9] * 120, [0.9] * 120, 3, (0, 0, 0, 0))
+    r |= {"run": 3, "days_apart": 0.0, "probes": 100, "evidence_rows": 20, "evidence_rows_scores": 120,
+          "labelled_left": 0, "series_began": "2026-11-08T10:00:00+00:00"}
+    text = "\n".join(drift.verdict_model(r))
+    assert "20 labelled rows and 100 without labels asked again" in text
+    assert "evidence from 20 first re-asks since 2026-11-08" in text and "evidence from 120 first re-asks" in text
+    assert "every labelled row has been asked in this series" in text and "--probes M" not in text
+    r["probes"] = 0
+    assert "--probes M keeps the scores evidence growing" in "\n".join(drift.verdict_model(r))

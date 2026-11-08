@@ -178,6 +178,10 @@ def main(argv=None):
     dt.add_argument("--anchors", type=int, default=0, metavar="N",
                     help="also re-ask the active version on N labelled rows to check the model (N API calls): the next N this "
                          "series of checks has not asked yet, so every check adds fresh evidence")
+    dt.add_argument("--probes", type=int, default=0, metavar="M",
+                    help="with --anchors: also re-ask M rows without labels, the next M this series hasn't asked (M API "
+                         "calls). They add to the scores test and its evidence, which then outlasts the labels; "
+                         "accuracy stays with the anchors")
     dt.add_argument("--model", action="store_true", help="check the model on anchors already asked again")
     dt.add_argument("--seed", default="1", help="orders the labelled rows the anchors are taken from, in turn")
     dt.add_argument("--run", action="store_true", help="with --anchors: run the worker until they are answered")
@@ -576,10 +580,15 @@ def _drift(a, ledger):
     import time
     from . import drift
     since = None
+    if a.probes and not a.anchors:
+        sys.exit("--probes goes with --anchors: accuracy needs labelled rows")
     if a.anchors:
         n, since = ledger.drift_enqueue(a.dsn, a.name, a.anchors, a.seed)
         print(f"{n} labelled rows queued to be asked again" if n else
               f"{a.name}: no labelled rows to ask again; import labels with `pgdocket label {a.name} … --sample 200`")
+        if a.probes:
+            m = ledger.drift_enqueue_probes(a.dsn, a.name, a.probes, a.seed)
+            print(f"{m} rows without labels queued to be asked again")
         if a.run:
             from .worker import Worker
             totals = Worker(a.dsn, api_key=os.environ.get("TYPESAFE_API_KEY") or None, max_usd=a.max_usd).run(once=True)

@@ -174,7 +174,9 @@ def rows_check(ref_answers, ref_scores, new_answers, new_scores, day, recent, ru
 
 
 def anchors(orig_right, new_right, orig_scores, new_scores, alpha_run):
-    """Compare old and new answers on the same labelled rows. Pure function, like `windows`."""
+    """Compare old and new answers on the same labelled rows (accuracy), and old and new scores on those rows and on
+    any rows without labels asked again with them (`--probes`, #36: the score arrays may be longer). Pure function,
+    like `windows`."""
     o, n = np.asarray(orig_right, bool), np.asarray(new_right, bool)
     worse, better = int((o & ~n).sum()), int((~o & n).sum())
     diff = np.asarray(new_scores, float) - np.asarray(orig_scores, float)
@@ -317,56 +319,74 @@ def data_check(conn, name, days=7, by=None):
 
 
 def model_check(conn, name, since=None):
-    """Each anchor's current answer against its newest re-ask on the same input (made at or after `since`, when given),
-    by sign tests on MODEL_SHARE of the budget spent over the series' checks; and the evidence that never expires
-    (#35) from every labelled row's first re-ask in the series, on the rest."""
+    """Each re-asked row's current answer against its newest re-ask on the same input (made at or after `since`, when
+    given): the labelled anchors for accuracy, they and the rows without labels (`--probes`, #36) for scores, by sign
+    tests on MODEL_SHARE of the budget spent over the series' checks; and the evidence that never expires (#35) from
+    every row's first re-ask in the series, on the rest: accuracy from the labelled rows, scores from all of them."""
     d = _decision(conn, name)
     rows = conn.execute("""
-        SELECT l.label, jo.value, jo.score, pr.value, pr.score, extract(epoch FROM pr.judged_at - jo.judged_at) / 86400
-        FROM docket.current c
-        JOIN docket.judgment jo ON jo.id = c.judgment_id
-        JOIN docket.label l ON l.decision_id = c.decision_id AND l.row_key = c.row_key AND l.sampling IN ('random', 'all')
-        JOIN LATERAL (SELECT j.value, j.score, j.judged_at FROM docket.judgment j
-                      WHERE j.decision_id = c.decision_id AND j.version = c.version AND j.row_key = c.row_key
-                        AND j.purpose = 'probe' AND j.input_hash = jo.input_hash AND j.id > jo.id
-                        AND j.judged_at >= coalesce(%(since)s::timestamptz, '-infinity')
-                      ORDER BY j.id DESC LIMIT 1) pr ON true
-        WHERE c.decision_id = %(d)s AND c.version = %(v)s""", {"since": since, "d": d["id"], "v": d["version"]}).fetchall()
+        WITH latest AS (
+            SELECT DISTINCT ON (j.row_key) j.row_key, j.value, j.score, j.input_hash, j.id, j.judged_at
+            FROM docket.judgment j
+            WHERE j.decision_id = %(d)s AND j.version = %(v)s AND j.purpose = 'probe'
+              AND j.judged_at >= coalesce(%(since)s::timestamptz, '-infinity')
+            ORDER BY j.row_key, j.id DESC)
+        SELECT l.label, jo.value, jo.score, t.value, t.score, extract(epoch FROM t.judged_at - jo.judged_at) / 86400
+        FROM latest t
+        JOIN docket.current c ON c.decision_id = %(d)s AND c.version = %(v)s AND c.row_key = t.row_key
+        JOIN docket.judgment jo ON jo.id = c.judgment_id AND jo.input_hash = t.input_hash AND t.id > jo.id
+        LEFT JOIN docket.label l ON l.decision_id = c.decision_id AND l.row_key = c.row_key
+                                AND l.sampling IN ('random', 'all')""",
+                        {"since": since, "d": d["id"], "v": d["version"]}).fetchall()
     k, _ = next_run(conn, d, "model")
-    if len(rows) < 10:
-        return d, {"run": k, "note": f"only {len(rows)} labelled rows have been asked again; queue anchors with "
+    lab = [r for r in rows if r[0] is not None]
+    if len(lab) < 10:
+        return d, {"run": k, "note": f"only {len(lab)} labelled rows have been asked again; queue anchors with "
                                      f"`pgdocket drift {name} --anchors 100 --run` (needs at least 10)"}
     spec = d["spec"]
     right = lambda label, v, s: _answer(spec, v, s) == label
-    began, first = first_reasks(conn, d)
-    out = {"run": k, "days_apart": float(np.median([r[5] for r in rows])), "evidence_rows": len(first),
+    began, first, left = first_reasks(conn, d)
+    first_lab = [r for r in first if r[0] is not None]
+    out = {"run": k, "days_apart": float(np.median([r[5] for r in rows])), "probes": len(rows) - len(lab),
+           "evidence_rows": len(first_lab), "evidence_rows_scores": len(first), "labelled_left": left,
            "series_began": began} | model_rows(
-        [right(r[0], r[1], r[2]) for r in rows], [right(r[0], r[3], r[4]) for r in rows],
+        [right(r[0], r[1], r[2]) for r in lab], [right(r[0], r[3], r[4]) for r in lab],
         [r[2] for r in rows], [r[4] for r in rows], k,
-        signs([right(r[0], r[1], r[2]) for r in first], [right(r[0], r[3], r[4]) for r in first],
+        signs([right(r[0], r[1], r[2]) for r in first_lab], [right(r[0], r[3], r[4]) for r in first_lab],
               [r[2] for r in first], [r[4] for r in first]))
     out["alarm"] = store(conn, d, "model", out)
     return d, out
 
 
 def first_reasks(conn, d):
-    """When the series began (the active version's last calibration; None if never), and every labelled row's first
-    re-ask since then on the input of its current answer: (label, stored value, stored score, value, score). Each row
-    counts once in a series, however often it is asked again (#35)."""
+    """When the series began (the active version's last calibration; None if never); every row's first re-ask since
+    then, if it was made on the input of the row's current answer: (label or None, stored value, stored score, value,
+    score); and how many labelled rows the series has yet to ask. Each row counts once in a series, however often it
+    is asked again (#35); rows without labels count towards scores only (#36)."""
     began = conn.execute("SELECT calibration->>'fitted_at' FROM docket.version WHERE decision_id = %s AND version = %s",
                          (d["id"], d["version"])).fetchone()[0]
+    args = {"began": began, "d": d["id"], "v": d["version"]}
     rows = conn.execute("""
-        SELECT l.label, jo.value, jo.score, pr.value, pr.score
-        FROM docket.current c
-        JOIN docket.judgment jo ON jo.id = c.judgment_id
+        WITH firsts AS (
+            SELECT DISTINCT ON (j.row_key) j.row_key, j.value, j.score, j.input_hash, j.id
+            FROM docket.judgment j
+            WHERE j.decision_id = %(d)s AND j.version = %(v)s AND j.purpose = 'probe'
+              AND j.judged_at > coalesce(%(began)s::timestamptz, '-infinity')
+            ORDER BY j.row_key, j.id)
+        SELECT l.label, jo.value, jo.score, f.value, f.score
+        FROM firsts f
+        JOIN docket.current c ON c.decision_id = %(d)s AND c.version = %(v)s AND c.row_key = f.row_key
+        JOIN docket.judgment jo ON jo.id = c.judgment_id AND jo.input_hash = f.input_hash AND f.id > jo.id
+        LEFT JOIN docket.label l ON l.decision_id = c.decision_id AND l.row_key = c.row_key
+                                AND l.sampling IN ('random', 'all')""", args).fetchall()
+    left = conn.execute("""
+        SELECT count(*) FROM docket.current c
         JOIN docket.label l ON l.decision_id = c.decision_id AND l.row_key = c.row_key AND l.sampling IN ('random', 'all')
-        JOIN LATERAL (SELECT j.value, j.score FROM docket.judgment j
-                      WHERE j.decision_id = c.decision_id AND j.version = c.version AND j.row_key = c.row_key
-                        AND j.purpose = 'probe' AND j.input_hash = jo.input_hash AND j.id > jo.id
-                        AND j.judged_at > coalesce(%(began)s::timestamptz, '-infinity')
-                      ORDER BY j.id LIMIT 1) pr ON true
-        WHERE c.decision_id = %(d)s AND c.version = %(v)s""", {"began": began, "d": d["id"], "v": d["version"]}).fetchall()
-    return began, rows
+        WHERE c.decision_id = %(d)s AND c.version = %(v)s
+          AND NOT EXISTS (SELECT 1 FROM docket.judgment j WHERE j.decision_id = c.decision_id AND j.version = c.version
+                            AND j.row_key = c.row_key AND j.purpose = 'probe'
+                            AND j.judged_at > coalesce(%(began)s::timestamptz, '-infinity'))""", args).fetchone()[0]
+    return began, rows, left
 
 
 def pending(conn, d):
@@ -413,14 +433,23 @@ def verdict_model(r):
     budget = f"needs p < {r['alpha'] / 2:.2g}"
     since = f" since {r['series_began'][:10]}" if r.get("series_began") else ""
     ev = lambda e, lead: (f" · {lead}: {_e(e)} (needs {math.exp(e['threshold']):.0f})" if e else "")
-    lines = [f"model: {r['anchors']} labelled rows asked again, {r['days_apart']:.1f} days after their stored answer "
-             f"(median) · check {r['run']}",
+    probes = f" and {r['probes']} without labels" if r.get("probes") else ""
+    n_sc = r.get("evidence_rows_scores", r.get("evidence_rows", 0))      # first re-asks with and without labels
+    lead_sc = f"evidence from {n_sc} first re-asks" if n_sc != r.get("evidence_rows", 0) else "evidence"
+    lines = [f"model: {r['anchors']} labelled rows{probes} asked again, {r['days_apart']:.1f} days after their stored "
+             f"answer (median) · check {r['run']}",
              f"  accuracy {pct(acc['before'])} → {pct(acc['after'])}: worse on {acc['worse']}, better on {acc['better']}, "
              f"p = {acc['p']:.2g} ({budget})"
              + ev(acc.get("evidence"), f"evidence from {r.get('evidence_rows', 0)} first re-asks{since}")
              + ("  ⚠ dropped" if acc["alarm"] else ""),
              f"  scores: up on {s['up']}, down on {s['down']}, mean change {s['mean_change']:+.3f}, p = {s['p']:.2g} "
-             f"({budget})" + ev(s.get("evidence"), "evidence") + ("  ⚠ shifted" if s["alarm"] else "")]
+             f"({budget})"
+             + ev(s.get("evidence"), lead_sc)
+             + ("  ⚠ shifted" if s["alarm"] else "")]
+    if r.get("labelled_left") == 0:
+        lines.append("  every labelled row has been asked in this series, so its accuracy evidence has stopped growing: "
+                     "label more rows at random" + ("" if r.get("probes") else
+                                                    "; --probes M keeps the scores evidence growing on rows without labels"))
     if acc["alarm"]:
         lines.append("  → the model answers worse than when it was calibrated: compare a new version, or pin another model")
     elif s["alarm"]:

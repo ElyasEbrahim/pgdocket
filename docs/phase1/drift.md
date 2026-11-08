@@ -1,6 +1,6 @@
 # Drift checks: have the rows or the model changed?
 
-*2026-10-25, 2026-11-05, 2026-11-06 · issues #22, #33, #34, #35 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: Failing Loudly (Rabanser et al., NeurIPS 2019), canary re-asks of API models ("Who Drifted", 2026), universal inference (Wasserman, Ramdas & Balakrishnan, PNAS 2020), betting martingales (Waudby-Smith & Ramdas, 2024) · evidence: [results/drift-validation](../../results/drift-validation/report.md), [results/drift-model](../../results/drift-model/report.md)*
+*2026-10-25, 2026-11-05, 2026-11-06, 2026-11-08 · issues #22, #33, #34, #35, #36 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: Failing Loudly (Rabanser et al., NeurIPS 2019), canary re-asks of API models ("Who Drifted", 2026), universal inference (Wasserman, Ramdas & Balakrishnan, PNAS 2020), betting martingales (Waudby-Smith & Ramdas, 2024) · evidence: [results/drift-validation](../../results/drift-validation/report.md), [results/drift-model](../../results/drift-model/report.md), [results/drift-probes](../../results/drift-probes/report.md)*
 
 Every number pgdocket gives (thresholds, counts, review plans) rests on two assumptions:
 - **New rows look like the labelled ones.** If customers start writing about a new product, the mix of answers changes, and a precision measured on last month's labels may not hold for this month's rows.
@@ -57,6 +57,7 @@ Tests on a classifier's own outputs were the most reliable simple shift detector
 - **Accuracy.** An exact one-sided sign test on the anchors where exactly one of the two answers is right. The alarm means the model now answers worse.
 - **Scores.** An exact two-sided sign test on whether each anchor's score went up or down. The alarm means the model behaves differently, even if accuracy has held, so the calibration may be stale.
 - **The evidence (#35).** Every labelled row's first re-ask in the series counts once, at whichever check it came. Such comparisons are independent of one another, and where the two answers differ, each sign is a fair coin without a change. So betting on the signs, worse against better and scores down against up, with a mixture of betting martingales (Waudby-Smith & Ramdas, 2024), gives evidence that piles up over the series and may be read whenever you like. A fixed panel couldn't do this: every check compared the same rows' re-asks with the same stored answers.
+- **Rows without labels (#36).** `--probes M` also re-asks M rows that have no random or whole-column label, in the same kind of rotation, those judged before the series began first. They can't show whether an answer got worse, but their scores can show that the model changed: they join each check's scores test, and each one's first re-ask adds to the scores evidence. So the scores evidence keeps growing after every labelled row has been asked. Accuracy stays with the anchors.
 
 **Repeated checks.** Drift checks are meant to run on a schedule, and every run is another chance of a false alarm. Over the whole series the chance of any false alarm stays at most 5 %:
 - **The window tests** of the k-th check spend 0.04 · 6 / (π² k²): 0.024 for the first, 0.0061 for the second, 0.0027 for the third. Those budgets sum to 0.04 (a union bound), split equally between answers and scores.
@@ -78,6 +79,21 @@ Recalibrating, the usual answer to an alarm, starts a new series with a new cut;
 - **The price:** the first check after a change catches up to 5 points less (77 % against 82 % for one row per request from check 7).
 - **False alarms:** at most 0.6 % of runs over 12 checks, whatever the design.
 - **Labels are the limit.** Each labelled row counts once per series. With 300 labels and 50 anchors a check, the evidence stops growing after six checks: a change from check 7 on the Kubernetes issues was caught by check 12 in 8 % of runs (3 % with the fixed panel).
+
+**Rows without labels (#36).** `jevbench driftprobes` gave the same checks probes on top of their anchors, with the rest of each table as rows without labels ([report](../../results/drift-probes/report.md)): 300 of the 2,000 complaints labelled, 50 anchors a check over 18 checks; and 100 of the 300 Kubernetes issues labelled, 25 anchors a check over 12. 500 runs per scenario.
+- **Added to the anchors, probes only helped.** One row per request on half the complaints, beginning at check 7 when the labels had run out, was caught by check 18 in 6 % of runs with the anchors alone. With 50, 100 or 200 probes a check: 63 %, 99 % and 99.6 %. On a quarter of the complaints from the first check: 7 % against 56–94 %. The options without their descriptions, beginning after the Kubernetes labels had run out, went from 1 % to 10–63 % by check 12. Nowhere did probes lose more than 2.2 points, within the simulation's noise; false alarms stayed at most 1.4 %.
+- **Swapping anchors for probes failed the test fixed beforehand.** At the same calls, 50 anchors and 50 probes caught score changes after the labels had run out more often than 100 anchors, but accuracy drops far less often. A 10-point drop was caught at the first check in 22 % of runs against 68 %, and from check 7 by check 18 in 2 % against 44 %. Only labels show accuracy, so probes are added calls, not a swap.
+- **Some changes leave no trace without labels.** Shuffling the complaints into new batches changed 16 % of answers, but neither their scores nor any answer's share moved in one direction. No design caught it.
+
+```
+$ pgdocket drift tickets --anchors 60 --probes 100 --run        # the third check of a series, 150 labelled rows
+…
+model: 60 labelled rows and 100 without labels asked again, 0.0 days after their stored answer (median) · check 3
+  accuracy 100.0 % → 100.0 %: worse on 0, better on 0, p = 1 (needs p < 0.0012) · evidence from 150 first re-asks: 1 (needs 133)
+  scores: up on 0, down on 0, mean change +0.000, p = 1 (needs p < 0.0012) · evidence from 300 first re-asks: 1 (needs 133)
+  every labelled row has been asked in this series, so its accuracy evidence has stopped growing: label more rows at random
+  → no change in the model detected
+```
 
 ## Evidence
 
@@ -144,7 +160,7 @@ One check alone catches a little less than before #33: its window test has 80 % 
 - **Small windows catch only large shifts.** With 100 recent rows, a 10-point shift in one answer usually goes unnoticed. Choose `--days` so that the recent window holds a few hundred rows.
 - **The window test's budget still shrinks with every check, the evidence's doesn't (#33).** The evidence carries a lasting shift however often the check runs, but it is slow to show a fresh one: it pays for not knowing when a change began, and for the reference's own sampling error. So a shift is usually first seen by the window test, and a long series relies on the evidence.
 - **The first look after a change is a little weaker than before #33.** The window test has 80 % of the budget it had, so a first check caught up to 7 points less than the check as it was. #33's half and half lost up to 16, and just missed the real Kubernetes feature-request shift.
-- **The model check's evidence needs labelled rows it hasn't asked yet.** Each counts once per series (#35). Once every labelled row has been asked, the evidence stops growing, and later checks rely on their sign tests, whose budget shrinks. With 300 labels and 50 anchors a check, that is six checks: label more rows at random, or ask fewer each time, to keep the evidence growing.
+- **The model check's accuracy evidence needs labelled rows it hasn't asked yet.** Each counts once per series (#35). Once every labelled row has been asked, the accuracy evidence stops growing, and the check says so: with 300 labels and 50 anchors a check, that is after six checks. Label more rows at random, or ask fewer each time, to keep it growing. `--probes M` keeps the scores evidence growing on rows without labels (#36), but only labels can show that answers got worse.
 - **Keep `--days` while a series runs.** Its first check sets the evidence's blocks; later checks keep them, and change only the window.
 - **Run it on a schedule, not when something looks odd.** The window tests' budgets, and the model check's sign tests', assume each check's timing does not depend on the data it tests. The evidence may be read whenever you like.
 - **The rows check sees only the model's outputs.** A change in the inputs that leaves answers and scores alone is invisible to it, and a shift in answers is not proof that accuracy fell. Only labels can show that: after an alarm, label a fresh random sample of recent rows, or keep a running [audit](audit.md) of the accepted rows.

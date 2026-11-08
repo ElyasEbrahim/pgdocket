@@ -2,6 +2,14 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-08
+
+### Added (rows without labels for the model check, #36)
+- **`pgdocket drift --anchors N --probes M`** also re-asks M rows that have no random or whole-column label, the next M in the seed's order that the series hasn't asked yet, rows judged before the series began first (migration 014, with a partial index on re-asks). Their scores join each check's scores test, and each one's first re-ask in the series adds to the scores evidence, which then outlasts the labelled rows. Accuracy stays with the anchors. Once every labelled row has been asked in a series, the check says so.
+- **Why scores only:** on the real changes at hand, rows without labels showed a change through their scores, not through which answer they gave. One row per request: scores up on 1,161 complaints and down on 379, p = 3e-92; the strongest answer drift, p = 3e-5 before correcting for nine answers. The options without their descriptions: scores p = 1.3e-6, answers p = 0.12.
+- **Validation** (`jevbench driftprobes`, new, no API calls, 500 runs per scenario). With 300 of the 2,000 complaints labelled and 50 anchors a check over 18 checks, a change in scores on half the complaints from check 7, after the labels had run out, was caught by check 18 in 6 % of runs with the anchors alone, and in 63 %, 99 % and 99.6 % with 50, 100 or 200 probes. Probes never lost more than 2.2 points anywhere, within simulation noise; false alarms stayed at most 1.4 %.
+- **The test fixed beforehand failed, so probes are added calls, not a swap.** At the same calls, 50 anchors and 50 probes caught score changes more often than 100 anchors, but a 10-point accuracy drop at the first check in 22 % of runs against 68 %. Shuffled batches, which changed 16 % of answers in no one direction, stayed invisible to every design.
+
 ## 2026-11-06
 
 ### Changed (model checks that keep collecting evidence, #35)
