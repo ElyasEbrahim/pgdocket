@@ -20,6 +20,7 @@
   driftsplit  which share of the drift check's budget should its window test get? (no API calls)
   driftmodel  can the drift check's model check collect evidence that never expires? (no API calls)
   driftprobes should the model check re-ask rows without labels? (no API calls)
+  drifttwice  can asking rows twice catch changes in no one direction? (no API calls)
   auditvalidate does the audit alarm when accepted answers fall below target, and only then? (no API calls)
   stratvalidate would labels stratified by answer certify more answers? (no API calls)
   steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
@@ -108,6 +109,7 @@ def main(argv=None):
     sub.add_parser("driftsplit")
     sub.add_parser("driftmodel")
     sub.add_parser("driftprobes")
+    sub.add_parser("drifttwice")
     sub.add_parser("auditvalidate")
     sub.add_parser("stratvalidate")
     sub.add_parser("backends")
@@ -226,6 +228,9 @@ def main(argv=None):
     elif args.cmd == "driftprobes":
         from . import driftprobes
         print("report:", driftprobes.run() + "/report.md")
+    elif args.cmd == "drifttwice":
+        from . import drifttwice
+        print("report:", drifttwice.run() + "/report.md")
     elif args.cmd == "auditvalidate":
         from . import auditvalidate
         print("report:", auditvalidate.run() + "/report.md")

@@ -2,6 +2,14 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-12
+
+### Tested, not built (asking rows twice, #37)
+- **The idea.** Ask a row without a label twice. Of its stored answer and the two new ones, when exactly two agree, the odd one is the stored answer a third of the time if nothing changed, and far more often after a change, whichever way the answers moved. That would catch changes in no one direction, such as shuffled batches (16 % of answers changed, #36), which no drift check sees.
+- **`jevbench drifttwice`** (new, no API calls, 1,000 series per scenario) tested it on real asks, with the criteria fixed in the issue beforehand. Where a real change had altered answers (shuffled batches, one row per request, the options without their descriptions), the first of the three asks was the odd one on 77–87 % of the rows that had one. At the same calls, 50 rows asked twice a check caught shuffled batches by check 18 in every series, against 2.4 % for 100 rows asked once; a 10-point accuracy drop after the labels had run out, in every series against 2 %. It was slower for changes with a direction (78 % against 98 % at the first check after one row per request), so it would be an option, not a replacement. Series without a change alarmed in at most 1.5 %.
+- **Not built: the no-change check on real repeats was not met as written.** Of the three ways to pair the complaints' three repeats, one rejected "the stored answer is the odd one a third of the time" (43 of 93 rows, p = 0.011; the smallest of three is that small in 3 % of random relabellings). Pooled it is 39 % (15 % of relabellings are as far off), and the scores of the same triples give 33.5–33.7 %, so it reads like chance. But the criterion did not say how to treat three pairings, and the strict reading decides. Fresh repeat runs, with one test fixed beforehand, would settle it.
+- **Also measured:** the same test on scores caught jev-1.14 in place of jev-1.13 by check 12 in 99.8 % of series, a change no other check has seen. No pgdocket code changed.
+
 ## 2026-11-08
 
 ### Added (rows without labels for the model check, #36)
