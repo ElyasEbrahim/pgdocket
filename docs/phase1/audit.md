@@ -1,6 +1,6 @@
 # Audits: are the answers marked `auto` still right?
 
-*2026-10-26 · issue #23 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022), testing by betting (Waudby-Smith & Ramdas, JRSS-B 2024) · evidence: [results/audit-validation](../../results/audit-validation/report.md)*
+*2026-10-26, 2026-11-13 · issues #23, #41 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022), testing by betting (Waudby-Smith & Ramdas, JRSS-B 2024) · evidence: [results/audit-validation](../../results/audit-validation/report.md), [results/audit-scores](../../results/audit-scores/report.md)*
 
 `calibrate` measures precision once, on the labels it is given. The guarantee says that at least 90 % (say) of the rows marked `auto` are right, and it holds for rows like the labelled ones. The [drift check](drift.md) tells you whether the rows or the model have *changed*. But a change in the answers is not proof that accuracy fell, and a fall in accuracy may come with no visible change. Only labels on new accepted rows can show it.
 
@@ -59,9 +59,20 @@ No API calls: `jevbench auditvalidate` ([report](../../results/audit-validation/
 
 With 20 labels a week at a 90 % target, a 15-point fall shows in about three weeks (median 51 rows) and a 5-point fall in about four months. The report says how many audited rows a 10-point fall would take at your target.
 
+**Could the model's scores cut the labels? (#41)** Prediction-powered methods would use the model's score on every accepted row as a control variate. For each audited row they bet on its label minus a multiple of its score, plus the batch's mean score, which is known exactly. That is how PPI and PPI++, prediction-powered e-values (Csillag et al., ICML 2025) and prediction-powered risk monitoring (Zhang et al., ICML 2026) work. At best the scores remove the share corr(score, right)² of one label's variance, the correlation taken over the accepted rows. So 1 / (1 − corr²) bounds how many times fewer labels any such design can need, before the cost of the wider bets it must allow. Measured on the audit's real streams ([report](../../results/audit-scores/report.md)):
+
+| accepted rows of | share at the single top confidence | corr(score, right) | fewer labels at best |
+| --- | ---: | ---: | ---: |
+| Kubernetes, the live decision (90 %) | 71 % | 0.31 | 1.10× |
+| CFPB 2022–2023 at 85 % (the stream above) | 74 % | 0.04 | 1.00× |
+| CFPB 2022–2023 at 80 % | 44 % | 0.16 | 1.03× |
+| CFPB 2022–2023 at 75 % | 32 % | 0.35 | 1.14× |
+
+Jev's probabilities pile up at the top, so most accepted rows share one calibrated confidence, and the score says little about which of them are wrong. Even drawing the least-sure rows more often, with inverse-probability weights, would have saved at most 23 % of labels on Kubernetes and none on the complaints. So nothing was built. A model whose scores spread across the accepted rows could gain more; `jevbench auditscores` measures the bound.
+
 ## Limits
 
-- **Small falls take many labels.** That is the price of a test that may be read for ever without false alarms. To find out quickly, audit more rows, or label a fresh random sample and recalibrate.
+- **Small falls take many labels.** That is the price of a test that may be read for ever without false alarms. On Jev's decisions the model's scores can't stand in for them (#41). To find out quickly, audit more rows, or label a fresh random sample and recalibrate.
 - **Skipped rows.** Rows drawn but left unlabelled are left out. That is safe only if a row is not skipped for being hard; the report says when a batch is incomplete.
 - **Only accepted rows.** The audit checks the rows `auto` accepts. It says nothing about rows sent to people, or about the auto-*no* band of a recall target, whose guarantee is about yeses the threshold misses.
 - **An alarm says precision fell, not why.** The drift check and `compare` help find out.

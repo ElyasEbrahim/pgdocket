@@ -85,7 +85,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] The scores of rows asked twice (#39): a second bet reads each pair by scores, chosen among five readings by a rule fixed beforehand (`jevbench twicescores`). jev-1.14 in place of jev-1.13, which moved scores in no one direction and hardly any answer, was caught by check 12 in every simulated series run forward on two fresh asks (#40), against under 1 % by answers alone
 - [x] `pgdocket audit`: blind spot checks of the rows marked `auto`, with an anytime-valid alarm (an e-process; Podkopaev & Ramdas) (#23)
 - [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)
-- [ ] Audits with fewer labels: use the model's own scores on every accepted row (prediction-powered risk monitoring)
+- [x] Audits with fewer labels from the model's own scores (prediction-powered risk monitoring), examined (#41): on Jev's decisions the scores of the accepted rows could save at most 0–14 % of labels, since most share one calibrated confidence (`jevbench auditscores`), so not built
 
 **Exit:** backend comparison report on two public datasets.
 

@@ -4,6 +4,10 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-13
 
+### Examined, not built (audit labels from the model's scores, #41)
+- **The question:** could the model's score on every accepted row cut the labels `pgdocket audit` needs? Prediction-powered methods would use it as a control variate (PPI, PPI++, prediction-powered e-values, prediction-powered risk monitoring). At best that removes the share corr(score, right)² of one label's variance over the accepted rows, so 1 / (1 − corr²) bounds the saving of any such design.
+- **Measured** (`jevbench auditscores`, new, no API calls). The bound was 1.10× on the live Kubernetes decision and 1.00× on the CFPB stream the audit was validated on (85 %); at 80 and 75 % on the same complaints, 1.03× and 1.14×. Jev's probabilities pile up at the top: 71–74 % of the accepted rows share a single calibrated confidence, and the correlation with being right is 0.04–0.35. Drawing the least-sure rows more often would have saved at most 23 %. Nothing was built.
+
 ### Checked (jev-1.14 run forward, #40)
 - **jev-1.14 asked twice more** on the 300 Kubernetes issues, through the worker as `--twice` does: 600 asks, each second ask linked to its first, none failed, $0.026. #39's numbers for it had the roles swapped, since it had been asked once.
 - **The forward triples** (checks fixed in #40 before the asks). The stored jev-1.13 score was the odd one on 63 of 85 issues (74.1 %, p = 2e-14 against a third; 67–75 % with the roles swapped), and the stored answer on 4 of 4. Against its own ask of 22 October, jev-1.14 gave 23 of 66 (34.8 %, p = 0.79), so it had not changed itself.
