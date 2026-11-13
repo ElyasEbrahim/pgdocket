@@ -4,8 +4,9 @@ Claim with a lease and claim token (FOR UPDATE SKIP LOCKED) → read rows → sk
 judge outside any transaction → append judgments, upsert `current` and dequeue (only rows still carrying our
 claim token) in one transaction. Failures back off; after 5 attempts a row shows as `error`.
 
-A hardened calibration (#24) also queues an erase-and-check ('check') for every row `auto` would accept: the row is
-judged again without each of its pieces, and the result goes to docket.robust, which the view requires.
+A hardened calibration (#24) also queues a check ('check') for every row `auto` would accept: the row is judged again
+without each of its pieces (erase-and-check) and, for choice decisions, with each piece alone (keep-one, #43). The
+result goes to docket.robust, which the view requires.
 
 A re-ask queued with `twice` (`pgdocket drift --twice`, #38) is asked a second time, in requests of its own, once the
 first answers are in; the second answer's `pair_of` is the first one's id.
@@ -113,8 +114,8 @@ class Worker:
     def _handle(self, conn, did, ver, keys, token, purpose="live", twice=frozenset()):
         """purpose 'live': judge changed rows and make the answer current. 'probe': always re-ask (the point is
         to measure run-to-run noise) and record the answer in the ledger without making it current; the rows in
-        `twice` are asked again, in requests of their own after the first ones (#38). 'check': erase-and-check the
-        current answer (#24)."""
+        `twice` are asked again, in requests of their own after the first ones (#38). 'check': check the current
+        answer for steering (#24, #43)."""
         if purpose == "check":
             return self._check(conn, did, ver, keys, token)
         d = self._decision(conn, did, ver)
@@ -182,9 +183,13 @@ class Worker:
         self.totals["usd"] = sum(b.cost_usd() for b in self.backends.values() if b.paid)
 
     def _check(self, conn, did, ver, keys, token):
-        """Erase-and-check: judge each row again without each of its pieces. The row is flagged when an answer
-        differs from the current one by the view's rules (choice: the option; yes/no: the band), or when its text is
-        one piece, which can't be checked. Rows changed or deleted since being queued are checked as they are now."""
+        """Judge each row again without each of its pieces (erase-and-check, #24) and, for choice decisions, with each
+        piece alone (keep-one, #43). The row is flagged when an answer without a piece differs from the current one
+        by the view's rules (choice: the option; yes/no: the band); when the pieces alone, each voting for its option
+        with that option's probability, favour another option more than the current one; or when its text is one
+        piece, which can't be checked (no calls). A piece with no text isn't judged alone. Rows changed or deleted since
+        being queued are checked as they are now. docket.robust keeps every answer: {"how": "erase" | "keep",
+        "piece", "value", "score"}."""
         d = self._decision(conn, did, ver)
         spec = d["spec"]
         cal = self._calibration(conn, did, ver) or {}
@@ -201,14 +206,15 @@ class Worker:
             return
         verdict = (lambda a: read_answer(spec, a)[0]) if spec["kind"] == "choice" else (
             lambda a: calibration.noul_answer(a, spec, cal))
-        pieces = {k: steer.erased(steer.segments(json.loads(rows[k]), d["text"]), d["text"]) for k in todo}
-        flat = [(k, rec) for k in todo for rec in pieces[k]]
+        keep = spec["kind"] == "choice"         # keep-one was measured on a choice task; yes/no rows are erased only
+        segs = {k: steer.segments(json.loads(rows[k]), d["text"]) for k in todo}
+        flat = [(k, how, i, rec) for k in todo for how, i, rec in steer.variants(segs[k], d["text"], keep)]
         backend = self._backend(spec)
         before = backend.stats["input_tokens"]
         try:
-            answers = backend.judge([rec for _, rec in flat], spec["kind"], spec["question"],
+            answers = backend.judge([rec for *_, rec in flat], spec["kind"], spec["question"],
                                     option_display(spec) if spec["kind"] == "choice" else None, 1,
-                                    untrusted=spec.get("untrusted", False))
+                                    untrusted=spec.get("untrusted", False)) if flat else []
         except BackendError as e:
             with conn.transaction():
                 self._fail(conn, did, ver, todo, token, e, "check")
@@ -217,15 +223,13 @@ class Worker:
             return
         tokens = backend.stats["input_tokens"] - before
         got = defaultdict(list)
-        for (k, _), a in zip(flat, answers):
-            got[k].append(a)
+        for (k, how, i, _), a in zip(flat, answers):
+            got[k].append((how, i, verdict(a), read_answer(spec, a)[1]))
         out = []
         for k in todo:
             jid, current = cur[k]
-            ref = verdict(current)
-            flagged = len(pieces[k]) < 2 or any(verdict(a) != ref for a in got[k])
-            out.append((jid, k, len(pieces[k]), flagged,
-                        json.dumps([{"value": verdict(a), "score": read_answer(spec, a)[1]} for a in got[k]])))
+            out.append((jid, k, len(segs[k]), steer.flagged(verdict(current), len(segs[k]), got[k]),
+                        json.dumps([{"how": how, "piece": i, "value": v, "score": sc} for how, i, v, sc in got[k]])))
         with conn.transaction():
             conn.execute(
                 "INSERT INTO docket.robust (judgment_id, decision_id, version, row_key, pieces, flagged, answers, tokens) "

@@ -65,8 +65,8 @@ def main(argv=None):
     c.add_argument("--untrusted", action="store_true",
                    help="tell the model the rows come from third parties and to ignore instructions in them")
     c.add_argument("--steer", type=int, default=0, metavar="N",
-                   help="also try to steer N rows with text appended by their author, and test erase-and-check "
-                        "(about 20 extra calls per row)")
+                   help="also try to steer N rows with text appended by their author, and test --harden's check "
+                        "(up to about 40 extra calls per row; 22 for yes/no decisions)")
     c.add_argument("--seed", default="1")
     c.add_argument("--backend", default="jev", help="jev | sim | any /v1/systemone URL")
     c.add_argument("--model", default="jev-1.14.0")
@@ -130,8 +130,9 @@ def main(argv=None):
     ca.add_argument("--include-manual", action="store_true",
                     help="also fit on hand-picked labels (e.g. exported disagreements); may bias the guarantee")
     ca.add_argument("--harden", action="store_true",
-                    help="auto only for rows that pass erase-and-check: no answer changes with any one piece of their "
-                         "text removed (about 5 extra calls per accepted row)")
+                    help="auto only for rows that pass a check: no answer changes with any one piece of their text "
+                         "removed and, for choice decisions, the pieces judged alone don't favour another answer "
+                         "(about 10 extra calls per accepted row; 5 for yes/no decisions)")
     es = sub.add_parser("estimate", help="counts with confidence intervals (prediction-powered inference)")
     dsn_arg(es)
     es.add_argument("name")
@@ -340,8 +341,8 @@ def _ledger_command(a):
         for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name)]):
             print(line)
         if a.harden:
-            print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for erase-and-check; until the worker has "
-                  "checked a row, `auto` is false for it")
+            print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for the steering check; until the worker "
+                  "has checked a row, `auto` is false for it")
     elif a.cmd == "estimate" and a.with_:
         _estimate_with(a, ledger)
     elif a.cmd == "estimate" and (a.by or a.weight):

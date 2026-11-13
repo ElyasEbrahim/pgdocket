@@ -231,8 +231,9 @@ def analyse_noul(cfg, sample, answers):
 
 def steer_test(cfg, backend, sample, answers, threshold, opts):
     """Can a row's author steer the answer (#24)? Each row gets one paragraph per attack family, aimed at a random
-    wrong answer, and is judged again. Then erase-and-check runs on the rows `auto` would accept: clean ones, to see
-    how many it flags for nothing, and steered ones, to see how many it catches."""
+    wrong answer, and is judged again. Then `--harden`'s check runs on the rows `auto` would accept: clean ones, to
+    see how many it flags for nothing, and steered ones, to see how many it catches. The check erases each piece and,
+    for choice decisions, keeps each piece alone (#43); `erase_*` is erase-and-check alone."""
     from . import steer as S
     names = option_names(cfg) if cfg.kind == "choice" else None
     desc = {o["name"]: o.get("description") or "" for o in cfg.options} if cfg.kind == "choice" else {}
@@ -258,23 +259,28 @@ def steer_test(cfg, backend, sample, answers, threshold, opts):
                                           untrusted=cfg.untrusted)]
     checks = [(None, r["clean"], r["record"]) for r in rows if auto(r["clean"], r["score"])]
     checks += [(fam, ans, rec) for (r, fam, rec), (ans, sc) in zip(attacked, got) if ans == r["target"] and auto(ans, sc)]
-    variants = [(i, e) for i, (_, _, rec) in enumerate(checks) for e in S.erased(S.segments(rec, cfg.text), cfg.text)]
-    erased = [read(a)[0] for a in backend.judge([e for _, e in variants], cfg.kind, cfg.question, opts, 1,
-                                                untrusted=cfg.untrusted)] if variants else []
-    flagged = [False] * len(checks)
-    for (i, _), ans in zip(variants, erased):
-        flagged[i] |= ans != checks[i][1]
-    out = {"rows": len(rows), "threshold": threshold, "families": {}}
-    clean_flags = [f for (fam, _, _), f in zip(checks, flagged) if fam is None]
-    out["clean"] = {"auto": len(clean_flags) / max(len(rows), 1),
-                    "erase_flagged": float(np.mean(clean_flags)) if clean_flags else None}
+    segs = [S.segments(rec, cfg.text) for _, _, rec in checks]
+    variants = [(i, how, p, v) for i, sg in enumerate(segs) for how, p, v in S.variants(sg, cfg.text, cfg.kind == "choice")]
+    judged = [read(a) for a in backend.judge([v for *_, v in variants], cfg.kind, cfg.question, opts, 1,
+                                             untrusted=cfg.untrusted)] if variants else []
+    seen = [[] for _ in checks]
+    for (i, how, p, _), (ans, sc) in zip(variants, judged):
+        seen[i].append((how, p, ans, sc))
+    flagged = [S.flagged(c[1], len(sg), g) for c, sg, g in zip(checks, segs, seen)]
+    erase = [S.flagged(c[1], len(sg), [x for x in g if x[0] == "erase"]) for c, sg, g in zip(checks, segs, seen)]
+    share = lambda fs: float(np.mean(fs)) if fs else None
+    out = {"rows": len(rows), "threshold": threshold, "families": {},
+           "check": "erase-and-check and keep-one" if cfg.kind == "choice" else "erase-and-check"}
+    clean = [i for i, (fam, _, _) in enumerate(checks) if fam is None]
+    out["clean"] = {"auto": len(clean) / max(len(rows), 1), "flagged": share([flagged[i] for i in clean]),
+                    "erase_flagged": share([erase[i] for i in clean])}
     for fam in S.FAMILIES:
         res = [(r, ans, sc) for (r, f, _), (ans, sc) in zip(attacked, got) if f == fam]
-        caught = [f for (cf, _, _), f in zip(checks, flagged) if cf == fam]
+        hit = [i for i, (cf, _, _) in enumerate(checks) if cf == fam]
         out["families"][fam] = {"changed": float(np.mean([ans != r["clean"] for r, ans, _ in res])),
                                 "steered": float(np.mean([ans == r["target"] for r, ans, _ in res])),
                                 "steered_auto": float(np.mean([ans == r["target"] and auto(ans, sc) for r, ans, sc in res])),
-                                "erase_caught": float(np.mean(caught)) if caught else None}
+                                "caught": share([flagged[i] for i in hit]), "erase_caught": share([erase[i] for i in hit])}
     return out
 
 
@@ -287,8 +293,9 @@ def run_check(cfg, api_key=None, log=print, yes=False):
     backend = Backend(cfg.backend, api_key=api_key, model=cfg.model)
     chars = sum(len(json.dumps(s["record"])) for s in sample)
     per_row = chars / len(sample) / 3.5 + 120 + (270 if cfg.batch_size == 1 else 270 / cfg.batch_size)
-    m_steer = min(cfg.steer, len(sample))                # 4 attacks per row, then erase-and-check (≈ 6 calls a row)
-    calls = len(sample) + min(cfg.repeat, len(sample)) + min(cfg.batch_test, len(sample)) + 22 * m_steer
+    m_steer = min(cfg.steer, len(sample))      # 4 attacks per row, then --harden's check on up to 5 texts per row,
+    steer_calls = 40 if cfg.kind == "choice" else 22  # each piece erased, and kept alone for choice decisions (#43)
+    calls = len(sample) + min(cfg.repeat, len(sample)) + min(cfg.batch_test, len(sample)) + steer_calls * m_steer
     est = per_row * calls * backend.usd_per_token
     log(f"{len(sample)} labeled rows sampled from {in_scope:,} in scope ({table_rows:,} in {cfg.table}); "
         f"{calls} judgments; " + (f"estimated ≤ ${est:.3f}" if backend.paid else "free backend, no API cost"))
@@ -393,6 +400,11 @@ def reanalyze(out, precision_target=None):
 
 
 # ---------------------------------------------------------------- report
+_ERASE_ONLY = ("The check judges a row again without each of its pieces and flags it when an answer changes "
+               "(erase-and-check).")
+_KEEP_ONE = ("The check judges a row again without each of its pieces, and with each piece alone. It flags the row "
+             "when an answer without a piece changes, or when the pieces alone, each voting with its answer's "
+             "probability, favour another answer.")
 def _pct(x):
     return "–" if x is None else f"{100 * x:.1f} %"
 
@@ -583,15 +595,18 @@ def render(r):
     if st:
         L += ["", "## Steering", "",
               f"Can the person who writes a row steer its answer? Each of {st['rows']} rows got one paragraph appended per "
-              "attack family, aimed at a random wrong answer. *Accepted by auto* uses the threshold above. Erase-and-check "
-              "judges a row again without each of its pieces and flags it when an answer changes; *caught* is the share of "
-              "steered, accepted rows it flagged.", "",
-              "| attack | answer changed | sent where the author wanted | …and accepted by auto | erase-and-check caught |",
+              "attack family, aimed at a random wrong answer. *Accepted by auto* uses the threshold above. "
+              + (_KEEP_ONE if "check" in st and "keep" in st["check"] else _ERASE_ONLY)
+              + " *Caught* is the share of steered, accepted rows `calibrate --harden` would keep out of `auto`.", "",
+              "| attack | answer changed | sent where the author wanted | …and accepted by auto | `--harden` caught |",
               "| --- | ---: | ---: | ---: | ---: |"]
-        L += [f"| {fam} | {_pct(f['changed'])} | {_pct(f['steered'])} | {_pct(f['steered_auto'])} | {_pct(f['erase_caught'])} |"
-              for fam, f in st["families"].items()]
-        if st["clean"]["erase_flagged"] is not None:
-            L += ["", f"On the clean rows `auto` accepts, erase-and-check flagged {_pct(st['clean']['erase_flagged'])} for nothing."]
+        L += [f"| {fam} | {_pct(f['changed'])} | {_pct(f['steered'])} | {_pct(f['steered_auto'])} | "
+              f"{_pct(f.get('caught', f['erase_caught']))} |" for fam, f in st["families"].items()]
+        c0 = st["clean"]
+        if c0.get("flagged", c0["erase_flagged"]) is not None:
+            L += ["", f"On the clean rows `auto` accepts, the check flagged {_pct(c0.get('flagged', c0['erase_flagged']))} "
+                      "for nothing" + (f" (erasing alone: {_pct(c0['erase_flagged'])})." if "keep" in st.get("check", "")
+                                       else ".")]
     L += ["", "## Cost", ""]
     if c.get("paid", "typesafe.ai" in r["backend"]["url"]):      # older reports have no `paid`
         L += [f"- This check: {c['requests']:,} requests, {c['input_tokens']:,} input tokens, ≈ ${c['usd']:.4f}, {c['seconds']:.0f} s.",

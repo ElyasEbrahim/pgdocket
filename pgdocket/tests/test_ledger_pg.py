@@ -760,16 +760,21 @@ def test_audit_draws_blind_batches_and_catches_accepted_answers_going_wrong(env,
 
 def test_harden_keeps_a_steered_row_out_of_auto(env, capsys):
     """#24: with a model that obeys text in the row, an override appended by the row's author sends it to the
-    author's answer with full confidence. A hardened calibration keeps every row out of `auto` until erase-and-check
-    has run, then flags the steered rows and passes the rest; new rows are checked as they are judged."""
+    author's answer with full confidence. A hardened calibration keeps every row out of `auto` until the check has
+    run, then flags the steered rows and passes the rest; new rows are checked as they are judged. #43: an override
+    written twice survives every erasure, and the pieces judged alone catch it; rows that passed erase-and-check
+    alone, before keep-one, are checked again."""
     from pgdocket import cli
     from pgdocket.backend import UNTRUSTED
     from pgdocket.steer import attack
     teams = ["billing", "technical", "sales"]
     para = lambda t, c: t + " " + c * 150                       # each paragraph names the team: erasing one keeps it
+    over = attack("override", "choice", "sales")
     rows = [(i, f"ticket {i}", para(teams[i % 3], "x") + "\n\n" + para(teams[i % 3], "y"), teams[i % 3]) for i in range(1, 55)]
-    rows += [(i, f"ticket {i}", para("billing", "x") + "\n\n" + para("billing", "y") + "\n\n"
-              + attack("override", "choice", "sales"), "billing") for i in range(55, 61)]
+    rows += [(i, f"ticket {i}", para("billing", "x") + "\n\n" + para("billing", "y") + "\n\n" + over, "billing")
+             for i in range(55, 58)]
+    rows += [(i, f"ticket {i}", over + "\n\n" + "\n\n".join(para("billing", c) for c in "xyz") + "\n\n" + over, "billing")
+             for i in range(58, 61)]                             # written twice: every erasure keeps a copy
     with psycopg.connect(env["owner"], autocommit=True) as c:
         c.execute("CREATE TABLE shop.desk (id int PRIMARY KEY, title text, body text, team text)")
         with c.cursor() as cur:
@@ -789,12 +794,26 @@ def test_harden_keeps_a_steered_row_out_of_auto(env, capsys):
         ledger.calibrate(env["owner"], "desk", precision_target=0.8)
         assert {k: v[:2] for k, v in view().items() if k > 54} == {k: ("sales", True) for k in range(55, 61)}  # steered, auto
         cli.main(["calibrate", "--dsn", env["owner"], "desk", "--precision-target", "0.8", "--harden"])
-        assert "hardened: 60 accepted rows queued for erase-and-check" in capsys.readouterr().out
+        assert "hardened: 60 accepted rows queued for the steering check" in capsys.readouterr().out
         assert not any(auto for _, auto, _ in view().values())                     # nothing is auto until checked
         Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
         v = view()
         assert all(v[k][1:] == (False, "flagged") for k in range(55, 61))          # the steered rows go to review
         assert all(v[k][1:] == (True, "passed") for k in range(1, 55))
+
+        def stored(key):
+            with psycopg.connect(env["owner"]) as c:
+                return c.execute("SELECT r.answers FROM docket.robust r JOIN docket.current cur ON cur.judgment_id = "
+                                 "r.judgment_id WHERE r.row_key = %s", (str(key),)).fetchone()[0]
+        twice = stored(58)                                    # erasing never moved it; the pieces alone outvote it
+        assert {a["value"] for a in twice if a["how"] == "erase"} == {"sales"}
+        assert [a["value"] for a in twice if a["how"] == "keep"] == ["billing", "sales", "billing", "billing", "sales"]
+        with psycopg.connect(env["owner"], autocommit=True) as c:                  # as erase-and-check alone stored it
+            c.execute("UPDATE docket.robust SET answers = (SELECT jsonb_agg(e - 'how' - 'piece') FROM "
+                      "jsonb_array_elements(answers) e WHERE e->>'how' = 'erase') WHERE row_key IN ('1', '2', '55')")
+        assert ledger.calibrate(env["owner"], "desk", precision_target=0.8, harden=True)["checks_queued"] == 2
+        Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+        assert all(a.get("how") for k in (1, 2) for a in stored(k)) and view()[1][1:] == (True, "passed")
         with psycopg.connect(env["owner"], autocommit=True) as c:                  # a new row is checked when judged
             c.execute("INSERT INTO shop.desk VALUES (61, 'ticket 61', %s, 'sales')", (para("sales", "x") + "\n\n" + para("sales", "y"),))
         Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)

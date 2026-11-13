@@ -140,8 +140,8 @@ def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False,
     threshold guarantee assumes the labelled rows are like the rest.
     `per_answer`: one threshold and guarantee per answer instead of one for all accepted rows together (#19).
     `recall_target` (yes/no decisions): also a threshold below which rows are answered "no" without review (#21).
-    `harden`: a row is `auto` only once erase-and-check has passed it (#24); the rows `auto` accepts now are queued
-    for the worker to check (`cal["checks_queued"]`).
+    `harden`: a row is `auto` only once the steering check has passed it (erase-and-check, #24, and keep-one for
+    choice decisions, #43); the rows `auto` accepts now are queued for the worker to check (`cal["checks_queued"]`).
     """
     with connect(dsn) as conn:
         return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer, recall_target,
@@ -149,11 +149,13 @@ def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False,
 
 
 def harden_enqueue(conn, d, cal):
-    """Queue erase-and-check for the current rows `auto` would accept that have no check for their answer. Yes/no
-    answers depend on the calibration's bands, so those rows are checked again after every recalibration."""
+    """Queue `--harden`'s check for the current rows `auto` would accept that have no check for their answer. Yes/no
+    answers depend on the calibration's bands, so those rows are checked again after every recalibration. Rows that
+    passed erase-and-check alone, before keep-one (#43), are checked again; their stored answers have no "how"."""
     rows = conn.execute(
-        "SELECT c.row_key, j.answer, r.judgment_id IS NOT NULL FROM docket.current c "
-        "JOIN docket.judgment j ON j.id = c.judgment_id LEFT JOIN docket.robust r ON r.judgment_id = j.id "
+        "SELECT c.row_key, j.answer, r.judgment_id IS NOT NULL AND (r.flagged OR r.answers->0->>'how' IS NOT NULL) "
+        "FROM docket.current c JOIN docket.judgment j ON j.id = c.judgment_id "
+        "LEFT JOIN docket.robust r ON r.judgment_id = j.id "
         "WHERE c.decision_id = %s AND c.version = %s", (d["id"], d["version"])).fetchall()
     redo = d["spec"]["kind"] == "noul"
     keys = [k for k, a, checked in rows if (redo or not checked) and calibration.auto(a, d["spec"], cal)]

@@ -141,7 +141,7 @@ A fourth sweep, on the risk none of the earlier ones covered: text in a row aime
   - **`check --steer`**, so teams can measure their own decision.
 - **Not adopted.**
   - **Pattern filters:** circular evidence, and they miss claims.
-  - **Keep-one voting:** it caught 85.7 % of the repeated payload but adds false flags. It is a candidate for later.
+  - **Keep-one voting:** it caught 85.7 % of the repeated payload but adds false flags. It is a candidate for later. *Built in #43*, beside erase-and-check, for choice decisions: it cut a claim written twice from 7.3 % to 3.0 % of issues ([steering.md](../phase1/steering.md#payloads-written-twice)).
 
 ## Update, 30 October 2026
 

@@ -75,6 +75,13 @@ def test_choice_analysis_and_report():
     md = render(result)
     assert "Judge one row per request" in md and "Store answers" in md
     assert "## Steering" in md and "Rows can steer the answer.** A *policy* paragraph" in md
+    assert "(erase-and-check)" in md and "| policy | 40.0 % | 30.0 % | 20.0 % | 90.0 % |" in md   # a report from before #43
+    result["steering"]["check"] = "erase-and-check and keep-one"
+    result["steering"]["clean"]["flagged"] = 0.15
+    result["steering"]["families"]["policy"]["caught"] = 0.95
+    md = render(result)
+    assert "and with each piece alone" in md and "| policy | 40.0 % | 30.0 % | 20.0 % | 95.0 % |" in md
+    assert "flagged 15.0 % for nothing (erasing alone: 10.0 %)" in md
     assert "SECRET-ROW-TEXT" not in md                   # the report never contains row text
     assert "no API cost" in md and "per million rows" not in md          # a free backend isn't priced like Jev
     result["cost"]["paid"] = True
@@ -198,9 +205,10 @@ def test_check_names_answers_below_target_and_reports_them_per_answer():
     assert "Don't auto-accept every answer" in md and "*c*" in md and "### Precision per answer" in md and "| c ⚠ |" in md
 
 
-def test_steer_test_measures_steering_and_what_erase_and_check_catches(server):
+def test_steer_test_measures_steering_and_what_the_harden_check_catches(server):
     """#24: a model that obeys 'classified as "X"' in the row is steered by the instruction and override families,
-    not by the policy and claim ones; erase-and-check catches every steered row and flags no clean one."""
+    not by the policy and claim ones; `--harden`'s check (erase-and-check and keep-one, #43) catches every steered
+    row and flags no clean one."""
     FakeSystemOne.fail_first = False
     FakeSystemOne.obey_injection = True
     names = ["alpha", "beta", "gamma"]
@@ -216,6 +224,7 @@ def test_steer_test_measures_steering_and_what_erase_and_check_catches(server):
     f = st["families"]
     assert f["override"]["steered"] == f["override"]["steered_auto"] == 1.0 and f["instruction"]["steered"] == 1.0
     assert f["override"]["erase_caught"] == f["instruction"]["erase_caught"] == 1.0
+    assert f["override"]["caught"] == f["instruction"]["caught"] == 1.0 and st["check"] == "erase-and-check and keep-one"
     assert f["policy"]["steered"] == f["claim"]["steered"] == 0.0 and f["policy"]["erase_caught"] is None
-    assert st["clean"]["auto"] == 1.0 and st["clean"]["erase_flagged"] == 0.0
+    assert st["clean"]["auto"] == 1.0 and st["clean"]["erase_flagged"] == st["clean"]["flagged"] == 0.0
 

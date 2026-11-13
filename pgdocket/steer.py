@@ -1,4 +1,4 @@
-"""Can the author of a row steer the answer? Attacks for `check --steer`, and erase-and-check (#24)
+"""Can the author of a row steer the answer? Attacks for `check --steer`, erase-and-check (#24) and keep-one (#43)
 
 Rows are often written by outsiders: customers, issue reporters, applicants. Text in a row can try to steer the
 model, and decision models like Jev are steered by it (Datadog Security Labs, Check Point and HiddenLayer, 2026;
@@ -11,9 +11,14 @@ misleading claim with no instruction in it.
 `segments` splits a row into pieces (each text column, split on blank lines). Erase-and-check (Kumar et al., 2023)
 judges the row again without each piece in turn. An injection confined to one piece that changed the answer is
 gone in one of those calls, so the answers disagree and the row is flagged.
+
+A payload written twice survives every erasure. Keep-one (#43) judges each piece alone, and each votes for its
+answer with that answer's probability: a row whose pieces favour another answer than the whole row's is flagged
+too. Erasing catches a payload written once, keeping catches one written into fewer pieces than the rest.
 """
 import random
 import re
+from collections import defaultdict
 
 FAMILIES = ("instruction", "override", "policy", "claim")
 MAX_SEGMENTS = 6
@@ -95,3 +100,32 @@ def record_of(segs, columns):
 def erased(segs, columns):
     """One record per piece: the row without that piece."""
     return [record_of(segs[:i] + segs[i + 1:], columns) for i in range(len(segs))]
+
+
+def variants(segs, columns, keep=True):
+    """[(how, piece, record)] to judge for `--harden`'s check: the row without each piece ('erase', #24) and, with
+    `keep`, each piece with text alone, the other columns empty ('keep', #43). Nothing for a row of one piece, which
+    can't be checked."""
+    if len(segs) < 2:
+        return []
+    out = [("erase", i, r) for i, r in enumerate(erased(segs, columns))]
+    if keep:
+        out += [("keep", i, record_of([s], columns)) for i, s in enumerate(segs) if s[1]]
+    return out
+
+
+def outvoted(answer, votes):
+    """Keep-one (#43): `votes` are (answer, score) for each piece alone, each piece voting for its answer with that
+    answer's probability. True when another answer strictly outweighs `answer`; a tie leaves it."""
+    weight = defaultdict(float)
+    for v, s in votes:
+        weight[v] += s
+    return any(w > weight[answer] + 1e-12 for v, w in list(weight.items()) if v != answer)
+
+
+def flagged(answer, pieces, got):
+    """Does the check flag a row of `pieces` pieces whose answer is `answer`? `got` is [(how, piece, answer, score)]
+    for its variants. A row of one piece can't be checked; an erased piece that changes the answer, or pieces alone
+    that outvote it, flag the row."""
+    return (pieces < 2 or any(v != answer for how, _, v, _ in got if how == "erase")
+            or outvoted(answer, [(v, s) for how, _, v, s in got if how == "keep"]))
