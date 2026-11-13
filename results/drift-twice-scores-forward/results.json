@@ -1,0 +1,2465 @@
+{
+  "seed": 39,
+  "runs": 1000,
+  "designs": {
+    "A": "by answers (as now)",
+    "B": "by scores alone",
+    "C": "answers and scores, two bets",
+    "D": "by answers, else by scores",
+    "E": "by every option's probability"
+  },
+  "out": [],
+  "chosen": "C",
+  "worst_regret": {
+    "A": 99.5,
+    "B": 97.8,
+    "C": 28.900000000000006,
+    "D": 94.7,
+    "E": 93.7
+  },
+  "mean_regret": {
+    "A": 11.945312499999998,
+    "B": 6.863020833333333,
+    "C": 2.3890625,
+    "D": 6.283854166666667,
+    "E": 4.3796875
+  },
+  "worst_where": {
+    "A": "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 1 \u00b7 by the last check",
+    "B": "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 7 \u00b7 by the last check",
+    "C": "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 1 \u00b7 at its first check",
+    "D": "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 13 \u00b7 by the last check",
+    "E": "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 13 \u00b7 by the last check"
+  },
+  "false_alarms": {
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": 1.35,
+      "B": 1.3,
+      "C": 1.35,
+      "D": 1.325,
+      "E": 1.35
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": 1.55,
+      "B": 1.55,
+      "C": 1.55,
+      "D": 1.55,
+      "E": 1.575
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": 0.35000000000000003,
+      "B": 0.4,
+      "C": 0.375,
+      "D": 0.375,
+      "E": 0.375
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": 0.35000000000000003,
+      "B": 0.375,
+      "C": 0.35000000000000003,
+      "D": 0.35000000000000003,
+      "E": 0.4
+    }
+  },
+  "repeats": {
+    "per_triple": {
+      "17 Oct; F1, F2": {
+        "A": {
+          "stored": 37,
+          "of": 92
+        },
+        "B": {
+          "stored": 438,
+          "of": 1281
+        },
+        "D": {
+          "stored": 452,
+          "of": 1290
+        },
+        "E": {
+          "stored": 439,
+          "of": 1255
+        }
+      },
+      "18 Oct, first; F3, F4": {
+        "A": {
+          "stored": 29,
+          "of": 79
+        },
+        "B": {
+          "stored": 420,
+          "of": 1244
+        },
+        "D": {
+          "stored": 412,
+          "of": 1252
+        },
+        "E": {
+          "stored": 403,
+          "of": 1226
+        }
+      },
+      "18 Oct, second; F5, F6": {
+        "A": {
+          "stored": 34,
+          "of": 83
+        },
+        "B": {
+          "stored": 408,
+          "of": 1259
+        },
+        "D": {
+          "stored": 419,
+          "of": 1270
+        },
+        "E": {
+          "stored": 415,
+          "of": 1251
+        }
+      },
+      "19 Oct; F7, F8": {
+        "A": {
+          "stored": 21,
+          "of": 85
+        },
+        "B": {
+          "stored": 411,
+          "of": 1234
+        },
+        "D": {
+          "stored": 409,
+          "of": 1243
+        },
+        "E": {
+          "stored": 385,
+          "of": 1204
+        }
+      },
+      "19 Oct shuffled; H1, H2": {
+        "A": {
+          "stored": 25,
+          "of": 102
+        },
+        "B": {
+          "stored": 429,
+          "of": 1252
+        },
+        "D": {
+          "stored": 417,
+          "of": 1258
+        },
+        "E": {
+          "stored": 417,
+          "of": 1221
+        }
+      },
+      "19 Oct one row per request; B1, B2": {
+        "A": {
+          "stored": 19,
+          "of": 45
+        },
+        "B": {
+          "stored": 255,
+          "of": 776
+        },
+        "D": {
+          "stored": 260,
+          "of": 783
+        },
+        "E": {
+          "stored": 257,
+          "of": 774
+        }
+      }
+    },
+    "tests": {
+      "A": {
+        "stored": 165,
+        "of": 486,
+        "share": 0.3395061728395062,
+        "p": 0.7729621625175804
+      },
+      "B": {
+        "stored": 2361,
+        "of": 7046,
+        "share": 0.3350837354527391,
+        "p": 0.7616922636699095
+      },
+      "D": {
+        "stored": 2369,
+        "of": 7096,
+        "share": 0.3338500563697858,
+        "p": 0.9297673242789459
+      },
+      "E": {
+        "stored": 2316,
+        "of": 6931,
+        "share": 0.3341509161737123,
+        "p": 0.8885487609771513
+      },
+      "C": {
+        "p": 0.7616922636699095,
+        "parts": [
+          "A",
+          "B"
+        ]
+      }
+    },
+    "passes": {
+      "A": true,
+      "B": true,
+      "C": true,
+      "D": true,
+      "E": true
+    }
+  },
+  "cells": {
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": {
+        "at": 0.8500000000000001,
+        "end": 1.35
+      },
+      "B": {
+        "at": 0.8500000000000001,
+        "end": 1.3
+      },
+      "C": {
+        "at": 0.8500000000000001,
+        "end": 1.35
+      },
+      "D": {
+        "at": 0.8500000000000001,
+        "end": 1.325
+      },
+      "E": {
+        "at": 0.8500000000000001,
+        "end": 1.35
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 29.9,
+        "end": 100.0
+      },
+      "B": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 100.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 7.3999999999999995,
+        "end": 100.0
+      },
+      "B": {
+        "at": 16.6,
+        "end": 100.0
+      },
+      "C": {
+        "at": 16.3,
+        "end": 100.0
+      },
+      "D": {
+        "at": 16.6,
+        "end": 100.0
+      },
+      "E": {
+        "at": 29.099999999999998,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 3.1,
+        "end": 99.2
+      },
+      "B": {
+        "at": 3.5999999999999996,
+        "end": 100.0
+      },
+      "C": {
+        "at": 4.5,
+        "end": 100.0
+      },
+      "D": {
+        "at": 4.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 7.199999999999999,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 3.6999999999999997,
+        "end": 100.0
+      },
+      "B": {
+        "at": 46.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 39.5,
+        "end": 100.0
+      },
+      "D": {
+        "at": 45.2,
+        "end": 100.0
+      },
+      "E": {
+        "at": 68.4,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 1.7999999999999998,
+        "end": 99.4
+      },
+      "B": {
+        "at": 2.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 2.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 2.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 2.3,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 2.1999999999999997,
+        "end": 46.800000000000004
+      },
+      "B": {
+        "at": 1.7999999999999998,
+        "end": 91.60000000000001
+      },
+      "C": {
+        "at": 2.0,
+        "end": 92.4
+      },
+      "D": {
+        "at": 1.9,
+        "end": 91.8
+      },
+      "E": {
+        "at": 2.0,
+        "end": 99.1
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.8,
+        "end": 90.9
+      },
+      "B": {
+        "at": 5.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 3.5000000000000004,
+        "end": 100.0
+      },
+      "D": {
+        "at": 5.1,
+        "end": 100.0
+      },
+      "E": {
+        "at": 9.1,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 1.6,
+        "end": 46.5
+      },
+      "B": {
+        "at": 1.4000000000000001,
+        "end": 90.5
+      },
+      "C": {
+        "at": 1.5,
+        "end": 91.5
+      },
+      "D": {
+        "at": 1.3,
+        "end": 90.2
+      },
+      "E": {
+        "at": 1.3,
+        "end": 98.6
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 1.2,
+        "end": 5.6000000000000005
+      },
+      "B": {
+        "at": 1.2,
+        "end": 12.6
+      },
+      "C": {
+        "at": 1.2,
+        "end": 12.2
+      },
+      "D": {
+        "at": 1.0999999999999999,
+        "end": 13.200000000000001
+      },
+      "E": {
+        "at": 1.2,
+        "end": 23.200000000000003
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 99.4,
+        "end": 100.0
+      },
+      "B": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 100.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 81.2,
+        "end": 100.0
+      },
+      "B": {
+        "at": 82.69999999999999,
+        "end": 100.0
+      },
+      "C": {
+        "at": 82.69999999999999,
+        "end": 100.0
+      },
+      "D": {
+        "at": 82.89999999999999,
+        "end": 100.0
+      },
+      "E": {
+        "at": 84.3,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 69.6,
+        "end": 100.0
+      },
+      "B": {
+        "at": 69.8,
+        "end": 100.0
+      },
+      "C": {
+        "at": 69.8,
+        "end": 100.0
+      },
+      "D": {
+        "at": 69.6,
+        "end": 100.0
+      },
+      "E": {
+        "at": 70.1,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 39.7,
+        "end": 100.0
+      },
+      "B": {
+        "at": 68.8,
+        "end": 100.0
+      },
+      "C": {
+        "at": 65.60000000000001,
+        "end": 100.0
+      },
+      "D": {
+        "at": 70.8,
+        "end": 100.0
+      },
+      "E": {
+        "at": 78.2,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 7.7,
+        "end": 99.3
+      },
+      "B": {
+        "at": 7.8,
+        "end": 100.0
+      },
+      "C": {
+        "at": 7.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 8.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 8.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 5.8999999999999995,
+        "end": 51.5
+      },
+      "B": {
+        "at": 5.8999999999999995,
+        "end": 94.5
+      },
+      "C": {
+        "at": 6.0,
+        "end": 94.69999999999999
+      },
+      "D": {
+        "at": 5.8999999999999995,
+        "end": 94.89999999999999
+      },
+      "E": {
+        "at": 6.0,
+        "end": 98.1
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 7.000000000000001,
+        "end": 96.2
+      },
+      "B": {
+        "at": 10.5,
+        "end": 100.0
+      },
+      "C": {
+        "at": 9.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 10.9,
+        "end": 100.0
+      },
+      "E": {
+        "at": 12.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 1.4000000000000001,
+        "end": 46.300000000000004
+      },
+      "B": {
+        "at": 1.4000000000000001,
+        "end": 93.4
+      },
+      "C": {
+        "at": 1.4000000000000001,
+        "end": 94.1
+      },
+      "D": {
+        "at": 1.3,
+        "end": 94.5
+      },
+      "E": {
+        "at": 1.5,
+        "end": 97.2
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 1.7999999999999998,
+        "end": 7.199999999999999
+      },
+      "B": {
+        "at": 1.7999999999999998,
+        "end": 12.8
+      },
+      "C": {
+        "at": 1.9,
+        "end": 13.100000000000001
+      },
+      "D": {
+        "at": 1.7999999999999998,
+        "end": 14.2
+      },
+      "E": {
+        "at": 1.9,
+        "end": 21.9
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 2.7,
+        "end": 100.0
+      },
+      "B": {
+        "at": 1.6,
+        "end": 56.3
+      },
+      "C": {
+        "at": 1.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 1.7000000000000002,
+        "end": 61.7
+      },
+      "E": {
+        "at": 1.7999999999999998,
+        "end": 62.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 7": {
+      "A": {
+        "at": 1.7999999999999998,
+        "end": 89.2
+      },
+      "B": {
+        "at": 1.3,
+        "end": 1.5
+      },
+      "C": {
+        "at": 1.5,
+        "end": 86.6
+      },
+      "D": {
+        "at": 1.3,
+        "end": 2.8000000000000003
+      },
+      "E": {
+        "at": 1.3,
+        "end": 3.1
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 13": {
+      "A": {
+        "at": 1.7000000000000002,
+        "end": 18.0
+      },
+      "B": {
+        "at": 1.2,
+        "end": 1.2
+      },
+      "C": {
+        "at": 1.4000000000000001,
+        "end": 13.900000000000002
+      },
+      "D": {
+        "at": 1.2,
+        "end": 1.6
+      },
+      "E": {
+        "at": 1.2,
+        "end": 1.6
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 32.9,
+        "end": 100.0
+      },
+      "B": {
+        "at": 20.7,
+        "end": 99.1
+      },
+      "C": {
+        "at": 28.199999999999996,
+        "end": 100.0
+      },
+      "D": {
+        "at": 21.2,
+        "end": 100.0
+      },
+      "E": {
+        "at": 21.4,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 7": {
+      "A": {
+        "at": 2.8000000000000003,
+        "end": 100.0
+      },
+      "B": {
+        "at": 1.7999999999999998,
+        "end": 2.8000000000000003
+      },
+      "C": {
+        "at": 2.1,
+        "end": 100.0
+      },
+      "D": {
+        "at": 1.7999999999999998,
+        "end": 28.999999999999996
+      },
+      "E": {
+        "at": 1.7000000000000002,
+        "end": 32.6
+      }
+    },
+    "CFPB \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 13": {
+      "A": {
+        "at": 2.8000000000000003,
+        "end": 87.9
+      },
+      "B": {
+        "at": 1.6,
+        "end": 1.7999999999999998
+      },
+      "C": {
+        "at": 2.1999999999999997,
+        "end": 84.6
+      },
+      "D": {
+        "at": 1.6,
+        "end": 3.4000000000000004
+      },
+      "E": {
+        "at": 1.6,
+        "end": 3.5000000000000004
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": {
+        "at": 1.0250000000000001,
+        "end": 1.55
+      },
+      "B": {
+        "at": 1.0250000000000001,
+        "end": 1.55
+      },
+      "C": {
+        "at": 1.0250000000000001,
+        "end": 1.55
+      },
+      "D": {
+        "at": 1.0250000000000001,
+        "end": 1.55
+      },
+      "E": {
+        "at": 1.0250000000000001,
+        "end": 1.575
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 77.0,
+        "end": 100.0
+      },
+      "B": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 100.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 19.8,
+        "end": 100.0
+      },
+      "B": {
+        "at": 56.699999999999996,
+        "end": 100.0
+      },
+      "C": {
+        "at": 55.400000000000006,
+        "end": 100.0
+      },
+      "D": {
+        "at": 55.800000000000004,
+        "end": 100.0
+      },
+      "E": {
+        "at": 82.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 100 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 8.1,
+        "end": 100.0
+      },
+      "B": {
+        "at": 17.1,
+        "end": 100.0
+      },
+      "C": {
+        "at": 17.4,
+        "end": 100.0
+      },
+      "D": {
+        "at": 17.299999999999997,
+        "end": 100.0
+      },
+      "E": {
+        "at": 31.5,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 18.3,
+        "end": 100.0
+      },
+      "B": {
+        "at": 89.5,
+        "end": 100.0
+      },
+      "C": {
+        "at": 87.3,
+        "end": 100.0
+      },
+      "D": {
+        "at": 89.9,
+        "end": 100.0
+      },
+      "E": {
+        "at": 97.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 2.9000000000000004,
+        "end": 100.0
+      },
+      "B": {
+        "at": 5.1,
+        "end": 100.0
+      },
+      "C": {
+        "at": 4.3,
+        "end": 100.0
+      },
+      "D": {
+        "at": 5.1,
+        "end": 100.0
+      },
+      "E": {
+        "at": 9.3,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 50 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 1.9,
+        "end": 73.6
+      },
+      "B": {
+        "at": 2.3,
+        "end": 99.0
+      },
+      "C": {
+        "at": 2.6,
+        "end": 99.5
+      },
+      "D": {
+        "at": 2.1999999999999997,
+        "end": 99.1
+      },
+      "E": {
+        "at": 3.1,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 3.4000000000000004,
+        "end": 99.9
+      },
+      "B": {
+        "at": 15.6,
+        "end": 100.0
+      },
+      "C": {
+        "at": 12.6,
+        "end": 100.0
+      },
+      "D": {
+        "at": 15.6,
+        "end": 100.0
+      },
+      "E": {
+        "at": 27.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 2.0,
+        "end": 84.6
+      },
+      "B": {
+        "at": 1.7000000000000002,
+        "end": 100.0
+      },
+      "C": {
+        "at": 1.7000000000000002,
+        "end": 100.0
+      },
+      "D": {
+        "at": 2.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 1.9,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 shuffled batches, on 25 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 1.3,
+        "end": 10.100000000000001
+      },
+      "B": {
+        "at": 1.4000000000000001,
+        "end": 23.3
+      },
+      "C": {
+        "at": 1.3,
+        "end": 22.3
+      },
+      "D": {
+        "at": 1.5,
+        "end": 21.8
+      },
+      "E": {
+        "at": 1.4000000000000001,
+        "end": 41.5
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "B": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "C": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 100.0,
+        "end": 100.0
+      },
+      "E": {
+        "at": 100.0,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 98.1,
+        "end": 100.0
+      },
+      "B": {
+        "at": 99.2,
+        "end": 100.0
+      },
+      "C": {
+        "at": 99.2,
+        "end": 100.0
+      },
+      "D": {
+        "at": 99.2,
+        "end": 100.0
+      },
+      "E": {
+        "at": 99.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 100 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 95.3,
+        "end": 100.0
+      },
+      "B": {
+        "at": 95.89999999999999,
+        "end": 100.0
+      },
+      "C": {
+        "at": 95.8,
+        "end": 100.0
+      },
+      "D": {
+        "at": 95.8,
+        "end": 100.0
+      },
+      "E": {
+        "at": 96.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 67.10000000000001,
+        "end": 100.0
+      },
+      "B": {
+        "at": 96.5,
+        "end": 100.0
+      },
+      "C": {
+        "at": 95.0,
+        "end": 100.0
+      },
+      "D": {
+        "at": 97.2,
+        "end": 100.0
+      },
+      "E": {
+        "at": 98.7,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 20.9,
+        "end": 100.0
+      },
+      "B": {
+        "at": 22.900000000000002,
+        "end": 100.0
+      },
+      "C": {
+        "at": 21.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 22.8,
+        "end": 100.0
+      },
+      "E": {
+        "at": 24.2,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 50 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 12.9,
+        "end": 86.1
+      },
+      "B": {
+        "at": 13.100000000000001,
+        "end": 99.8
+      },
+      "C": {
+        "at": 13.200000000000001,
+        "end": 100.0
+      },
+      "D": {
+        "at": 13.3,
+        "end": 99.9
+      },
+      "E": {
+        "at": 13.200000000000001,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 14.499999999999998,
+        "end": 100.0
+      },
+      "B": {
+        "at": 27.200000000000003,
+        "end": 100.0
+      },
+      "C": {
+        "at": 24.5,
+        "end": 100.0
+      },
+      "D": {
+        "at": 26.900000000000002,
+        "end": 100.0
+      },
+      "E": {
+        "at": 32.9,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 7": {
+      "A": {
+        "at": 1.9,
+        "end": 83.8
+      },
+      "B": {
+        "at": 1.9,
+        "end": 100.0
+      },
+      "C": {
+        "at": 1.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 1.9,
+        "end": 100.0
+      },
+      "E": {
+        "at": 2.1999999999999997,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 one row per request, on 25 % of rows \u00b7 from check 13": {
+      "A": {
+        "at": 1.5,
+        "end": 11.600000000000001
+      },
+      "B": {
+        "at": 1.4000000000000001,
+        "end": 27.800000000000004
+      },
+      "C": {
+        "at": 1.4000000000000001,
+        "end": 28.000000000000004
+      },
+      "D": {
+        "at": 1.4000000000000001,
+        "end": 30.3
+      },
+      "E": {
+        "at": 1.4000000000000001,
+        "end": 41.199999999999996
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 12.0,
+        "end": 100.0
+      },
+      "B": {
+        "at": 3.5000000000000004,
+        "end": 54.1
+      },
+      "C": {
+        "at": 9.2,
+        "end": 100.0
+      },
+      "D": {
+        "at": 3.5000000000000004,
+        "end": 69.5
+      },
+      "E": {
+        "at": 3.8,
+        "end": 73.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 7": {
+      "A": {
+        "at": 3.2,
+        "end": 99.7
+      },
+      "B": {
+        "at": 2.1,
+        "end": 2.1999999999999997
+      },
+      "C": {
+        "at": 2.8000000000000003,
+        "end": 99.6
+      },
+      "D": {
+        "at": 2.1,
+        "end": 6.3
+      },
+      "E": {
+        "at": 2.1999999999999997,
+        "end": 7.3999999999999995
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 13": {
+      "A": {
+        "at": 1.7999999999999998,
+        "end": 39.300000000000004
+      },
+      "B": {
+        "at": 1.7000000000000002,
+        "end": 1.7000000000000002
+      },
+      "C": {
+        "at": 1.7000000000000002,
+        "end": 32.4
+      },
+      "D": {
+        "at": 1.7999999999999998,
+        "end": 1.9
+      },
+      "E": {
+        "at": 1.7000000000000002,
+        "end": 2.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 65.3,
+        "end": 100.0
+      },
+      "B": {
+        "at": 22.5,
+        "end": 99.3
+      },
+      "C": {
+        "at": 60.699999999999996,
+        "end": 100.0
+      },
+      "D": {
+        "at": 24.099999999999998,
+        "end": 100.0
+      },
+      "E": {
+        "at": 24.6,
+        "end": 100.0
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 7": {
+      "A": {
+        "at": 6.9,
+        "end": 100.0
+      },
+      "B": {
+        "at": 1.7000000000000002,
+        "end": 2.1999999999999997
+      },
+      "C": {
+        "at": 5.6000000000000005,
+        "end": 100.0
+      },
+      "D": {
+        "at": 1.7999999999999998,
+        "end": 69.69999999999999
+      },
+      "E": {
+        "at": 1.6,
+        "end": 70.7
+      }
+    },
+    "CFPB \u00b7 100 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 13": {
+      "A": {
+        "at": 3.9,
+        "end": 98.3
+      },
+      "B": {
+        "at": 1.7000000000000002,
+        "end": 1.7000000000000002
+      },
+      "C": {
+        "at": 2.8000000000000003,
+        "end": 97.89999999999999
+      },
+      "D": {
+        "at": 1.7000000000000002,
+        "end": 3.5999999999999996
+      },
+      "E": {
+        "at": 1.7000000000000002,
+        "end": 4.6
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": {
+        "at": 0.25,
+        "end": 0.35000000000000003
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.4
+      },
+      "C": {
+        "at": 0.27499999999999997,
+        "end": 0.375
+      },
+      "D": {
+        "at": 0.27499999999999997,
+        "end": 0.375
+      },
+      "E": {
+        "at": 0.27499999999999997,
+        "end": 0.375
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.7000000000000001,
+        "end": 17.2
+      },
+      "B": {
+        "at": 75.7,
+        "end": 100.0
+      },
+      "C": {
+        "at": 69.1,
+        "end": 100.0
+      },
+      "D": {
+        "at": 72.39999999999999,
+        "end": 100.0
+      },
+      "E": {
+        "at": 84.5,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.2,
+        "end": 1.0
+      },
+      "B": {
+        "at": 11.5,
+        "end": 99.9
+      },
+      "C": {
+        "at": 8.1,
+        "end": 99.9
+      },
+      "D": {
+        "at": 6.7,
+        "end": 99.9
+      },
+      "E": {
+        "at": 11.0,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.5,
+        "end": 0.6
+      },
+      "B": {
+        "at": 0.6,
+        "end": 0.7000000000000001
+      },
+      "C": {
+        "at": 0.6,
+        "end": 0.7000000000000001
+      },
+      "D": {
+        "at": 0.6,
+        "end": 0.7000000000000001
+      },
+      "E": {
+        "at": 0.6,
+        "end": 0.7000000000000001
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.8,
+        "end": 1.9
+      },
+      "B": {
+        "at": 11.4,
+        "end": 100.0
+      },
+      "C": {
+        "at": 7.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 10.4,
+        "end": 100.0
+      },
+      "E": {
+        "at": 12.6,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.8,
+        "end": 0.8999999999999999
+      },
+      "B": {
+        "at": 2.1,
+        "end": 66.2
+      },
+      "C": {
+        "at": 1.7000000000000002,
+        "end": 56.8
+      },
+      "D": {
+        "at": 1.4000000000000001,
+        "end": 54.6
+      },
+      "E": {
+        "at": 1.4000000000000001,
+        "end": 65.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "B": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "C": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "D": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "E": {
+        "at": 0.1,
+        "end": 0.1
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.3,
+        "end": 0.6
+      },
+      "B": {
+        "at": 1.7999999999999998,
+        "end": 71.89999999999999
+      },
+      "C": {
+        "at": 1.0,
+        "end": 64.4
+      },
+      "D": {
+        "at": 1.6,
+        "end": 60.9
+      },
+      "E": {
+        "at": 1.7000000000000002,
+        "end": 71.7
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.1,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.6,
+        "end": 7.000000000000001
+      },
+      "C": {
+        "at": 0.4,
+        "end": 4.2
+      },
+      "D": {
+        "at": 0.3,
+        "end": 3.0
+      },
+      "E": {
+        "at": 0.2,
+        "end": 4.3999999999999995
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.0,
+        "end": 0.0
+      },
+      "B": {
+        "at": 0.0,
+        "end": 0.0
+      },
+      "C": {
+        "at": 0.0,
+        "end": 0.0
+      },
+      "D": {
+        "at": 0.0,
+        "end": 0.0
+      },
+      "E": {
+        "at": 0.0,
+        "end": 0.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.4,
+        "end": 0.6
+      },
+      "B": {
+        "at": 8.1,
+        "end": 100.0
+      },
+      "C": {
+        "at": 4.9,
+        "end": 100.0
+      },
+      "D": {
+        "at": 8.1,
+        "end": 100.0
+      },
+      "E": {
+        "at": 12.3,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "B": {
+        "at": 1.7000000000000002,
+        "end": 52.300000000000004
+      },
+      "C": {
+        "at": 1.5,
+        "end": 43.0
+      },
+      "D": {
+        "at": 1.3,
+        "end": 43.4
+      },
+      "E": {
+        "at": 1.9,
+        "end": 62.3
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "B": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "C": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "D": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "E": {
+        "at": 0.1,
+        "end": 0.1
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      },
+      "B": {
+        "at": 1.3,
+        "end": 57.9
+      },
+      "C": {
+        "at": 1.0,
+        "end": 49.4
+      },
+      "D": {
+        "at": 1.0999999999999999,
+        "end": 48.699999999999996
+      },
+      "E": {
+        "at": 1.7000000000000002,
+        "end": 66.60000000000001
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.4,
+        "end": 4.5
+      },
+      "C": {
+        "at": 0.4,
+        "end": 2.5
+      },
+      "D": {
+        "at": 0.3,
+        "end": 2.4
+      },
+      "E": {
+        "at": 0.4,
+        "end": 4.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.3
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.1,
+        "end": 0.5
+      },
+      "B": {
+        "at": 0.4,
+        "end": 7.1
+      },
+      "C": {
+        "at": 0.2,
+        "end": 4.6
+      },
+      "D": {
+        "at": 0.4,
+        "end": 4.5
+      },
+      "E": {
+        "at": 0.2,
+        "end": 7.3999999999999995
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "B": {
+        "at": 0.5,
+        "end": 0.6
+      },
+      "C": {
+        "at": 0.5,
+        "end": 0.6
+      },
+      "D": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "E": {
+        "at": 0.5,
+        "end": 0.8
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.3
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 0.6,
+        "end": 49.9
+      },
+      "B": {
+        "at": 0.6,
+        "end": 3.4000000000000004
+      },
+      "C": {
+        "at": 0.6,
+        "end": 42.9
+      },
+      "D": {
+        "at": 0.8999999999999999,
+        "end": 7.6
+      },
+      "E": {
+        "at": 0.8999999999999999,
+        "end": 8.0
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 5": {
+      "A": {
+        "at": 0.3,
+        "end": 3.2
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 2.0
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.4
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 9": {
+      "A": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "B": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "C": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "D": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "E": {
+        "at": 0.4,
+        "end": 0.4
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 2.0,
+        "end": 99.6
+      },
+      "B": {
+        "at": 1.2,
+        "end": 48.6
+      },
+      "C": {
+        "at": 1.5,
+        "end": 99.4
+      },
+      "D": {
+        "at": 2.1999999999999997,
+        "end": 76.4
+      },
+      "E": {
+        "at": 2.6,
+        "end": 77.2
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 5": {
+      "A": {
+        "at": 0.3,
+        "end": 45.7
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 37.5
+      },
+      "D": {
+        "at": 0.2,
+        "end": 2.5
+      },
+      "E": {
+        "at": 0.2,
+        "end": 2.1
+      }
+    },
+    "Kubernetes \u00b7 25 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 9": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.3
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 no change \u00b7 from check 1": {
+      "A": {
+        "at": 0.22499999999999998,
+        "end": 0.35000000000000003
+      },
+      "B": {
+        "at": 0.25,
+        "end": 0.375
+      },
+      "C": {
+        "at": 0.22499999999999998,
+        "end": 0.35000000000000003
+      },
+      "D": {
+        "at": 0.22499999999999998,
+        "end": 0.35000000000000003
+      },
+      "E": {
+        "at": 0.25,
+        "end": 0.4
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 2.1,
+        "end": 18.099999999999998
+      },
+      "B": {
+        "at": 99.8,
+        "end": 100.0
+      },
+      "C": {
+        "at": 99.6,
+        "end": 100.0
+      },
+      "D": {
+        "at": 99.6,
+        "end": 100.0
+      },
+      "E": {
+        "at": 99.8,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.6,
+        "end": 0.8999999999999999
+      },
+      "B": {
+        "at": 0.7000000000000001,
+        "end": 1.0
+      },
+      "C": {
+        "at": 0.6,
+        "end": 0.8999999999999999
+      },
+      "D": {
+        "at": 0.6,
+        "end": 0.8999999999999999
+      },
+      "E": {
+        "at": 0.7000000000000001,
+        "end": 1.0
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 100 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.3,
+        "end": 0.5
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.5
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.5
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.5
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.5
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.8999999999999999,
+        "end": 2.1999999999999997
+      },
+      "B": {
+        "at": 47.599999999999994,
+        "end": 100.0
+      },
+      "C": {
+        "at": 40.300000000000004,
+        "end": 100.0
+      },
+      "D": {
+        "at": 40.9,
+        "end": 100.0
+      },
+      "E": {
+        "at": 49.4,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "E": {
+        "at": 0.2,
+        "end": 0.2
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 50 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "E": {
+        "at": 0.2,
+        "end": 0.2
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.5,
+        "end": 0.6
+      },
+      "B": {
+        "at": 5.7,
+        "end": 68.5
+      },
+      "C": {
+        "at": 3.8,
+        "end": 60.3
+      },
+      "D": {
+        "at": 4.3,
+        "end": 56.00000000000001
+      },
+      "E": {
+        "at": 5.1,
+        "end": 68.30000000000001
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      },
+      "B": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      },
+      "C": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      },
+      "D": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      },
+      "E": {
+        "at": 0.5,
+        "end": 0.7000000000000001
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 the options without their descriptions, on 25 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "C": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "D": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "E": {
+        "at": 0.5,
+        "end": 0.5
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "B": {
+        "at": 36.3,
+        "end": 100.0
+      },
+      "C": {
+        "at": 29.7,
+        "end": 100.0
+      },
+      "D": {
+        "at": 34.300000000000004,
+        "end": 100.0
+      },
+      "E": {
+        "at": 51.4,
+        "end": 100.0
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "B": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "C": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "D": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "E": {
+        "at": 0.5,
+        "end": 0.5
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 100 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "E": {
+        "at": 0.2,
+        "end": 0.2
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 4.7,
+        "end": 54.400000000000006
+      },
+      "C": {
+        "at": 3.5999999999999996,
+        "end": 46.5
+      },
+      "D": {
+        "at": 4.0,
+        "end": 47.9
+      },
+      "E": {
+        "at": 5.4,
+        "end": 64.60000000000001
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.3
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 50 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "C": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "D": {
+        "at": 0.3,
+        "end": 0.3
+      },
+      "E": {
+        "at": 0.3,
+        "end": 0.3
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 1": {
+      "A": {
+        "at": 0.3,
+        "end": 0.5
+      },
+      "B": {
+        "at": 1.0,
+        "end": 7.000000000000001
+      },
+      "C": {
+        "at": 0.7000000000000001,
+        "end": 4.5
+      },
+      "D": {
+        "at": 0.8999999999999999,
+        "end": 4.5
+      },
+      "E": {
+        "at": 1.0999999999999999,
+        "end": 7.199999999999999
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 5": {
+      "A": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "B": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "C": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "D": {
+        "at": 0.5,
+        "end": 0.5
+      },
+      "E": {
+        "at": 0.5,
+        "end": 0.5
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 jev-1.14 in place of jev-1.13, on 25 % of rows \u00b7 from check 9": {
+      "A": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.1,
+        "end": 0.1
+      },
+      "E": {
+        "at": 0.1,
+        "end": 0.1
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 1.7000000000000002,
+        "end": 50.4
+      },
+      "B": {
+        "at": 0.4,
+        "end": 2.9000000000000004
+      },
+      "C": {
+        "at": 0.8999999999999999,
+        "end": 42.5
+      },
+      "D": {
+        "at": 1.0,
+        "end": 6.6000000000000005
+      },
+      "E": {
+        "at": 1.0999999999999999,
+        "end": 7.3
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 5": {
+      "A": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "B": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "C": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "D": {
+        "at": 0.4,
+        "end": 0.4
+      },
+      "E": {
+        "at": 0.4,
+        "end": 0.4
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 5-point accuracy drop injected \u00b7 from check 9": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "E": {
+        "at": 0.2,
+        "end": 0.2
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 1": {
+      "A": {
+        "at": 15.5,
+        "end": 99.9
+      },
+      "B": {
+        "at": 0.7000000000000001,
+        "end": 49.6
+      },
+      "C": {
+        "at": 8.6,
+        "end": 99.6
+      },
+      "D": {
+        "at": 3.5000000000000004,
+        "end": 77.10000000000001
+      },
+      "E": {
+        "at": 4.2,
+        "end": 78.8
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 5": {
+      "A": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "B": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "C": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "D": {
+        "at": 0.2,
+        "end": 0.2
+      },
+      "E": {
+        "at": 0.2,
+        "end": 0.2
+      }
+    },
+    "Kubernetes \u00b7 50 rows asked twice a check \u00b7 10-point accuracy drop injected \u00b7 from check 9": {
+      "A": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "B": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "C": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "D": {
+        "at": 0.6,
+        "end": 0.6
+      },
+      "E": {
+        "at": 0.6,
+        "end": 0.6
+      }
+    }
+  },
+  "forward_check": {
+    "forward: the stored jev-1.13 answers, then the two new jev-1.14 asks": {
+      "A": {
+        "first": 4,
+        "of": 4,
+        "p": 0.012345679012345675
+      },
+      "B": {
+        "first": 63,
+        "of": 85,
+        "p": 1.8858681435670045e-14
+      },
+      "D": {
+        "first": 63,
+        "of": 85,
+        "p": 1.8858681435670045e-14
+      },
+      "E": {
+        "first": 67,
+        "of": 86,
+        "p": 3.0832918284230173e-17
+      }
+    },
+    "jev-1.14 against itself: 22 October, then the two new asks": {
+      "A": {
+        "first": 1,
+        "of": 1,
+        "p": 0.3333333333333333
+      },
+      "B": {
+        "first": 23,
+        "of": 66,
+        "p": 0.7948824878597304
+      },
+      "D": {
+        "first": 24,
+        "of": 66,
+        "p": 0.60309210279061
+      },
+      "E": {
+        "first": 26,
+        "of": 67,
+        "p": 0.3648646251288844
+      }
+    },
+    "jev-1.14 changed itself": false
+  }
+}

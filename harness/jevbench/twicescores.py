@@ -26,6 +26,10 @@ The rule, fixed in issue #39 before the first run:
    change and by the last check, in every scenario and setting. The smallest worst-case regret wins; within 1 point of
    it, the smaller mean regret.
 4. If A wins, nothing is built. Otherwise the winner replaces A in `--twice` with the same share.
+
+`--forward` (#40): jev-1.14 was asked twice more, through the worker as `--twice` does, so its change runs the right way
+round: the stored jev-1.13 answers, then two jev-1.14 asks drawn from its three. Fixed in issue #40 before the asks:
+the forward triples and jev-1.14 against itself are reported, and #39's rule is applied again.
 """
 import json
 import math
@@ -43,6 +47,8 @@ from .drifttwice import binom_two_sided, odd_answers, odd_scores
 from .report import choice_probs, load_run
 
 OUT = "results/drift-twice-scores"
+OUT_FORWARD = "results/drift-twice-scores-forward"
+JEV114 = "jev-1.14 in place of jev-1.13"
 ALPHA, SHARE, TWICE = drift.ALPHA, drift.MODEL_SHARE, drift.TWICE_SHARE
 DESIGNS = {"A": "by answers (as now)", "B": "by scores alone", "C": "answers and scores, two bets",
            "D": "by answers, else by scores", "E": "by every option's probability"}
@@ -94,7 +100,9 @@ def load_cfpb():
             "truth": np.array([opts.index(truth[h].product) if truth[h].product in opts else -1 for h in keys])}
 
 
-def load_k8s(name="k8s_route"):
+def load_k8s(name="k8s_route", forward=False):
+    """The stored answers and two re-asks of jev-1.13, and the two changes as asked once. `forward` (#40): jev-1.14 as
+    its three asks (22 October, and the pair of 13 November the worker linked with pair_of), run forward."""
     with connect() as conn:
         specs = dict(conn.execute("SELECT v.version, v.spec FROM docket.version v JOIN docket.decision d ON d.id = "
                                   "v.decision_id WHERE d.name = %s", (name,)).fetchall())
@@ -112,13 +120,31 @@ def load_k8s(name="k8s_route"):
             JOIN docket.current c3 ON c3.decision_id = d.id AND c3.version = 3 AND c3.row_key = c.row_key
             JOIN docket.judgment j3 ON j3.id = c3.judgment_id
             WHERE d.name = %s ORDER BY c.row_key""", (name,)).fetchall()
+        pairs = dict((k, (a1, a2)) for k, a1, a2 in conn.execute("""
+            SELECT j2.row_key, j1.answer, j2.answer FROM docket.judgment j2
+            JOIN docket.judgment j1 ON j1.id = j2.pair_of
+            JOIN docket.decision d ON d.id = j2.decision_id
+            WHERE d.name = %s AND j2.version = 3 AND j2.purpose = 'probe'""", (name,)).fetchall()) if forward else {}
+        keys = [r[0] for r in conn.execute("""
+            SELECT c.row_key FROM docket.decision d
+            JOIN docket.current c ON c.decision_id = d.id AND c.version = 1
+            JOIN demo.k8s_live l ON l.number::text = c.row_key
+            JOIN docket.current c2 ON c2.decision_id = d.id AND c2.version = 2 AND c2.row_key = c.row_key
+            JOIN docket.current c3 ON c3.decision_id = d.id AND c3.version = 3 AND c3.row_key = c.row_key
+            WHERE d.name = %s ORDER BY c.row_key""", (name,)).fetchall()]
     names = [o["name"] for o in specs[1]["options"]]
     assert all([o["name"] for o in specs[v]["options"]] == names for v in (2, 3))
     vec = lambda answers, v: np.array([choice_vector(a, option_display(specs[v])) for a in answers])
-    return {"orig": np.stack([vec([r[1] for r in rows], 1), vec([r[2][0] for r in rows], 1), vec([r[2][1] for r in rows], 1)]),
+    task = {"orig": np.stack([vec([r[1] for r in rows], 1), vec([r[2][0] for r in rows], 1), vec([r[2][1] for r in rows], 1)]),
             "forward": False, "truth": np.array([names.index(r[0]) for r in rows]),
             "changes": {"the options without their descriptions": vec([r[3] for r in rows], 2)[None],
-                        "jev-1.14 in place of jev-1.13": vec([r[4] for r in rows], 3)[None]}}
+                        JEV114: vec([r[4] for r in rows], 3)[None]}}
+    if forward:
+        assert len(pairs) == len(keys) and all(k in pairs for k in keys)
+        task["changes"][JEV114] = np.stack([task["changes"][JEV114][0], vec([pairs[k][0] for k in keys], 3),
+                                            vec([pairs[k][1] for k in keys], 3)])
+        task["forward_changes"] = {JEV114}
+    return task
 
 
 # ---------------------------------------------------------------- the series
@@ -181,7 +207,7 @@ def series(task, cfg, m2, change, share, start, runs, rng):
                     w = wrong[p][flip]
                     rows = np.flatnonzero(flip)
                     v[rows, top], v[rows, w] = v[rows, w], v[rows, top]
-            elif active and task["forward"]:
+            elif active and (task["forward"] or change in task.get("forward_changes", ())):
                 on = hit[p]
                 c1, c2 = pick2(np.arange(len(C)), len(p))
                 v1, v2 = np.where(on[:, None], C[c1, p], v1), np.where(on[:, None], C[c2, p], v2)
@@ -243,6 +269,21 @@ def real_repeats():
     return {"per_triple": per, "tests": tests, "passes": {d: tests[d]["p"] >= 0.05 for d in DESIGNS}}
 
 
+def forward_check(task):
+    """#40, steps 1 and 2: the stored jev-1.13 answers against the two new jev-1.14 asks, and jev-1.14's ask of 22
+    October against them. Of the rows with an odd one out, how often is it the first, by each reading?"""
+    stored, (old, new1, new2) = task["orig"][0], task["changes"][JEV114]
+    out = {}
+    for what, first in (("forward: the stored jev-1.13 answers, then the two new jev-1.14 asks", stored),
+                        ("jev-1.14 against itself: 22 October, then the two new asks", old)):
+        odd = odd_all(first, new1, new2)
+        out[what] = {d: {"first": int((o == 0).sum()), "of": int((o >= 0).sum()),
+                         "p": binom_two_sided(int((o == 0).sum()), int((o >= 0).sum()))} for d, o in odd.items()}
+    same = out["jev-1.14 against itself: 22 October, then the two new asks"]
+    out["jev-1.14 changed itself"] = bool(same["A"]["p"] < 0.05 or same["B"]["p"] < 0.05)
+    return out
+
+
 def choose(cells, out_of):
     """Criterion 3 among the designs still in: the smallest worst-case regret, then the smaller mean regret."""
     ds = [d for d in DESIGNS if d not in out_of]
@@ -264,9 +305,15 @@ def choose(cells, out_of):
     return chosen, worst, mean, {d: w[1] for d, w in where.items()}
 
 
-def run(seed=39, runs=1000):
+def run(seed=39, runs=1000, forward=False):
     rng = np.random.default_rng(seed)
-    loaded = {"CFPB": load_cfpb(), "Kubernetes": load_k8s()}
+    loaded = {"CFPB": load_cfpb(), "Kubernetes": load_k8s(forward=forward)}
+    checks = forward_check(loaded["Kubernetes"]) if forward else None
+    if checks and checks["jev-1.14 changed itself"]:          # #40, step 2: the simulation is skipped
+        os.makedirs(OUT_FORWARD, exist_ok=True)
+        with open(f"{OUT_FORWARD}/results.json", "w") as f:
+            json.dump({"forward_check": checks}, f, indent=2)
+        return OUT_FORWARD
     cells, false_alarms = {}, {}
     for name, cfg in TASKS.items():
         task = loaded[name]
@@ -290,21 +337,40 @@ def run(seed=39, runs=1000):
              {d for d, ok in repeats["passes"].items() if not ok}
     chosen, worst, mean, where = choose(cells, out_of)
     res = {"seed": seed, "runs": runs, "designs": DESIGNS, "out": sorted(out_of), "chosen": chosen, "worst_regret": worst,
-           "mean_regret": mean, "worst_where": where, "false_alarms": false_alarms, "repeats": repeats, "cells": cells}
-    os.makedirs(OUT, exist_ok=True)
-    with open(f"{OUT}/results.json", "w") as f:
+           "mean_regret": mean, "worst_where": where, "false_alarms": false_alarms, "repeats": repeats, "cells": cells,
+           "forward_check": checks}
+    out = OUT_FORWARD if forward else OUT
+    os.makedirs(out, exist_ok=True)
+    with open(f"{out}/results.json", "w") as f:
         json.dump(res, f, indent=2)
-    with open(f"{OUT}/report.md", "w") as f:
+    with open(f"{out}/report.md", "w") as f:
         f.write(render(res))
-    return OUT
+    return out
 
 
 def render(res):
     ds = list(res["designs"])
     rep = res["repeats"]["tests"]
-    L = ["# How should `--twice` read a row's three asks?", "",
-         "No API calls. Generated by `jevbench twicescores` (#39) from real asks. Designs, each on the same pairs of "
-         "re-asks and with the share of the evidence budget #37 chose for rows asked twice:", ""]
+    fc = res.get("forward_check")
+    L = ["# How should `--twice` read a row's three asks?" + (" With jev-1.14 run forward" if fc else ""), "",
+         "No API calls. Generated by `jevbench twicescores" + (" --forward` (#40)" if fc else "` (#39)") + " from real asks. "
+         "Designs, each on the same pairs of re-asks and with the share of the evidence budget #37 chose for rows asked "
+         "twice:", ""]
+    if fc:
+        F = ["jev-1.14 was asked twice more on the 300 Kubernetes issues (13 November 2026, $0.026, through the worker as "
+             "`--twice` does), so its change runs forward here: the stored jev-1.13 answers, then two jev-1.14 asks drawn "
+             "from its three. Everything else is as in #39, with the same seed. Fixed in issue #40 before the asks.", "",
+             "## The new asks, as triples", "",
+             "| triple | reading | the first is the odd one | p against a third |", "| --- | --- | ---: | ---: |"]
+        for what, by in fc.items():
+            if isinstance(by, dict):
+                F += [f"| {what} | {d}: {res['designs'][d]} | {by[d]['first']} of {by[d]['of']} "
+                      f"({100 * by[d]['first'] / max(1, by[d]['of']):.1f} %) | {by[d]['p']:.3g} |" for d in "ABDE"]
+        F += ["", "jev-1.14 changed itself between 22 October and 13 November: "
+                  + ("yes, so the simulation was skipped." if fc["jev-1.14 changed itself"] else
+                     "no (neither the answers nor the scores test rejected at 5 %), so the simulation ran."), "",
+              "## The simulation", ""]
+        L[2:2] = F
     L += [f"- **{d}**: {v}" + (" (out)" if d in res["out"] else "") + (" (**chosen**)" if d == res["chosen"] else "")
           for d, v in res["designs"].items()]
     L += ["", "**The rule, fixed in issue #39 before the first run.** A design is out if its series without a change alarm "

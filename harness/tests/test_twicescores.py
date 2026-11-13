@@ -36,3 +36,20 @@ def test_the_rule_drops_designs_out_and_minimises_the_worst_regret():
     assert chosen == "C" and worst["C"] == 1 and worst["A"] == 100 and "no change" not in where["C"]
     chosen, worst, _, _ = T.choose(cells, out_of={"C"})
     assert chosen not in ("C",) and "C" not in worst
+
+
+def test_a_change_with_several_asks_can_run_forward():
+    """#40: a change asked more than once runs forward (the stored ask first, then two of the change's asks), even in a
+    task whose other changes have their roles swapped; one whose new asks agree with each other is caught by its scores."""
+    rng = np.random.default_rng(40)
+    rows = 400
+    base = rng.dirichlet(np.ones(4) * 0.5, rows)
+    shifted = base.copy()
+    shifted[:, 0], shifted[:, 1] = base[:, 1], base[:, 0]            # the change: two options swap probabilities
+    task = {"orig": np.stack([base, base, base]), "truth": base.argmax(-1), "forward": False,
+            "changes": {"swap": np.stack([shifted, shifted, shifted])}, "forward_changes": {"swap"}}
+    cfg = {"labelled": 100, "anchors": 25, "checks": 6}
+    first = T.series(task, cfg, 25, "swap", 1.0, 1, 10, rng)
+    assert (first["C"] <= 6).all() and set(first) == set(T.DESIGNS)
+    quiet = T.series(task, cfg, 25, None, 1.0, 1, 10, rng)
+    assert all((f == T.NEVER).all() for f in quiet.values())   # every ask alike: nothing to find

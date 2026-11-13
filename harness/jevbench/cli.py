@@ -113,7 +113,8 @@ def main(argv=None):
     sub.add_parser("driftprobes")
     sub.add_parser("drifttwice")
     sub.add_parser("twicerepeat")
-    sub.add_parser("twicescores")
+    ts = sub.add_parser("twicescores")
+    ts.add_argument("--forward", action="store_true", help="with jev-1.14 run forward from its new asks (#40)")
     sub.add_parser("auditvalidate")
     sub.add_parser("stratvalidate")
     sub.add_parser("backends")
@@ -240,7 +241,7 @@ def main(argv=None):
         print("report:", twicerepeat.run() + "/report.md")
     elif args.cmd == "twicescores":
         from . import twicescores
-        print("report:", twicescores.run() + "/report.md")
+        print("report:", twicescores.run(forward=args.forward) + "/report.md")
     elif args.cmd == "auditvalidate":
         from . import auditvalidate
         print("report:", auditvalidate.run() + "/report.md")

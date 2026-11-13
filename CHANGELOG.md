@@ -4,6 +4,11 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-13
 
+### Checked (jev-1.14 run forward, #40)
+- **jev-1.14 asked twice more** on the 300 Kubernetes issues, through the worker as `--twice` does: 600 asks, each second ask linked to its first, none failed, $0.026. #39's numbers for it had the roles swapped, since it had been asked once.
+- **The forward triples** (checks fixed in #40 before the asks). The stored jev-1.13 score was the odd one on 63 of 85 issues (74.1 %, p = 2e-14 against a third; 67–75 % with the roles swapped), and the stored answer on 4 of 4. Against its own ask of 22 October, jev-1.14 gave 23 of 66 (34.8 %, p = 0.79), so it had not changed itself.
+- **The simulation forward** (`jevbench twicescores --forward`). The two bets caught jev-1.14 from the first check by check 12 in every series (99.9 % with the roles swapped), on half the issues in 49 % (38 %), and the answers alone in under 1 %. #39's rule chose the two bets again, so nothing was rebuilt.
+
 ### Added (the scores of rows asked twice, #39)
 - **A second bet on the pairs of `--twice`, by scores.** Of a row's stored score and its two new ones, the two closest make the pair and the third is the odd one; without a change it is the stored one a third of the time. The model check now bets on that beside the answers, the two splitting the share of the evidence budget that rows asked twice have, so each needs an e-value of 533 instead of 267. No other threshold moved. It catches changes that move scores and hardly any answer, in no one direction, which no other check saw: jev-1.14 in place of jev-1.13, which `jev-latest` moved to on 14 October.
 - **Chosen by `jevbench twicescores`** (new, no API calls) among five readings, by a rule fixed in #39 before the first run: by answers alone (as in #38), by scores alone, both as two bets, answers then scores as one bet, and every option's probability (total variation). Data: the twelve CFPB runs in the original batches as stored and re-asks, the changes run forward from three runs each, the Kubernetes changes with the roles swapped; 1,000 series per scenario.
