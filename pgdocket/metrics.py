@@ -268,7 +268,7 @@ def spent_alpha(alpha, run):
 
 
 # ---------------------------------------------------------------- anytime-valid tests by betting (audit, #23)
-def eprocess_below(x, target, cap=0.5, window=40, stop=None):
+def eprocess_below(x, target, cap=0.5, window=20, stop=None):
     """Evidence that the mean of x (values in [0, 1], in the order observed) has fallen below `target`.
 
     Wealth W_t = prod (1 + lambda_i (target - x_i)). While each x_i has conditional mean >= target, W is a
@@ -277,7 +277,9 @@ def eprocess_below(x, target, cap=0.5, window=40, stop=None):
     bets follow aGRAPA (Waudby-Smith & Ramdas, 2024), capped at `cap` / (1 - target) so that one observation can at
     most halve the wealth. They are sized from the last `window` observations plus one pseudo-observation at the
     target (no bet without evidence): a mean over all of them would keep a long good stretch from betting after a
-    change. Returns the wealth after each observation (up to the first that reaches `stop`, if given)."""
+    change. The window was 40 until #42, which chose 20 among windows of 20, 40 and 80, a larger cap and fresh starts
+    at every batch, by a rule fixed beforehand: a fall shows sooner, at a small cost for small falls watched for long.
+    Returns the wealth after each observation (up to the first that reaches `stop`, if given)."""
     x = np.asarray(x, float)
     w, out = 1.0, []
     for i, xi in enumerate(x):

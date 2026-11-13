@@ -10,7 +10,9 @@ The test is an e-process (`metrics.eprocess_below`): it bets against "precision 
 time, in draw order. While every batch's precision is at least the target, the chance that its wealth ever reaches
 1 / alpha is at most alpha (Ville's inequality), however often the audit is read and however many batches follow.
 This is the sequential "harmful shift" test of Podkopaev & Ramdas (ICLR 2022), with the betting bounds of
-Waudby-Smith & Ramdas (JRSS-B 2024). A series of batches belongs to one calibration: recalibrating starts a new one.
+Waudby-Smith & Ramdas (JRSS-B 2024). Its bets are sized from the last 20 audited rows (#42; 40 before), so a fall
+shows sooner after a long good stretch. A series of batches belongs to one calibration: recalibrating starts a new
+one.
 
 Audit labels are recorded as 'audit'. Drawn from accepted rows only, they are never used to calibrate, count or plan.
 """

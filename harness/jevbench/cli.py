@@ -25,6 +25,7 @@
   twicescores how should --twice read a row's three asks? (no API calls)
   auditvalidate does the audit alarm when accepted answers fall below target, and only then? (no API calls)
   auditscores how many audit labels could the model's scores save? (no API calls)
+  auditbets   better bets for the audit: start fresh where a fall may begin? (no API calls)
   stratvalidate would labels stratified by answer certify more answers? (no API calls)
   steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
   backends    Jev and Laya on the same labelled rows, from the stored check reports (no API calls)
@@ -116,6 +117,7 @@ def main(argv=None):
     sub.add_parser("twicerepeat")
     ts = sub.add_parser("twicescores")
     ts.add_argument("--forward", action="store_true", help="with jev-1.14 run forward from its new asks (#40)")
+    sub.add_parser("auditbets")
     sub.add_parser("auditscores")
     sub.add_parser("auditvalidate")
     sub.add_parser("stratvalidate")
@@ -244,6 +246,9 @@ def main(argv=None):
     elif args.cmd == "twicescores":
         from . import twicescores
         print("report:", twicescores.run(forward=args.forward) + "/report.md")
+    elif args.cmd == "auditbets":
+        from . import auditbets
+        print("report:", auditbets.run() + "/report.md")
     elif args.cmd == "auditscores":
         from . import auditscores
         print("report:", auditscores.run() + "/report.md")

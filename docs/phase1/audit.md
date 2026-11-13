@@ -1,6 +1,6 @@
 # Audits: are the answers marked `auto` still right?
 
-*2026-10-26, 2026-11-13 · issues #23, #41 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022), testing by betting (Waudby-Smith & Ramdas, JRSS-B 2024) · evidence: [results/audit-validation](../../results/audit-validation/report.md), [results/audit-scores](../../results/audit-scores/report.md)*
+*2026-10-26, 2026-11-13 · issues #23, #41, #42 · design: [ADR 0003](../adr/0003-human-labels-are-the-oracle.md) · lineage: harmful-shift tracking (Podkopaev & Ramdas, ICLR 2022), testing by betting (Waudby-Smith & Ramdas, JRSS-B 2024) · evidence: [results/audit-validation](../../results/audit-validation/report.md), [results/audit-scores](../../results/audit-scores/report.md), [results/audit-bets](../../results/audit-bets/report.md)*
 
 `calibrate` measures precision once, on the labels it is given. The guarantee says that at least 90 % (say) of the rows marked `auto` are right, and it holds for rows like the labelled ones. The [drift check](drift.md) tells you whether the rows or the model have *changed*. But a change in the answers is not proof that accuracy fell, and a fall in accuracy may come with no visible change. Only labels on new accepted rows can show it.
 
@@ -31,14 +31,14 @@ audit of triage v1 (calibration of 2026-10-26 10:52): 2 batches, 40 rows drawn, 
 - **The test.** It bets against "precision ≥ target", one audited row at a time, in draw order. Its wealth is ∏ (1 + λᵢ (target − xᵢ)), where xᵢ is 1 for a right answer.
   - **Why it holds.** While every batch's precision is at least the target, the wealth is a nonnegative supermartingale for any bet λᵢ chosen from the earlier rows. By Ville's inequality, the chance it *ever* reaches 20 is at most 5 %.
   - **What that buys.** The audit can be read after every batch, for as long as you like, at no cost in false alarms. The drift check, by contrast, splits a fixed budget across its runs. Precision may also vary from batch to batch, as long as it stays at or above the target.
-- **The bets.** They follow aGRAPA (Waudby-Smith & Ramdas), sized from the last 40 audited rows. On the real CFPB stream below, a mean over every audited row was still dominated by the good months long after a change: a fall to 70 % was caught in 14 % of audits, against 93 % with the 40-row window.
+- **The bets.** They follow aGRAPA (Waudby-Smith & Ramdas), sized from the last 20 audited rows (#42; 40 before). On the real CFPB stream below, a mean over every audited row was still dominated by the good months long after a change: a fall to 70 % was caught in 14 % of audits, against 93 % with a 40-row window (#23).
 - **A series per calibration.** Recalibrating changes what `auto` means, so it starts a new series, as does promoting a version.
 
 ## Evidence
 
 No API calls: `jevbench auditvalidate` ([report](../../results/audit-validation/report.md)).
 
-**False alarms stayed rare, read after every row.** In simulation, precision exactly at the target is the hardest case. Over 1,000 audited rows, 3.0 % of runs alarmed at a 90 % target and 1.5 % at 95 % (5 % allowed). On real streams, with every label known:
+**False alarms stayed rare, read after every row.** In simulation, precision exactly at the target is the hardest case. Over 1,000 audited rows, 3.5 % of runs alarmed at a 90 % target and 2.1 % at 95 % (5 % allowed). On real streams, with every label known:
 - **Kubernetes.** The live decision (calibrated at 90 %): 20 issues audited a month from March to June 2026. The months' true precision ran from 71 % (7 issues in March) to 98 %. No audit alarmed in 1,000.
 - **CFPB.** 2,000 complaints, calibrated at 85 % on 2015–2021 and audited through 2022–2023 in 13 batches. Every batch's true precision was between 92.5 % and 100 %. No audit alarmed in 1,000.
 
@@ -46,18 +46,30 @@ No API calls: `jevbench auditvalidate` ([report](../../results/audit-validation/
 
 | target | 5 points lower | 10 points lower | 15 points lower | 20 points lower |
 | ---: | ---: | ---: | ---: | ---: |
-| 90 % | 318 / 839 | 101 / 228 | 51 / 111 | 34 / 67 |
-| 95 % | 236 / 482 | 77 / 154 | 44 / 80 | 30 / 56 |
+| 90 % | 345 / 1,104 | 109 / 247 | 53 / 115 | 34 / 70 |
+| 95 % | 264 / 592 | 84 / 164 | 44 / 83 | 30 / 59 |
 
 **A fall injected into the real stream.** On the CFPB stream, from the sixth batch on, right answers were turned wrong at random until the accepted complaints were at 80, 75 or 70 % (target 85 %). 500 audits each; 146 complaints are audited after the change.
 
 | precision after the change | alarms before the change | caught by the end | audited rows from the change to the alarm (median) |
 | ---: | ---: | ---: | ---: |
-| 80 % | 0.0 % | 9.8 % | 111 |
-| 75 % | 0.0 % | 53.4 % | 97 |
-| 70 % | 0.0 % | 92.6 % | 72 |
+| 80 % | 0.0 % | 10.0 % | 97 |
+| 75 % | 0.0 % | 53.4 % | 90 |
+| 70 % | 0.0 % | 93.0 % | 65 |
 
-With 20 labels a week at a 90 % target, a 15-point fall shows in about three weeks (median 51 rows) and a 5-point fall in about four months. The report says how many audited rows a 10-point fall would take at your target.
+With 20 labels a week at a 90 % target, a 15-point fall shows in about three weeks (median 53 rows) and a 5-point fall in about four months. The report says how many audited rows a 10-point fall would take at your target.
+
+**Better bets (#42).** After a long good stretch, a 40-row window still held the good rows when a fall began, so the test waited before betting. `jevbench auditbets` compared, on the same audits ([report](../../results/audit-bets/report.md)):
+- windows of 20, 40 and 80 rows;
+- a larger cap on each bet;
+- fresh starts: a mixture of tests started at every batch, weighted 1 / (b (b + 1)) to stay valid for ever;
+- half of today's test and half fresh starts.
+
+The scenarios were simulated falls (targets 85 and 90 %, 5–15 points below, from the first, 4th or 11th batch) and the falls injected into the CFPB stream. A rule fixed in the issue before the first run chose the 20-row window: its largest shortfall from the best design was 5.9 points, against 15.1 for the 40-row window and 12.8 for fresh starts.
+- **Large falls show sooner.** A fall to 70 % on the CFPB stream was caught within 40 audited rows in 17 % of audits, against 4 %. In simulation, a 15-point fall after 60 good rows was caught within 40 rows in 25 % of audits, against 10 %.
+- **The price, for small falls watched for long:** up to about 6 points. For example, a 10-point fall from the first batch, at an 85 % target, was caught within 200 rows in 67 % of audits, against 72 %. It also costs a few more labels when there was no good stretch before the fall, as in the simulation above: 109 against 101 for a 10-point fall.
+- **Fresh starts barely helped.** Their weight over start times cost about as much evidence as starting fresh saved, and a larger cap never bound.
+- **False alarms** stayed at most 4.0 % at exactly the target, and none on the real streams.
 
 **Could the model's scores cut the labels? (#41)** Prediction-powered methods would use the model's score on every accepted row as a control variate. For each audited row they bet on its label minus a multiple of its score, plus the batch's mean score, which is known exactly. That is how PPI and PPI++, prediction-powered e-values (Csillag et al., ICML 2025) and prediction-powered risk monitoring (Zhang et al., ICML 2026) work. At best the scores remove the share corr(score, right)² of one label's variance, the correlation taken over the accepted rows. So 1 / (1 − corr²) bounds how many times fewer labels any such design can need, before the cost of the wider bets it must allow. Measured on the audit's real streams ([report](../../results/audit-scores/report.md)):
 

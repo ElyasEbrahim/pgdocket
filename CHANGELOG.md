@@ -4,6 +4,11 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-13
 
+### Changed (the audit's bets, #42)
+- **`pgdocket audit` sizes its bets from the last 20 audited rows** (40 before). After a long good stretch, the 40-row window still held the good rows when a fall began, so the test waited before betting.
+- **Chosen by `jevbench auditbets`** (new, no API calls), by a rule fixed in #42 before the first run. The candidates were windows of 20, 40 and 80 rows, a larger cap on each bet, fresh starts (a mixture of tests started at every batch, weighted 1 / (b (b + 1))), and half of each. The scenarios were simulated falls and falls injected into the real CFPB stream. The 20-row window's largest shortfall from the best design was 5.9 points, against 15.1 for 40 rows and 12.8 for fresh starts, whose weight over start times cost about what starting fresh saved.
+- **What changes.** A fall to 70 % on the CFPB stream is caught within 40 audited rows in 17 % of audits (4 % before), and the median wait from the change to the alarm drops to 65 audited rows (72). Small falls watched for long lose up to about 6 points, and a fall with no good stretch before it takes a few more labels (109 against 101 for 10 points at a 90 % target). False alarms stay at most 4.0 % at exactly the target, and none on the real streams.
+
 ### Examined, not built (audit labels from the model's scores, #41)
 - **The question:** could the model's score on every accepted row cut the labels `pgdocket audit` needs? Prediction-powered methods would use it as a control variate (PPI, PPI++, prediction-powered e-values, prediction-powered risk monitoring). At best that removes the share corr(score, right)² of one label's variance over the accepted rows, so 1 / (1 − corr²) bounds the saving of any such design.
 - **Measured** (`jevbench auditscores`, new, no API calls). The bound was 1.10× on the live Kubernetes decision and 1.00× on the CFPB stream the audit was validated on (85 %); at 80 and 75 % on the same complaints, 1.03× and 1.14×. Jev's probabilities pile up at the top: 71–74 % of the accepted rows share a single calibrated confidence, and the correlation with being right is 0.04–0.35. Drawing the least-sure rows more often would have saved at most 23 %. Nothing was built.

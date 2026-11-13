@@ -1,41 +1,41 @@
 {
   "simulation": {
     "false_alarms": {
-      "0.9": 0.0305,
-      "0.95": 0.0145
+      "0.9": 0.035,
+      "0.95": 0.0215
     },
     "detect": {
       "0.9/0.05": {
-        "median": 317.5,
-        "p90": 839.1
+        "median": 345.0,
+        "p90": 1103.9
       },
       "0.9/0.1": {
-        "median": 101.0,
-        "p90": 228.10000000000002
+        "median": 109.0,
+        "p90": 247.30000000000007
       },
       "0.9/0.15": {
-        "median": 51.0,
-        "p90": 111.10000000000002
+        "median": 53.0,
+        "p90": 115.10000000000002
       },
       "0.9/0.2": {
         "median": 34.0,
-        "p90": 67.10000000000002
+        "p90": 70.0
       },
       "0.95/0.05": {
-        "median": 236.0,
-        "p90": 482.4000000000001
+        "median": 263.5,
+        "p90": 592.4000000000003
       },
       "0.95/0.1": {
-        "median": 77.0,
-        "p90": 154.0
+        "median": 83.5,
+        "p90": 164.0
       },
       "0.95/0.15": {
         "median": 44.0,
-        "p90": 80.10000000000002
+        "p90": 83.0
       },
       "0.95/0.2": {
         "median": 30.0,
-        "p90": 56.0
+        "p90": 59.0
       }
     }
   },
@@ -127,12 +127,12 @@
     },
     "injected": {
       "0.8": {
-        "alarm_rate": 0.098,
+        "alarm_rate": 0.1,
         "audited": 246,
         "false_before_change": 0.0,
-        "caught": 0.098,
+        "caught": 0.1,
         "after_change": 146,
-        "median_labels_after_change": 111.0
+        "median_labels_after_change": 97.0
       },
       "0.75": {
         "alarm_rate": 0.534,
@@ -140,15 +140,15 @@
         "false_before_change": 0.0,
         "caught": 0.534,
         "after_change": 146,
-        "median_labels_after_change": 97.0
+        "median_labels_after_change": 90.0
       },
       "0.7": {
-        "alarm_rate": 0.926,
+        "alarm_rate": 0.93,
         "audited": 246,
         "false_before_change": 0.0,
-        "caught": 0.926,
+        "caught": 0.93,
         "after_change": 146,
-        "median_labels_after_change": 72.0
+        "median_labels_after_change": 65.0
       }
     }
   }

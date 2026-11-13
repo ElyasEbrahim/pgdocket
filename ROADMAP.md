@@ -86,6 +86,7 @@ Status as of 2026-10-17: harness built and validated; real Jev run done; the tec
 - [x] `pgdocket audit`: blind spot checks of the rows marked `auto`, with an anytime-valid alarm (an e-process; Podkopaev & Ramdas) (#23)
 - [ ] Anytime-valid drift alarms that don't lose power as checks repeat (e-processes; prediction-powered risk monitoring, ICML 2026)
 - [x] Audits with fewer labels from the model's own scores (prediction-powered risk monitoring), examined (#41): on Jev's decisions the scores of the accepted rows could save at most 0–14 % of labels, since most share one calibrated confidence (`jevbench auditscores`), so not built
+- [x] Better bets for the audit (#42): bets sized from the last 20 audited rows instead of 40, chosen over a larger cap and fresh starts at every batch by a rule fixed beforehand (`jevbench auditbets`). A fall to 70 % on the real CFPB stream is caught within 40 audited rows in 17 % of audits, against 4 %
 
 **Exit:** backend comparison report on two public datasets.
 
