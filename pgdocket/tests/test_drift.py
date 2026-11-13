@@ -264,3 +264,48 @@ def test_the_model_verdict_names_rows_without_labels_and_says_when_the_labels_ra
     assert "every labelled row has been asked in this series" in text and "--probes M" not in text
     r["probes"] = 0
     assert "--probes M keeps the scores evidence growing" in "\n".join(drift.verdict_model(r))
+
+
+def test_the_odd_one_out_bet_is_fair_without_a_change():
+    """#37, #38: without a change the stored answer is the odd one out of three exchangeable answers with chance 1/3, and
+    the mixture of bets on it is then a test martingale: its expected value is 1 whatever the number of rows."""
+    for n in (1, 5, 30):
+        pmf = [math.comb(n, k) * (1 / 3) ** k * (2 / 3) ** (n - k) for k in range(n + 1)]
+        assert sum(p * math.exp(drift.log_odd(k, n)) for k, p in enumerate(pmf)) == pytest.approx(1.0, rel=1e-9)
+    assert drift.log_odd(0, 0) == 0 and drift.log_odd(12, 36) < 0 < drift.log_odd(25, 36)
+    assert drift.log_odd(9, 12, chance=0.5) == pytest.approx(drift.log_bets(9, 3))   # one chance in two: the sign bets
+    assert drift.log_odd(np.array([[3, 30]]), np.array([[9, 36]])).shape == (1, 2)
+
+
+def test_three_draws_of_one_model_put_the_stored_answer_odd_a_third_of_the_time():
+    rng = np.random.default_rng(38)
+    probs = rng.dirichlet(np.ones(4), 20000)                  # each row its own answer probabilities
+    draws = np.array([[rng.choice(4, p=p) for _ in range(3)] for p in probs[:6000]])
+    o = drift.odd_one(*draws.T)
+    assert set(np.unique(o)) <= {-1, 0, 1, 2}
+    share = (o == 0).sum() / (o >= 0).sum()
+    assert abs(share - 1 / 3) < 0.02                         # thousands of rows with an odd one out
+    assert drift.odd_one(["a", "a", "b", "c"], ["b", "a", "b", "d"], ["b", "a", "a", "e"]).tolist() == [0, -1, 2, -1]
+
+
+def test_the_label_free_half_of_the_evidence_is_split_with_rows_asked_twice():
+    ev = drift.model_evidence(0, 0, 0, 0, (1 - drift.MODEL_SHARE) * drift.ALPHA)
+    needs = {part: math.exp(ev[part]["threshold"]) for part in ("accuracy", "scores", "answers")}
+    assert needs["accuracy"] == pytest.approx(133.3, abs=0.1)                       # unchanged since #35
+    assert needs["scores"] == pytest.approx(266.7, abs=0.1) and needs["answers"] == pytest.approx(266.7, abs=0.1)
+    hit = drift.model_evidence(0, 0, 0, 0, 0.015, odd=(30, 32))
+    assert hit["answers"]["alarm"] and not hit["scores"]["alarm"] and not hit["accuracy"]["alarm"]
+    out = drift.model_rows([True] * 20, [True] * 20, [0.9] * 20, [0.9] * 20, 1, (0, 0, 0, 0), (30, 32))
+    assert out["answers"]["alarm"] and not out["accuracy"]["alarm"] and not out["scores"]["alarm"]
+
+
+def test_the_verdict_names_rows_asked_twice():
+    r = {"run": 2, "days_apart": 3.0, "probes": 40, "evidence_rows": 20, "evidence_rows_scores": 60, "labelled_left": 5,
+         "asked_twice": 40, "series_began": "2026-11-13T00:00:00+00:00"} | drift.model_rows(
+        [True] * 20, [True] * 20, [0.9] * 60, [0.9] * 60, 2, (0, 0, 0, 0), (30, 32))
+    lines = drift.verdict_model(r)
+    assert any("answers: of 40 rows asked twice since 2026-11-13, 32 had an odd one out, the stored answer on 30" in x
+               and "(needs 267)" in x and "⚠ changed" in x for x in lines)
+    assert lines[-1].startswith("  → the model now gives some rows another answer")
+    quiet = drift.verdict_model(r | {"asked_twice": 0})
+    assert not any("asked twice" in x for x in quiet)          # without --twice the line stays out of the way

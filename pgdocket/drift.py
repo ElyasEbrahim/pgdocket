@@ -42,6 +42,15 @@ row's, so where they differ each sign is a fair coin. The model check now alarms
   (`model_evidence`), worse against better and scores down against up.
 `jevbench driftmodel` chose the design and the share by the rule of #34, on real re-asks of 300 Kubernetes issues
 and 2,000 CFPB complaints.
+
+**Rows asked twice (#37, #38).** One re-ask can't show a change in no one direction: the same model asked again also
+answers differently now and then. Two re-asks can. Without a change, a row's stored answer and its two new ones are
+three exchangeable draws, so when exactly two agree, the odd one is the stored answer a third of the time; after a
+change it is far more often, whichever way the answers moved. With `--twice` the rows without labels are asked twice,
+and evidence that never expires bets on the stored answer being the odd one (`log_odd`), from each row's first pair of
+re-asks in the series. It gets half of the evidence budget that needs no labels (`TWICE_SHARE`, chosen in #37), in
+every series, so the scores evidence has the other half. Its validity was checked on twelve fresh runs (#38): the
+stored answer was the odd one on 165 of 486 rows (p = 0.77 against a third).
 """
 import json
 import math
@@ -63,6 +72,7 @@ MIN_SHIFT = 0.05       # an alarm on the answer mix needs an answer's share to m
 MIN_KS = 0.10          # …and on scores a Kolmogorov-Smirnov distance of at least 0.10
 MODEL_SHARE = 0.7      # the model check's sign tests get this share of ALPHA over the checks; its evidence, the rest
 BETS = np.arange(1, 20) / 20   # the bets the model check's evidence mixes (#35)
+TWICE_SHARE = 0.5      # rows asked twice get this share of the model check's label-free evidence budget; scores the rest
 
 
 def sign_test_one_sided(worse, better):
@@ -200,6 +210,29 @@ def log_bets(pos, neg, two_sided=False):
     return float(top + math.log(np.exp(t - top).mean()))
 
 
+def log_odd(k, n, chance=1 / 3):
+    """log e-value that a row's stored answer is the odd one out more often than `chance`: it was in k of the n rows
+    asked twice whose three answers had exactly two in agreement. Without a change the three are exchangeable draws,
+    so the stored one is the odd one with chance 1/3. An equal mixture over the bets b in BETS of the martingales
+    that multiply wealth by 1 + b (1 - chance) / chance when it is, and by 1 - b when a new answer is: each is a test
+    martingale, so their mean is one too (#37). Works on arrays of counts."""
+    k, n = np.asarray(k, float)[..., None], np.asarray(n, float)[..., None]
+    t = k * np.log1p(BETS * (1 - chance) / chance) + (n - k) * np.log1p(-BETS)
+    top = t.max(-1, keepdims=True)
+    out = (top + np.log(np.exp(t - top).mean(-1, keepdims=True)))[..., 0]
+    return float(out) if out.ndim == 0 else out
+
+
+def odd_one(stored, first, second):
+    """Per row, the place of the odd answer when exactly two of the three agree (0: the stored one); -1 otherwise."""
+    a0, a1, a2 = (np.asarray(x, dtype=object) for x in (stored, first, second))
+    out = np.full(len(a0), -1)
+    out[(a1 == a2) & (a0 != a1)] = 0
+    out[(a0 == a2) & (a1 != a0)] = 1
+    out[(a0 == a1) & (a2 != a0)] = 2
+    return out
+
+
 def signs(orig_right, new_right, orig_scores, new_scores):
     """(worse, better, up, down): re-asks answered worse or better than the stored answers, and whose scores rose or
     fell."""
@@ -208,28 +241,35 @@ def signs(orig_right, new_right, orig_scores, new_scores):
     return int((o & ~n).sum()), int((~o & n).sum()), int((diff > 1e-9).sum()), int((diff < -1e-9).sum())
 
 
-def model_rows(orig_right, new_right, orig_scores, new_scores, run, first):
+def model_rows(orig_right, new_right, orig_scores, new_scores, run, first, odd=(0, 0)):
     """The model check (#35): this check's re-asks against their stored answers, by sign tests on MODEL_SHARE of the
-    budget spent over the series' checks (`anchors`), and the evidence from every labelled row's first re-ask in the
-    series (`first`, as `signs` counts them) on the rest, once. Either can raise the alarm. Pure function."""
+    budget spent over the series' checks (`anchors`), and the evidence from every row's first re-ask in the series
+    (`first`, as `signs` counts them) and first pair of re-asks (`odd`: the stored answer odd one out, of the rows with
+    one, #38) on the rest, once. Any of them can raise the alarm. Pure function."""
     out = anchors(orig_right, new_right, orig_scores, new_scores, M.spent_alpha(MODEL_SHARE * ALPHA, run))
-    ev = model_evidence(*first, (1 - MODEL_SHARE) * ALPHA)
+    ev = model_evidence(*first, (1 - MODEL_SHARE) * ALPHA, odd)
     for part in ("accuracy", "scores"):
         out[part]["evidence"] = ev[part]
         out[part]["alarm"] = bool(out[part]["alarm"] or ev[part]["alarm"])
+    out["answers"] = {"evidence": ev["answers"], "alarm": ev["answers"]["alarm"]}
     return out
 
 
-def model_evidence(worse, better, up, down, alpha):
-    """Evidence that never expires for the model check (#35), from each labelled row's first re-ask in the series: how
-    many were answered worse or better than their stored answer, and how many scores went up or down. Without a change,
-    a row's stored answer and that re-ask are two exchangeable draws, independent of every other row's, so where they
-    differ each sign is a fair coin. Accuracy bets on 'worse' (one-sided), scores on either direction; `alpha` is split
-    between them."""
-    thr = math.log(2 / alpha)
-    acc, sc = log_bets(worse, better), log_bets(down, up, two_sided=True)
-    return {"accuracy": {"worse": worse, "better": better, "log_e": acc, "threshold": thr, "alarm": bool(acc >= thr)},
-            "scores": {"up": up, "down": down, "log_e": sc, "threshold": thr, "alarm": bool(sc >= thr)}}
+def model_evidence(worse, better, up, down, alpha, odd=(0, 0)):
+    """Evidence that never expires for the model check (#35), from each row's first re-ask in the series: how many
+    labelled rows were answered worse or better than their stored answer, and how many scores went up or down. Without
+    a change, a row's stored answer and that re-ask are two exchangeable draws, independent of every other row's, so
+    where they differ each sign is a fair coin. Accuracy bets on 'worse' (one-sided), scores on either direction.
+    Half of `alpha` goes to accuracy; the half that needs no labels is split between scores and the rows asked twice
+    (`odd` = (k, n): the stored answer was the odd one out in k of the n first pairs that had one, `log_odd`), by
+    TWICE_SHARE, in every series (#38)."""
+    k, n = odd
+    acc, sc, ans = log_bets(worse, better), log_bets(down, up, two_sided=True), log_odd(k, n)
+    t_acc = math.log(2 / alpha)
+    t_sc, t_ans = math.log(2 / ((1 - TWICE_SHARE) * alpha)), math.log(2 / (TWICE_SHARE * alpha))
+    return {"accuracy": {"worse": worse, "better": better, "log_e": acc, "threshold": t_acc, "alarm": bool(acc >= t_acc)},
+            "scores": {"up": up, "down": down, "log_e": sc, "threshold": t_sc, "alarm": bool(sc >= t_sc)},
+            "answers": {"odd": k, "of": n, "log_e": ans, "threshold": t_ans, "alarm": bool(ans >= t_ans)}}
 
 
 # ---------------------------------------------------------------- database
@@ -347,13 +387,16 @@ def model_check(conn, name, since=None):
     right = lambda label, v, s: _answer(spec, v, s) == label
     began, first, left = first_reasks(conn, d)
     first_lab = [r for r in first if r[0] is not None]
+    pairs = first_pairs(conn, d, began)
+    o = odd_one(*([_answer(spec, r[i], r[i + 1]) for r in pairs] for i in (0, 2, 4))) if pairs else np.array([], int)
     out = {"run": k, "days_apart": float(np.median([r[5] for r in rows])), "probes": len(rows) - len(lab),
            "evidence_rows": len(first_lab), "evidence_rows_scores": len(first), "labelled_left": left,
-           "series_began": began} | model_rows(
+           "asked_twice": len(pairs), "series_began": began} | model_rows(
         [right(r[0], r[1], r[2]) for r in lab], [right(r[0], r[3], r[4]) for r in lab],
         [r[2] for r in rows], [r[4] for r in rows], k,
         signs([right(r[0], r[1], r[2]) for r in first_lab], [right(r[0], r[3], r[4]) for r in first_lab],
-              [r[2] for r in first], [r[4] for r in first]))
+              [r[2] for r in first], [r[4] for r in first]),
+        (int((o == 0).sum()), int((o >= 0).sum())))
     out["alarm"] = store(conn, d, "model", out)
     return d, out
 
@@ -387,6 +430,22 @@ def first_reasks(conn, d):
                             AND j.row_key = c.row_key AND j.purpose = 'probe'
                             AND j.judged_at > coalesce(%(began)s::timestamptz, '-infinity'))""", args).fetchone()[0]
     return began, rows, left
+
+
+def first_pairs(conn, d, began):
+    """Every row's first pair of re-asks since the series began (`--twice`, #38), if both were made on the input of the
+    row's current answer: (stored value, stored score, first value, first score, second value, second score). The
+    worker links the second ask of a pair to the first (`pair_of`). Each row counts once in a series."""
+    return conn.execute("""
+        SELECT DISTINCT ON (j2.row_key) jo.value, jo.score, j1.value, j1.score, j2.value, j2.score
+        FROM docket.judgment j2
+        JOIN docket.judgment j1 ON j1.id = j2.pair_of
+        JOIN docket.current c ON c.decision_id = j2.decision_id AND c.version = j2.version AND c.row_key = j2.row_key
+        JOIN docket.judgment jo ON jo.id = c.judgment_id AND jo.input_hash = j1.input_hash AND jo.input_hash = j2.input_hash
+                                AND j1.id > jo.id
+        WHERE j2.decision_id = %(d)s AND j2.version = %(v)s AND j2.purpose = 'probe' AND j2.pair_of IS NOT NULL
+          AND j1.judged_at > coalesce(%(began)s::timestamptz, '-infinity')
+        ORDER BY j2.row_key, j2.id""", {"began": began, "d": d["id"], "v": d["version"]}).fetchall()
 
 
 def pending(conn, d):
@@ -446,12 +505,21 @@ def verdict_model(r):
              f"({budget})"
              + ev(s.get("evidence"), lead_sc)
              + ("  ⚠ shifted" if s["alarm"] else "")]
+    ans = r.get("answers")
+    if ans and r.get("asked_twice"):
+        e = ans["evidence"]
+        lines.append(f"  answers: of {r['asked_twice']} rows asked twice{since}, {e['of']} had an odd one out, the stored "
+                     f"answer on {e['odd']} (a third expected)" + ev(e, "evidence")
+                     + ("  ⚠ changed" if ans["alarm"] else ""))
     if r.get("labelled_left") == 0:
         lines.append("  every labelled row has been asked in this series, so its accuracy evidence has stopped growing: "
                      "label more rows at random" + ("" if r.get("probes") else
                                                     "; --probes M keeps the scores evidence growing on rows without labels"))
     if acc["alarm"]:
         lines.append("  → the model answers worse than when it was calibrated: compare a new version, or pin another model")
+    elif ans and ans["alarm"]:
+        lines.append("  → the model now gives some rows another answer than it did: compare a new version, or pin "
+                     "another model")
     elif s["alarm"]:
         lines.append("  → the model's scores moved: the calibration may be stale; recalibrate on the current answers")
     else:

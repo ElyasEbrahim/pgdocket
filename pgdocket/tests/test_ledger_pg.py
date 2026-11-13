@@ -63,7 +63,7 @@ def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
     assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011",
-                                            "012", "013", "014"]
+                                            "012", "013", "014", "015"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -628,6 +628,63 @@ def test_drift_probes_re_ask_rows_without_labels(env, capsys):
     with pytest.raises(SystemExit, match="--probes goes with --anchors"):
         from pgdocket import cli
         cli.main(["drift", "--dsn", env["owner"], "stream", "--probes", "10"])
+
+
+def test_drift_twice_asks_rows_without_labels_twice_and_sees_answers_change_in_no_one_direction(env, capsys):
+    """#37, #38: --twice asks each --probes row twice, in requests of its own, and links the second ask to the first.
+    Without a change no stored answer is the odd one out; once the model swaps two answers, the stored ones are, while
+    the scores don't move. Each row counts once in a series."""
+    from pgdocket import cli
+    with pytest.raises(SystemExit, match="--twice goes with --probes"):
+        cli.main(["drift", "--dsn", env["owner"], "stream", "--anchors", "10", "--twice"])
+    with psycopg.connect(env["owner"], autocommit=True) as c:       # several rows per request: refused
+        c.execute("UPDATE docket.version SET spec = jsonb_set(spec, '{batch_size}', '5') WHERE decision_id = "
+                  "(SELECT id FROM docket.decision WHERE name = 'stream')")
+        try:
+            with pytest.raises(SystemExit, match="--twice needs one row per request, and stream sends 5"):
+                cli.main(["drift", "--dsn", env["owner"], "stream", "--anchors", "10", "--probes", "10", "--twice"])
+        finally:
+            c.execute("UPDATE docket.version SET spec = jsonb_set(spec, '{batch_size}', '1') WHERE decision_id = "
+                      "(SELECT id FROM docket.decision WHERE name = 'stream')")
+        queued = c.execute("SELECT count(*) FROM docket.queue WHERE purpose = 'probe'").fetchone()[0]
+    assert queued == 0                                        # refused before anything was queued
+
+    ledger.calibrate(env["owner"], "stream")                  # a new series
+    code = _drift(env, "--anchors", "30", "--probes", "60", "--twice", "--run")
+    out = capsys.readouterr().out
+    assert code == 0 and "60 rows without labels queued to be asked twice" in out
+    assert "answers: of 60 rows asked twice since" in out and "0 had an odd one out, the stored answer on 0" in out
+    assert "(needs 267)" in out and "no change in the model detected" in out
+    with psycopg.connect(env["owner"]) as c:
+        did = c.execute("SELECT id FROM docket.decision WHERE name = 'stream'").fetchone()[0]
+        pairs = c.execute("SELECT count(*), count(DISTINCT j2.row_key), bool_and(j1.row_key = j2.row_key AND j1.id < j2.id "
+                          "AND j1.input_hash = j2.input_hash AND j1.pair_of IS NULL) FROM docket.judgment j2 "
+                          "JOIN docket.judgment j1 ON j1.id = j2.pair_of WHERE j2.decision_id = %s", (did,)).fetchone()
+        alarm, r = c.execute("SELECT alarm, result FROM docket.drift_check WHERE kind = 'model' AND decision_id = %s "
+                             "ORDER BY id DESC LIMIT 1", (did,)).fetchone()
+    assert tuple(pairs) == (60, 60, True)
+    assert r["asked_twice"] == 60 and r["probes"] == 60 and r["answers"]["evidence"]["of"] == 0 and not alarm
+
+    FakeSystemOne.answer_override = {"s": "b", "b": "s"}     # the model swaps sales and billing: no one direction
+    try:
+        code = _drift(env, "--anchors", "30", "--probes", "60", "--twice", "--run")
+    finally:
+        FakeSystemOne.answer_override = {}
+    out = capsys.readouterr().out
+    with psycopg.connect(env["owner"]) as c:
+        r = c.execute("SELECT result FROM docket.drift_check WHERE kind = 'model' AND decision_id = %s ORDER BY id DESC "
+                      "LIMIT 1", (did,)).fetchone()[0]
+    e = r["answers"]["evidence"]
+    assert code == 1 and "⚠ changed" in out and r["answers"]["alarm"] and r["asked_twice"] == 120
+    assert e["odd"] == e["of"] > 20 and e["log_e"] > e["threshold"]            # every odd one out is a stored answer
+    assert r["scores"]["up"] == r["scores"]["down"] == 0      # the fake's scores never move: only the answers show it
+
+    code = _drift(env, "--model")                             # the same pairs, reported again: they count once
+    with psycopg.connect(env["owner"]) as c:
+        again = c.execute("SELECT result FROM docket.drift_check WHERE kind = 'model' AND decision_id = %s ORDER BY id "
+                          "DESC LIMIT 1", (did,)).fetchone()[0]
+    assert again["asked_twice"] == 120 and again["answers"]["evidence"] == e
+    capsys.readouterr()
 
 
 

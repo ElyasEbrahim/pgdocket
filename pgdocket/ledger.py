@@ -256,11 +256,13 @@ def drift_enqueue(dsn, name, n, seed="1"):
         return conn.execute("SELECT docket.drift_enqueue(%s, %s, %s)", (name, n, str(seed))).fetchone()[0], since
 
 
-def drift_enqueue_probes(dsn, name, m, seed="1"):
+def drift_enqueue_probes(dsn, name, m, seed="1", twice=False):
     """Queue re-asks of the active version on the next m rows without a random or whole-column label that this series
-    of checks has not asked yet, rows judged before the series began first (#36). Returns how many were queued."""
+    of checks has not asked yet, rows judged before the series began first (#36); `twice`: each is asked twice, in
+    separate requests (#38). Returns how many rows were queued."""
     with connect(dsn) as conn:
-        return conn.execute("SELECT docket.drift_enqueue_probes(%s, %s, %s)", (name, m, str(seed))).fetchone()[0]
+        return conn.execute("SELECT docket.drift_enqueue_probes(%s, %s, %s, %s)",
+                            (name, m, str(seed), bool(twice))).fetchone()[0]
 
 
 def unjudged(conn, did, active, version):

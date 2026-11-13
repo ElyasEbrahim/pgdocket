@@ -2,6 +2,14 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-13
+
+### Added (asking rows twice, #38)
+- **`pgdocket drift --anchors N --probes M --twice`** asks each of the M rows without labels twice, in separate requests (migration 015: a `twice` flag on the queue, and `pair_of` linking a second ask to the first). Without a change, when exactly two of a row's three answers agree, the odd one is the stored answer a third of the time. Evidence that never expires bets on it being more often, from each row's first pair of re-asks in a series. That catches changes in no one direction, which no other check sees. `--twice` needs one row per request, and refuses a decision that sends more.
+- **The budget.** As #37 chose, half of the model check's evidence budget that needs no labels goes to rows asked twice, in every series. The scores evidence now needs 267 instead of 133; in #37's simulation that cost series asked once at most 3.4 points. Accuracy's evidence and the sign tests are unchanged.
+- **Settled on fresh runs** (`jevbench twicerepeat`, new, no API calls). Twelve fresh runs on the 2,000 complaints, $0.36, with the test fixed in #38 before any was made. Each October run stood for stored answers, followed by its own pair of fresh runs in the same configuration. Pooled over the six triples, the stored answer was the odd one on 165 of 486 rows (34.0 %, p = 0.77 against a third), per triple 24.5–42.2 %, none rejecting. The fresh runs disagreed with October's as often as with each other, so a month left no mark. With the changes run forward, the stored answer was the odd one on 81.3 % (shuffled batches) and 92.0 % (one row per request) of the rows that had one, against the 82–87 % and 78–84 % #37's simulation had assumed with the roles swapped.
+- **What #37 measured** (1,000 simulated series per scenario): at the same calls, 50 rows asked twice a check caught shuffled batches by check 18 in every series, against 2.4 % for 100 rows asked once. Changes with a direction show later (78 % against 98 % at the first check after one row per request), so `--twice` is an option beside `--probes`, not the default.
+
 ## 2026-11-12
 
 ### Tested, not built (asking rows twice, #37)

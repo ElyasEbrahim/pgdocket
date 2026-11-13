@@ -6,6 +6,9 @@ claim token) in one transaction. Failures back off; after 5 attempts a row shows
 
 A hardened calibration (#24) also queues an erase-and-check ('check') for every row `auto` would accept: the row is
 judged again without each of its pieces, and the result goes to docket.robust, which the view requires.
+
+A re-ask queued with `twice` (`pgdocket drift --twice`, #38) is asked a second time, in requests of its own, once the
+first answers are in; the second answer's `pair_of` is the first one's id.
 """
 import hashlib
 import json
@@ -30,7 +33,7 @@ FROM (SELECT decision_id, version, row_key FROM docket.queue
       LIMIT %(n)s
       FOR UPDATE SKIP LOCKED) c
 WHERE q.decision_id = c.decision_id AND q.version = c.version AND q.row_key = c.row_key
-RETURNING q.decision_id, q.version, q.row_key, q.attempts, q.purpose
+RETURNING q.decision_id, q.version, q.row_key, q.attempts, q.purpose, q.twice
 """
 
 
@@ -93,11 +96,13 @@ class Worker:
         with self._conn() as conn:
             claimed = conn.execute(CLAIM, {"lease": self.lease, "token": token, "max": MAX_ATTEMPTS,
                                            "n": self.claim_size}).fetchall()
-            groups = defaultdict(list)
-            for did, ver, key, _, purpose in claimed:
+            groups, twice = defaultdict(list), set()
+            for did, ver, key, _, purpose, again in claimed:
                 groups[(did, ver, purpose)].append(key)
+                if again:
+                    twice.add((did, ver, key))
             for (did, ver, purpose), keys in groups.items():
-                self._handle(conn, did, ver, keys, token, purpose)
+                self._handle(conn, did, ver, keys, token, purpose, {k for k in keys if (did, ver, k) in twice})
         return len(claimed)
 
     def _calibration(self, conn, did, ver):
@@ -105,10 +110,11 @@ class Worker:
         return conn.execute("SELECT calibration FROM docket.version WHERE decision_id = %s AND version = %s",
                             (did, ver)).fetchone()[0]
 
-    def _handle(self, conn, did, ver, keys, token, purpose="live"):
+    def _handle(self, conn, did, ver, keys, token, purpose="live", twice=frozenset()):
         """purpose 'live': judge changed rows and make the answer current. 'probe': always re-ask (the point is
-        to measure run-to-run noise) and record the answer in the ledger without making it current. 'check':
-        erase-and-check the current answer (#24)."""
+        to measure run-to-run noise) and record the answer in the ledger without making it current; the rows in
+        `twice` are asked again, in requests of their own after the first ones (#38). 'check': erase-and-check the
+        current answer (#24)."""
         if purpose == "check":
             return self._check(conn, did, ver, keys, token)
         d = self._decision(conn, did, ver)
@@ -129,10 +135,13 @@ class Worker:
             return
         backend = self._backend(spec)
         before = backend.stats["input_tokens"]
+        again = [(k, h) for k, h in todo if k in twice] if purpose == "probe" else []
+        judge = lambda pairs: backend.judge([json.loads(rows[k]) for k, _ in pairs], spec["kind"], spec["question"],
+                                            option_display(spec) if spec["kind"] == "choice" else None,
+                                            spec.get("batch_size", 1), untrusted=spec.get("untrusted", False))
         try:
-            answers = backend.judge([json.loads(rows[k]) for k, _ in todo], spec["kind"], spec["question"],
-                                    option_display(spec) if spec["kind"] == "choice" else None,
-                                    spec.get("batch_size", 1), untrusted=spec.get("untrusted", False))
+            answers = judge(todo)
+            second = judge(again) if again else []          # the same rows again, in requests of their own
         except BackendError as e:
             with conn.transaction():
                 self._fail(conn, did, ver, [k for k, _ in todo], token, e, purpose)
@@ -140,15 +149,20 @@ class Worker:
             self.log(f"backend error on {len(todo)} rows of decision {did} v{ver}: {e}")
             return
         tokens = backend.stats["input_tokens"] - before
-        per_row = round(tokens / len(todo))
-        values = [read_answer(spec, a) for a in answers]
+        per_row = round(tokens / (len(todo) + len(again)))
+        insert = ("INSERT INTO docket.judgment (decision_id, version, row_key, input_hash, answer, value, score, tokens, "
+                  "purpose, pair_of) SELECT %s, %s, k, h, a::jsonb, v, s, %s, %s, p FROM unnest(%s::text[], %s::text[], "
+                  "%s::text[], %s::text[], %s::float8[], %s::bigint[]) AS t(k, h, a, v, s, p) RETURNING id, row_key")
+
+        def write(pairs, got, first=None):
+            values = [read_answer(spec, a) for a in got]
+            return conn.execute(insert, (did, ver, per_row, purpose, [k for k, _ in pairs], [h for _, h in pairs],
+                                         [json.dumps(a) for a in got], [v for v, _ in values], [s for _, s in values],
+                                         [first[k] if first else None for k, _ in pairs])).fetchall()
         with conn.transaction():
-            ids = conn.execute(
-                "INSERT INTO docket.judgment (decision_id, version, row_key, input_hash, answer, value, score, tokens, purpose) "
-                "SELECT %s, %s, k, h, a::jsonb, v, s, %s, %s FROM unnest(%s::text[], %s::text[], %s::text[], %s::text[], "
-                "%s::float8[]) AS t(k, h, a, v, s) RETURNING id, row_key",
-                (did, ver, per_row, purpose, [k for k, _ in todo], [h for _, h in todo], [json.dumps(a) for a in answers],
-                 [v for v, _ in values], [s for _, s in values])).fetchall()
+            ids = write(todo, answers)
+            if again:
+                write(again, second, {k: i for i, k in ids})
             if purpose == "live":
                 conn.execute(
                     "INSERT INTO docket.current (decision_id, version, row_key, judgment_id) "
@@ -163,7 +177,7 @@ class Worker:
                                      "SELECT %s, %s, k, 'check' FROM unnest(%s::text[]) AS t(k) "
                                      "ON CONFLICT (decision_id, version, row_key, purpose) DO NOTHING", (did, ver, accepted))
             self._dequeue(conn, did, ver, [k for k, _ in todo], token, purpose)
-        self.totals["probed" if purpose == "probe" else "judged"] += len(todo)
+        self.totals["probed" if purpose == "probe" else "judged"] += len(todo) + len(again)
         self.totals["tokens"] += tokens
         self.totals["usd"] = sum(b.cost_usd() for b in self.backends.values() if b.paid)
 

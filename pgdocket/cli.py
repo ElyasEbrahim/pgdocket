@@ -182,6 +182,10 @@ def main(argv=None):
                     help="with --anchors: also re-ask M rows without labels, the next M this series hasn't asked (M API "
                          "calls). They add to the scores test and its evidence, which then outlasts the labels; "
                          "accuracy stays with the anchors")
+    dt.add_argument("--twice", action="store_true",
+                    help="with --probes: ask each of those rows twice, in separate requests (2M API calls), so a change "
+                         "in no one direction shows too: the stored answer is then the odd one out more than a third "
+                         "of the time. Needs one row per request")
     dt.add_argument("--model", action="store_true", help="check the model on anchors already asked again")
     dt.add_argument("--seed", default="1", help="orders the labelled rows the anchors are taken from, in turn")
     dt.add_argument("--run", action="store_true", help="with --anchors: run the worker until they are answered")
@@ -582,13 +586,21 @@ def _drift(a, ledger):
     since = None
     if a.probes and not a.anchors:
         sys.exit("--probes goes with --anchors: accuracy needs labelled rows")
+    if a.twice and not a.probes:
+        sys.exit("--twice goes with --probes: it asks the rows without labels twice")
+    if a.twice:
+        with ledger.connect(a.dsn) as conn:
+            size = drift._decision(conn, a.name)["spec"].get("batch_size", 1)
+        if size != 1:
+            sys.exit(f"--twice needs one row per request, and {a.name} sends {size}: a row's two new answers would share "
+                     "their companions in the request, and agree more than two draws of the model do")
     if a.anchors:
         n, since = ledger.drift_enqueue(a.dsn, a.name, a.anchors, a.seed)
         print(f"{n} labelled rows queued to be asked again" if n else
               f"{a.name}: no labelled rows to ask again; import labels with `pgdocket label {a.name} … --sample 200`")
         if a.probes:
-            m = ledger.drift_enqueue_probes(a.dsn, a.name, a.probes, a.seed)
-            print(f"{m} rows without labels queued to be asked again")
+            m = ledger.drift_enqueue_probes(a.dsn, a.name, a.probes, a.seed, a.twice)
+            print(f"{m} rows without labels queued to be asked {'twice' if a.twice else 'again'}")
         if a.run:
             from .worker import Worker
             totals = Worker(a.dsn, api_key=os.environ.get("TYPESAFE_API_KEY") or None, max_usd=a.max_usd).run(once=True)

@@ -94,3 +94,16 @@ def test_the_share_is_the_one_with_the_smallest_worst_shortfall():
                                            "task · no change · from check 1": cell(0, 50, 100)})
     assert chosen == T.SHARES[1] and worst[T.SHARES[0]] == 21 and worst[T.SHARES[2]] == 10 and worst[chosen] == 2
     assert "no change" not in where[T.SHARES[0]]
+
+
+def test_a_triple_counts_the_odd_one_out_by_its_place():
+    """`jevbench twicerepeat` (#38): which of three runs is the odd one out, for answers and for scores."""
+    from jevbench import twicerepeat
+    R = {"s": (np.array([1, 1, 2, 3, 1]), np.array([0.9, 0.5, 0.7, 0.2, 0.6])),
+         "x": (np.array([2, 1, 2, 3, 1]), np.array([0.8, 0.8, 0.7, 0.5, 0.6])),
+         "y": (np.array([2, 1, 1, 4, 1]), np.array([0.8, 0.8, 0.4, 0.9, 0.6]))}
+    t = twicerepeat.triple(R, "s", "x", "y")
+    # answers: row 0 sets the stored one apart, rows 2 and 3 the second re-ask; rows 1 and 4 all agree
+    assert (t["answers"]["first"], t["answers"]["second"], t["answers"]["third"], t["answers"]["of"]) == (1, 0, 2, 3)
+    assert (t["scores"]["first"], t["scores"]["of"]) == (2, 4)          # rows 0 and 1 set the stored score apart
+    assert t["answers"]["p"] == T.binom_two_sided(1, 3)

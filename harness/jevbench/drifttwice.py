@@ -39,7 +39,8 @@ one on at least 2 % of the rows asked twice more than a new answer is), and a te
 What came of it: 2 passed (100 % of series against 2.4 %) and simulated series without a change alarmed in at most
 1.5 %, but on the real CFPB repeats one of the three ways to pair them rejected (the stored run the odd one in 43 of 93
 rows, p = 0.011). The criterion did not say how to treat three pairings; read strictly it is not met, so asking twice
-is not built. The report keeps every number, for the replication on fresh repeats that would settle it.
+was not built. #38 settled it on twelve fresh runs (`jevbench twicerepeat`: the stored answer was the odd one on 165 of
+486 rows, p = 0.77), and `--twice` is built, with the bet (`drift.log_odd`) and the share chosen here.
 """
 import itertools
 import json
@@ -103,13 +104,7 @@ def _mix(t):
     return (top + np.log(np.exp(t - top).mean(-1, keepdims=True)))[..., 0]
 
 
-def log_odd(k, n, chance=1 / 3):
-    """log e-value that the stored answer is the odd one more often than `chance`: it was in k of the n rows with an
-    odd one. An equal mixture over the bets of `drift.BETS` of the martingales that multiply wealth by
-    1 + b (1 - chance) / chance when it is, and by 1 - b when a new answer is."""
-    k, n = np.asarray(k, float)[..., None], np.asarray(n, float)[..., None]
-    b = drift.BETS
-    return _mix(k * np.log1p(b * (1 - chance) / chance) + (n - k) * np.log1p(-b))
+log_odd = drift.log_odd           # built into the model check (#38): the bet on the stored answer being the odd one
 
 
 def log_margin(k, n, rows, margin=MIN_CHANGED):
@@ -432,7 +427,9 @@ def render(res):
                             "series without a change stayed quiet, but criterion 1 is not met as written: on the real "
                             "CFPB repeats, one of the three ways to pair them rejects. The criterion did not say how to "
                             "treat three pairings, so the strict reading is applied. A replication on fresh repeats, "
-                            "with one test fixed beforehand, would settle it."), "",
+                            "with one test fixed beforehand, would settle it.") + " #38 then did: on twelve fresh runs the "
+         "stored answer was the odd one on 165 of 486 rows (p = 0.77 against a third, "
+         "[report](../drift-twice-repeats/report.md)), and `--twice` is built as chosen here.", "",
          "## Which of three real asks is the odd one?", ""]
     for title, t in res["tasks"].items():
         tr = t["triples"]
