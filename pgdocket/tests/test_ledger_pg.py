@@ -654,6 +654,7 @@ def test_drift_twice_asks_rows_without_labels_twice_and_sees_answers_change_in_n
     out = capsys.readouterr().out
     assert code == 0 and "60 rows without labels queued to be asked twice" in out
     assert "answers: of 60 rows asked twice since" in out and "0 had an odd one out, the stored answer on 0" in out
+    assert "their scores: 0 had an odd one out, the stored score on 0 (a third expected) · evidence: 1 (needs 533)" in out
     assert "(needs 267)" in out and "no change in the model detected" in out
     with psycopg.connect(env["owner"]) as c:
         did = c.execute("SELECT id FROM docket.decision WHERE name = 'stream'").fetchone()[0]
@@ -685,6 +686,22 @@ def test_drift_twice_asks_rows_without_labels_twice_and_sees_answers_change_in_n
                           "DESC LIMIT 1", (did,)).fetchone()[0]
     assert again["asked_twice"] == 120 and again["answers"]["evidence"] == e
     capsys.readouterr()
+
+    # #39: the model keeps every answer, but scores billing tickets lower and sales tickets higher than it did
+    ledger.calibrate(env["owner"], "stream")                  # a new series
+    FakeSystemOne.score_override = {"b": 0.8, "s": 0.95}
+    try:
+        code = _drift(env, "--anchors", "30", "--probes", "60", "--twice", "--run")
+    finally:
+        FakeSystemOne.score_override = {}
+    out = capsys.readouterr().out
+    with psycopg.connect(env["owner"]) as c:
+        r = c.execute("SELECT result FROM docket.drift_check WHERE kind = 'model' AND decision_id = %s ORDER BY id DESC "
+                      "LIMIT 1", (did,)).fetchone()[0]
+    p = r["twice_scores"]["evidence"]
+    assert code == 1 and r["twice_scores"]["alarm"] and not r["answers"]["alarm"] and not r["accuracy"]["alarm"]
+    assert r["answers"]["evidence"]["of"] == 0 and p["odd"] == p["of"] > 20 and p["log_e"] > p["threshold"]
+    assert "their scores:" in out and "⚠ changed" in out
 
 
 

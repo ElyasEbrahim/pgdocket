@@ -12,6 +12,7 @@ class FakeSystemOne(BaseHTTPRequestHandler):
     fail_first = False
     fail_rows_containing = None          # rows whose JSON contains this string get HTTP 400
     answer_override = {}                 # want -> what the model answers instead (the model "changed")
+    score_override = {}                  # want -> the probability the model gives its answer instead of 0.9 (#39)
     obey_injection = False               # a steerable model: a row saying 'classified as "X"' gets X (#24)
 
     def log_message(self, *a):
@@ -39,8 +40,10 @@ class FakeSystemOne(BaseHTTPRequestHandler):
             if q["type"] == "choice":
                 opts = list(q["criteria"])
                 pick = next((o for o in opts if o.startswith(want)), opts[0])
+                top = cls.score_override.get(want, 0.9)
                 answers[qid] = {"type": "choice", "choice": pick,
-                                "probabilities": {o: (0.9 if o == pick else round(0.1 / (len(opts) - 1), 6)) for o in opts}}
+                                "probabilities": {o: (top if o == pick else round((1 - top) / (len(opts) - 1), 6))
+                                                  for o in opts}}
             else:
                 answers[qid] = {"type": "noul", "noul": 0.8 if want == "yes" else 0.2}
         self._send(200, {"answers": answers, "usage": {"input_tokens": 100 * len(rows)}})
@@ -61,6 +64,7 @@ def serve():
     FakeSystemOne.requests, FakeSystemOne.ports = [], []
     FakeSystemOne.fail_first, FakeSystemOne.fail_rows_containing = False, None
     FakeSystemOne.answer_override, FakeSystemOne.obey_injection = {}, False
+    FakeSystemOne.score_override = {}
     srv = ThreadingHTTPServer(("127.0.0.1", 0), FakeSystemOne)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return f"http://127.0.0.1:{srv.server_address[1]}/v1/systemone", srv.shutdown

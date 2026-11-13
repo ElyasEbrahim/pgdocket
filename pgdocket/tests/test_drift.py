@@ -292,11 +292,16 @@ def test_the_label_free_half_of_the_evidence_is_split_with_rows_asked_twice():
     ev = drift.model_evidence(0, 0, 0, 0, (1 - drift.MODEL_SHARE) * drift.ALPHA)
     needs = {part: math.exp(ev[part]["threshold"]) for part in ("accuracy", "scores", "answers")}
     assert needs["accuracy"] == pytest.approx(133.3, abs=0.1)                       # unchanged since #35
-    assert needs["scores"] == pytest.approx(266.7, abs=0.1) and needs["answers"] == pytest.approx(266.7, abs=0.1)
+    assert needs["scores"] == pytest.approx(266.7, abs=0.1)                         # since #38
+    assert needs["answers"] == pytest.approx(533.3, abs=0.1)                        # #39: the pairs' share, split in two
+    assert math.exp(ev["twice_scores"]["threshold"]) == pytest.approx(533.3, abs=0.1)
     hit = drift.model_evidence(0, 0, 0, 0, 0.015, odd=(30, 32))
     assert hit["answers"]["alarm"] and not hit["scores"]["alarm"] and not hit["accuracy"]["alarm"]
+    assert not hit["twice_scores"]["alarm"]
     out = drift.model_rows([True] * 20, [True] * 20, [0.9] * 20, [0.9] * 20, 1, (0, 0, 0, 0), (30, 32))
     assert out["answers"]["alarm"] and not out["accuracy"]["alarm"] and not out["scores"]["alarm"]
+    out = drift.model_rows([True] * 20, [True] * 20, [0.9] * 20, [0.9] * 20, 1, (0, 0, 0, 0), (0, 0), (30, 32))
+    assert out["twice_scores"]["alarm"] and not out["answers"]["alarm"]
 
 
 def test_the_verdict_names_rows_asked_twice():
@@ -305,7 +310,23 @@ def test_the_verdict_names_rows_asked_twice():
         [True] * 20, [True] * 20, [0.9] * 60, [0.9] * 60, 2, (0, 0, 0, 0), (30, 32))
     lines = drift.verdict_model(r)
     assert any("answers: of 40 rows asked twice since 2026-11-13, 32 had an odd one out, the stored answer on 30" in x
-               and "(needs 267)" in x and "⚠ changed" in x for x in lines)
+               and "(needs 533)" in x and "⚠ changed" in x for x in lines)
+    assert any(x.startswith("  their scores: 0 had an odd one out, the stored score on 0") and "⚠" not in x for x in lines)
     assert lines[-1].startswith("  → the model now gives some rows another answer")
     quiet = drift.verdict_model(r | {"asked_twice": 0})
-    assert not any("asked twice" in x for x in quiet)          # without --twice the line stays out of the way
+    assert not any("asked twice" in x or "their scores" in x for x in quiet)   # without --twice the lines stay out of the way
+    scored = {**r, **drift.model_rows([True] * 20, [True] * 20, [0.9] * 60, [0.9] * 60, 2, (0, 0, 0, 0), (2, 6), (30, 32))}
+    lines = drift.verdict_model(scored)
+    assert any(x.startswith("  their scores: 32 had an odd one out, the stored score on 30") and "⚠ changed" in x
+               for x in lines)
+    assert lines[-1].startswith("  → the model now scores some rows differently than it did, in no one direction")
+
+
+def test_the_odd_score_is_the_one_the_two_closest_leave_out():
+    """#39: by scores, the two closest of three make the pair; the third is the odd one; ties leave none."""
+    got = drift.odd_score([0.9, 0.5, 0.90, 0.2, 0.4, 0.7], [0.9, 0.8, 0.90, 0.5, 0.6, 0.7], [0.9, 0.8, 0.70, 0.9, 0.8, 0.7])
+    assert got.tolist() == [-1, 0, 2, 2, -1, -1]
+    rng = np.random.default_rng(39)
+    s = np.round(rng.beta(5, 2, (3, 30000)), 2)               # three draws of one model, on Jev's 0.01 grid
+    o = drift.odd_score(*s)
+    assert abs((o == 0).sum() / (o >= 0).sum() - 1 / 3) < 0.01
