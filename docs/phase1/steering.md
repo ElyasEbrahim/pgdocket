@@ -1,6 +1,6 @@
 # Rows that steer the model
 
-*2026-10-27, updated 2026-11-15 · issues #24, #43, #44 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023), structured ablation (Levine & Feizi, 2020) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md); payloads written twice, [results/steer-twice](../../results/steer-twice/report.md); a yes/no decision, [results/steer-noul](../../results/steer-noul/report.md); on Laya, [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md)*
+*2026-10-27, updated 2026-11-15 · issues #24, #43, #44, #45 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023), structured ablation (Levine & Feizi, 2020) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md); payloads written twice, [results/steer-twice](../../results/steer-twice/report.md); both on the pieces the worker cuts, [results/steer-cut](../../results/steer-cut/report.md); a yes/no decision, [results/steer-noul](../../results/steer-noul/report.md); on Laya, [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md)*
 
 pgdocket marks answers `auto`, safe to act on without review, and the rows it judges are often written by outsiders: customers write tickets, anyone can open a GitHub issue, applicants write their own letters. Text in a row can try to steer the model. In September and October 2026, four groups showed that Jev can be steered this way:
 - **Datadog Security Labs.** A counterfeit policy planted in the judged text cut Jev's recall on prompt-injection benchmarks from 83 % to 3.9 %.
@@ -43,25 +43,26 @@ On clean text it costs 1.4 points of accuracy (91.7 → 90.3 %), and at its own 
 
 The sentence stopped every instruction-style attack we wrote, including one aimed at it. Check Point found such sentences useless against attackers who adapt over several tries, so read this as raising the bar, not as a guarantee. A claim is not an instruction, so the sentence can't stop it.
 
-**`calibrate --harden`: erase-and-check.** A hardened row is `auto` only after the worker has judged it again without each of its pieces (the text split on blank lines, at most six pieces) and every answer agreed. Since #43 the check also judges each piece alone, for choice decisions ([below](#payloads-written-twice)), and since #44 for yes/no rows answered "no" ([below](#yesno-decisions)). The numbers in this section are for erasing alone.
+**`calibrate --harden`: erase-and-check.** A hardened row is `auto` only after the worker has judged it again without each of its pieces (the text split on blank lines, at most six pieces) and every answer agreed. Since #43 the check also judges each piece alone, for choice decisions ([below](#payloads-written-twice)), and since #44 for yes/no rows answered "no" ([below](#yesno-decisions)). The numbers in this section are for erasing alone, on the pieces the worker cuts ([#45](#on-the-pieces-the-worker-cuts)).
 - **Why it works.** An attacker's paragraph that changed the answer is gone in one of those calls, so that call answers like the clean row and the row goes to review. This is erase-and-check (Kumar et al., 2023), whose guarantee covers an injection confined to one place.
-- **It caught every steered row `auto` would have accepted,** for every single-paragraph attack, the misleading claim included.
+- **It caught every steered row `auto` would have accepted but one,** for every single-paragraph attack, the misleading claim included. The one was the same issue each time (0.3 % of issues): the worker had glued the payload to the issue's short last paragraph, and without both, the issue read as the attacker's SIG anyway.
 - **It costs** 7.4 % of the clean accepted issues, sent to review because one piece decided their answer. That leaves 88.0 % of issues `auto` instead of 95.0 %, with precision 94.7 % instead of 93.7 %. It also takes about five extra calls per accepted row.
 - **It can be beaten by repeating the payload** in two places: then every erased version still contains one copy, and it caught none. The `--untrusted` sentence stops that repeated policy (2.3 % steered).
+- **Keep-one,** which `--harden` adds for choice decisions since #43, stopped most of the repeated policy even without the sentence: 21.7 % of issues still got through instead of 91.0 %. With it, 10.2 % of the clean accepted issues go to review, and 85.3 % of issues stay `auto`, 94.5 % of them right.
 - **Rows with a single piece of text can't be checked,** so they stay out of `auto`.
 
 **Use both.** Each covers the other's gap: the sentence stops repeated instructions, and erase-and-check stops single misleading paragraphs. Measured together, on the share of all issues sent to the author's SIG **and** accepted by `auto`:
 
 | attack | no defence | `--untrusted` | `--harden` | both |
 | --- | ---: | ---: | ---: | ---: |
-| counterfeit policy | 93.3 % | 0.0 % | 0.0 % | 0.0 % |
-| a misleading claim | 59.0 % | 16.7 % | 0.0 % | 0.3 % |
+| counterfeit policy | 93.3 % | 0.0 % | 0.3 % | 0.0 % |
+| a misleading claim | 59.0 % | 16.7 % | 0.3 % | 0.3 % |
 | the policy, written twice | 91.0 % | 0.3 % | 91.0 % | 0.3 % |
 | a policy aimed at the sentence | 39.7 % | 1.0 % | – | 0.3 % |
-| plain instruction / "ignore previous instructions" | 9.7 % / 0.3 % | 0.7 % / 0.0 % | 0.0 % / 0.0 % | 0.0 % / 0.0 % |
+| plain instruction / "ignore previous instructions" | 9.7 % / 0.3 % | 0.7 % / 0.0 % | 0.3 % / 0.0 % | 0.0 % / 0.0 % |
 | **a misleading claim, written twice** | **45.0 %** | **7.3 %** | – | **7.3 %** |
 
-Under both defences, every attack we tried got through on at most 0.3 % of issues, except one. A misleading claim written twice is content, which the sentence can't forbid, and it is repeated, which erase-and-check can't remove; 7.3 % of issues still got through. Keep-one, added in #43, cut that to 3.0 % ([below](#payloads-written-twice)). On clean text, both together cost 1.4 points of accuracy and leave 86.3 % of issues `auto`, 94.6 % of them right (no defence: 95.0 % and 93.7 %). Under the sentence, erase-and-check sent fewer clean issues to review than alone (4.1 % of the accepted ones, against 7.4 %). One issue whose answer the sentence alone moved onto the attacker's target is not counted as steered.
+`--harden` here is erasing alone, and both columns are on the pieces the worker cuts. Under both defences, every attack we tried got through on at most 0.3 % of issues, except one. A misleading claim written twice is content, which the sentence can't forbid, and it is repeated, which erase-and-check can't remove; 7.3 % of issues still got through. Keep-one, added in #43, cut that to 3.7 % ([below](#payloads-written-twice)). On clean text, both together cost 1.4 points of accuracy and leave 86.3 % of issues `auto`, 94.6 % of them right (no defence: 95.0 % and 93.7 %). Under the sentence, erase-and-check sent fewer clean issues to review than alone (4.1 % of the accepted ones, against 7.4 %). One issue whose answer the sentence alone moved onto the attacker's target is not counted as steered.
 
 ```bash
 pgdocket check … --steer 100                     # how steerable is this decision on my table? (read-only)
@@ -77,7 +78,7 @@ pgdocket calibrate triage --harden               # auto only after the steering 
 
 *2026-11-13 · issue #43 · evidence: [results/steer-twice](../../results/steer-twice/report.md) (`jevbench steertwice`)*
 
-Under both defences, one attack still got through on 7.3 % of issues: a misleading claim written twice, at the start and at the end. Erasing one copy leaves the other, so no answer changes and erase-and-check passes the issue. #43 compared five checks on the same 300 issues. Each ran under `--untrusted`, on every issue `auto` would accept at that setting's own 90 % threshold (0.718), clean or attacked:
+Under both defences, one attack still got through on 7.3 % of issues: a misleading claim written twice, at the start and at the end. Erasing one copy leaves the other, so no answer changes and erase-and-check passes the issue. #43 compared five checks on the same 300 issues. The numbers below are on the pieces the worker cuts, measured again in [#45](#on-the-pieces-the-worker-cuts); #43's own, with every payload as a piece of its own, are in its [results](../../results/steer-twice/report.md). Each ran under `--untrusted`, on every issue `auto` would accept at that setting's own 90 % threshold (0.718), clean or attacked:
 - **E1**, as before: erase each piece.
 - **E2**: erase each piece, and each pair of pieces.
 - **ED**: erase each piece, and each group of near-duplicate pieces together (sets of words overlapping by half or more).
@@ -90,35 +91,47 @@ Two attacks were added, each written against one check. One writes the claim twi
 
 | check | clean accepted issues flagged | calls per accepted issue | worst attack: issues still steered and `auto` |
 | --- | ---: | ---: | ---: |
-| E1, erase each piece (before #43) | 4.1 % | 5.3 | 15.0 % |
-| E2, and each pair | 15.9 % (out) | 17.3 | 6.7 % |
-| ED, and near-duplicates together | 4.4 % | 5.4 | 15.0 % |
-| KO, keep each piece alone | 6.7 % | 5.3 | 9.7 % |
-| **E1+KO** | **8.5 %** | **10.6** | **7.0 %** |
+| E1, erase each piece (before #43) | 4.1 % | 5.3 | 16.7 % |
+| E2, and each pair | 15.9 % (out) | 17.3 | – |
+| ED, and near-duplicates together | 4.4 % | 5.4 | 16.7 % |
+| KO, keep each piece alone | 6.7 % | 5.3 | 11.3 % |
+| **E1+KO** | **8.5 %** | **10.6** | **9.3 %** |
 
 The share of all 300 issues sent to the attacker's SIG and accepted by `auto`, under `--untrusted`:
 
 | attack | no check | erase-and-check | **erase-and-check and keep-one** |
 | --- | ---: | ---: | ---: |
 | a misleading claim | 16.7 % | 0.3 % | 0.3 % |
-| the claim, written twice | 7.3 % | 7.3 % | **3.0 %** |
-| the claim twice, the second copy reworded | 23.7 % | 15.0 % | **7.0 %** |
-| the claim three times | 6.7 % | 6.7 % | **5.3 %** |
+| the claim, written twice | 7.3 % | 7.3 % | **3.7 %** |
+| the claim twice, the second copy reworded | 23.7 % | 16.7 % | **9.3 %** |
+| the claim three times | 6.7 % | 6.7 % | **6.7 %** |
 | a policy aimed at the sentence | 1.0 % | 0.3 % | 0.3 % |
 | the policy, written twice | 0.3 % | 0.3 % | 0.3 % |
 | a plain instruction | 0.7 % | 0.0 % | 0.0 % |
 | a counterfeit policy; "ignore all previous instructions" | 0.0 % | 0.0 % | 0.0 % |
 
-- **E1+KO won, and `--harden` now runs it.** It halves the worst case (7.0 % against 15.0 %), and the claim written twice now gets through on 3.0 % of issues instead of 7.3 %. It narrows the gap; it doesn't close it.
-- **Keep-one loses when the copies outweigh the issue's own pieces.** Three copies still won the vote on 5.3 % of issues, although an issue's own text has about five pieces.
-- **Grouping near-duplicates caught exact copies** (0.3 % for two copies and for three), and missed the reworded copy (15.0 %), which is what that attack was written to test.
-- **Erasing pairs caught every payload written twice,** but sent 15.9 % of the clean accepted issues to review, and three copies beat it.
+- **E1+KO won, and `--harden` now runs it.** It cuts the worst case from 16.7 % of issues to 9.3 %, and the claim written twice from 7.3 % to 3.7 %. It narrows the gap; it doesn't close it.
+- **Keep-one loses when the copies outweigh the issue's own pieces.** Three copies won every vote: none of the 20 issues the claim written three times got accepted was caught (6.7 % of issues), although an issue's own text has about five pieces.
+- **Grouping near-duplicates caught exact copies** (0.3 % left for two copies, 1.3 % for three), and missed the reworded copy (16.7 %), which is what that attack was written to test.
+- **Erasing pairs caught every payload written twice** on #43's cut, but sent 15.9 % of the clean accepted issues to review, and three copies beat it. #45 didn't ask its attacked issues again: its clean flags alone kept it out.
 - **The cost.** 8.5 % of the clean issues `auto` accepts go to review instead of 4.1 %, and each accepted issue takes about 10.6 calls instead of 5.3. With both defences, 82.3 % of issues stay `auto` instead of 86.3 %, 94.3 % of them right (94.6 % with erasing alone).
 - **Yes/no decisions were measured next** ([below](#yesno-decisions)). The vote does not carry over: in a yes/no question, every piece without the evidence votes "no".
 - **Rows passed before this change,** by erasing alone, are checked again the next time you run `calibrate --harden`.
 - **Spend.** #24's stored answers were reused. The new texts took 10,003 Jev calls for $0.371; #24 and #43 together cost $1.109.
 
-**How the pieces were cut** (found while preparing #44). In #24 and #43 the harness judged every payload as a piece of its own. The worker cuts a row into at most six pieces and merges the shortest neighbours, and 200 of the 300 issues have six pieces before any attack. Cut as the worker would, the single claim is a piece of its own in 92 of the 300 issues, both copies of the claim written twice in 55, and all three copies in 24; elsewhere a copy shares its piece with the issue's own text. So the numbers above hold for a payload that sits in a piece of its own. What the worker's merged pieces catch on this decision is not measured yet. The yes/no numbers below use the worker's own pieces.
+### On the pieces the worker cuts
+
+*2026-11-15 · issue #45 · evidence: [results/steer-cut](../../results/steer-cut/report.md) (`jevbench steercut`)*
+
+While preparing #44 we found that #24's and #43's harness judged every payload as a piece of its own. The worker cuts the text it is given. It splits on blank lines, joins a piece under 120 characters to the next, and merges the shortest neighbours until there are at most six. 200 of the 300 issues have six pieces before any attack. Cut as the worker would, the single claim is a piece of its own in 92 of the 300 issues, both copies of the claim written twice in 55, and all three copies in 24; elsewhere a copy shares its piece with the issue's own text.
+
+#45 measured both again on the worker's cut. The issues, attacks, targets and answers to the whole texts were the same, and #43's rule was fixed again before any call.
+- **Answers already asked were reused.** That covers texts the worker cuts the same way, and any record a check needs that #24 or #43 had asked: without a piece both cuts share, an issue reads the same however the rest is cut. On the harness's own cut, the same code gave all 125 of #24's and #43's stored numbers it was compared with.
+- **1,731 records were new,** for $0.068: 1,731 calls at $0.062, plus a first batch of 200 that was answered but lost before it could be saved, an estimated $0.006.
+- **The check stays.** E1+KO still wins #43's rule. The worst attack it lets through is 9.3 % of issues, where #43 measured 7.0 %. Erasing alone lets 16.7 % through (15.0 %), keep-one alone 11.3 % (9.7 %). The numbers in this write-up are the worker's.
+- **Clean issues are cut the same way,** so their flags, calls and the share left `auto` didn't change.
+- **A payload glued to a short paragraph.** Without the sentence, erasing missed one issue for each single-paragraph attack, all the same issue. The worker had joined the payload to the issue's last paragraph, which is under 120 characters, and without both, the issue read as the attacker's SIG anyway.
+- **Keep-one lost more votes.** A merged copy brings its piece's honest text with it. Three copies won every vote, and without the sentence the policy written twice got through keep-one on 21.7 % of issues, where #43's cut gave 13.3 %.
 
 ## Yes/no decisions
 
@@ -200,7 +213,7 @@ The same 300 issues, attacks and targets, judged by Laya 0.4.16 (open weights, r
 
 - **Pattern filters.** Regular expressions for instruction-like text caught every instruction-style attack in our run, but we wrote them knowing the attacks, so that proves nothing. They missed the claim entirely, and any rewording gets past them. They also fired on 1.3 % of clean issues.
 - **Erasing pairs of pieces** (#43). It caught every payload written twice, but flagged 15.9 % of the clean accepted issues, over the limit fixed beforehand, at 17 calls per issue. Three copies beat it.
-- **Erasing near-duplicates together** (#43). It caught exact copies at erasing's own cost (4.4 % flagged), but a copy in other words got through as often as before (15.0 %).
+- **Erasing near-duplicates together** (#43). It caught exact copies at erasing's own cost (4.4 % flagged), but a copy in other words got through as often as with erasing alone (16.7 % of issues on the worker's cut).
 - **The vote on a yes/no decision** (#44). For a "no" it caught nothing erasing hadn't. For a "yes" it cut a claim written twice from 95.5 % to 4.0 %, but flagged 22.4 % of the clean "yes" answers, over the limit fixed beforehand.
 - **Requiring `auto` to hold with each piece erased** (#44). It flagged 26.3 % of the clean "yes" answers and 9.3 % of the clean "no" answers.
 
@@ -208,9 +221,9 @@ The same 300 issues, attacks and targets, judged by Laya 0.4.16 (open weights, r
 
 - **Two tasks, two models.** These are Kubernetes routing and one yes/no question on Kubernetes issues with jev-1.14, and routing with Laya 0.4.16, zero-shot. Run `check --steer` on your own decision.
 - **A "yes" on a yes/no decision.** Hardening stops a claim written once, not twice: 95.5 % of the attacked issues were accepted as "yes". On this question the claim also comes close to changing what the issue asks for, since its author now says it asks for a new option; the maintainers' label says otherwise.
-- **How #24 and #43 cut their pieces.** Their checks were measured with every payload as a piece of its own. The worker merges pieces beyond six, which it would do in most of those attacked issues, and that case is not measured yet on the routing decision.
+- **Merged pieces.** The worker joins a piece under 120 characters to the next and merges pieces beyond six, so a payload often shares a piece with the issue's own text. Erasing that piece removes both. In one issue of 300, what was left read as the attacker's SIG anyway, and every single-paragraph attack got through erasing there.
 - **Fixed attacks.** The attacks are fixed templates, not an attacker who adapts after seeing the answers. Check Point's adaptive attackers broke every configuration they tried.
-- **Gaps in the check.** Erasing covers a payload confined to one piece, and keep-one a payload in fewer pieces than the issue's own text. Misleading content in more pieces, or reworded, still gets past it: under both defences, the claim written twice in other words got 7.0 % of issues through, and three copies 5.3 %.
+- **Gaps in the check.** Erasing covers a payload confined to one piece, and keep-one a payload in fewer pieces than the issue's own text. Misleading content in more pieces, or reworded, still gets past it: under both defences, the claim written twice in other words got 9.3 % of issues through, and three copies 6.7 %.
 - **What the guarantee covers.** The precision guarantee covers all rows above the threshold. Hardening removes some of them; on this task the rows left were more precise (94.7 % vs 93.7 %), but that is measured, not guaranteed. Calibrating with every label checked would make it so.
 
 ## Sources

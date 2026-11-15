@@ -30,6 +30,7 @@
   steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
   steertwice  payloads written twice: which check catches them? (real Jev calls, capped at $0.50 more)
   steernoul   keep-one on a yes/no decision: does it help? (real Jev calls, capped at $0.70)
+  steercut    #24's and #43's checks again, on the pieces the worker cuts (real Jev calls, capped at $0.40)
   backends    Jev and Laya on the same labelled rows, from the stored check reports (no API calls)
 """
 import argparse
@@ -152,6 +153,8 @@ def main(argv=None):
     mg.add_argument("--runs", type=int, default=100)
     sub.add_parser("steertwice")
     sub.add_parser("steernoul")
+    sc = sub.add_parser("steercut")
+    sc.add_argument("--dry-run", action="store_true", help="check the reproduction and count the calls; ask nothing")
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
@@ -301,6 +304,10 @@ def main(argv=None):
     elif args.cmd == "steernoul":
         from . import steernoul
         print("report:", steernoul.run() + "/report.md")
+    elif args.cmd == "steercut":
+        from . import steercut
+        out = steercut.run(dry=args.dry_run)
+        print(json.dumps(out, indent=2) if args.dry_run else "report: " + out + "/report.md")
     elif args.cmd == "steer":
         from . import steer
         print("report:", steer.run(args.max_usd, backend=args.backend, model=args.model, out=args.out) + "/report.md")

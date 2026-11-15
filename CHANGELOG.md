@@ -4,6 +4,12 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-15
 
+### Checked (`--harden` on the pieces the worker cuts, #45)
+- **#24's and #43's checks were measured again on the pieces the worker cuts** (`jevbench steercut`, new). The same 300 issues, attacks, targets and answers to the whole texts; only the pieces changed. Answers already asked were reused, and on the harness's own cut the same code gave all 125 of #24's and #43's stored numbers it was compared with. 1,731 new calls cost $0.068, counting a first batch of 200 that was answered but lost before it could be saved (an estimated $0.006), under a cap of $0.40.
+- **The check stays.** Under #43's rule, fixed again in #45, erase-and-check with keep-one still wins. The worst attack it lets through is 9.3 % of issues instead of 7.0 % (the claim written twice, reworded); erasing alone 16.7 % instead of 15.0 %; keep-one alone 11.3 % instead of 9.7 %. The claim written twice gets through on 3.7 % instead of 3.0 %, three copies on 6.7 % instead of 5.3 %. Clean issues are cut the same way, so their flags and calls didn't change.
+- **Without `--untrusted`,** erasing missed one issue for each single-paragraph attack (0.3 %; #24 reported none). The worker had glued the payload to the issue's short last paragraph, and without both the issue read as the attacker's SIG anyway. Keep-one let the policy written twice through on 21.7 % of issues instead of 13.3 %.
+- **Docs.** The READMEs, the steering write-up, ADR 0005 and the report now quote the worker's numbers.
+
 ### Changed (`--harden` on yes/no decisions, #44)
 - **For a yes/no row answered "no", `calibrate --harden` also judges each piece alone,** and sends the row to review if any piece is answered "yes". A denial written into a row leaves the piece it denies, however often it is repeated. Rows answered "yes" are still only erased.
 - **Chosen by `jevbench steernoul`** (new; 16,579 real Jev calls, $0.488 under a cap of $0.70), by a rule fixed in #44 before any call, for each side separately. The decision was "the issue asks for a new feature or enhancement", on 500 labelled Kubernetes issues, with `--untrusted`, a 90 % recall target and an 85 % precision target (no threshold certified 90 %). Six checks were compared on the worker's own pieces: erasing; requiring `auto` to hold with each piece erased; and each of the two with the vote of #43 or with the any-piece rule.
