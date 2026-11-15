@@ -251,6 +251,16 @@ def run(seed=0, cap=CAP):
         res["bands"][band] = {"clean_issues": n_clean, "attacked_issues": n_att, "flagged": flagged, "calls_per_issue": per_issue,
                               "attacks": attacks, "decided": decided, "out": out, "worst_left_issues": worst,
                               "worst_left": {c: (v / n_att if n_att else 0.0) for c, v in worst.items()}, "chosen": chosen}
+    # `calibrate --review yes` (#46): "yes" always goes to review, so only the "no" band can be automatic
+    clean = {band: [(r, flags("clean", r, rec, band)[0]) for b, name, r, rec in judged if name == "clean" and b == band]
+             for band in ("yes", "no")}
+    kept_no = [r for r, f in clean["no"] if not f["E1+KA"]]              # the check `--harden` runs on a "no"
+    kept_yes = [r for r, f in clean["yes"] if not f["E1"]]               # …and on a "yes"
+    res["review_yes"] = {"auto": len(clean["no"]) / len(rows), "auto_hardened": len(kept_no) / len(rows),
+                         "right_hardened": float(np.mean([r["label"] == "no" for r in kept_no])) if kept_no else None,
+                         "auto_hardened_without_switch": (len(kept_no) + len(kept_yes)) / len(rows),
+                         "yes_left_to_review": len(kept_yes) / len(rows),
+                         "yes_left_right": float(np.mean([r["label"] == "yes" for r in kept_yes])) if kept_yes else None}
     spend = f"{OUT}/spend.jsonl"
     res["spent_usd"] = sum(json.loads(line)["usd"] for line in open(spend)) if os.path.exists(spend) else 0.0
     with open(f"{OUT}/results.json", "w") as f:
@@ -304,4 +314,14 @@ def render(res):
         for fam, a in b["attacks"].items():
             L.append(f"| {fam} | {pct(a['answered'])} | {pct(a['steered_and_auto'])} | "
                      + " | ".join(pct(a["left"][k]) for k in cs) + f" | {pct(a['payload_alone'])} |")
+    v = res.get("review_yes")
+    if v:
+        L += ["", "## With `calibrate --review yes` (#46)", "",
+              "\"Yes\" always goes to review, so only the \"no\" band can be automatic, and no attack towards \"yes\" "
+              "reaches `auto`. Attacks towards \"no\" are unchanged (above).", "",
+              f"- **Automatic:** {pct(v['auto'])} of the issues; {pct(v['auto_hardened'])} with `--harden`, "
+              f"{pct(v['right_hardened'])} of them right (\"no\" for issues that aren't feature requests).",
+              f"- **What it costs:** with `--harden` and no switch, {pct(v['auto_hardened_without_switch'])} of the issues "
+              f"are automatic. The switch sends the {pct(v['yes_left_to_review'])} answered \"yes\" and passed by erasing "
+              f"to review; {pct(v['yes_left_right'])} of them were right."]
     return "\n".join(L) + "\n"

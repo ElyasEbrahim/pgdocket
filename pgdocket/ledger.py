@@ -132,7 +132,7 @@ def import_labels(dsn, name, column=None, csv_path=None, sample=None, seed="1", 
 
 
 def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None,
-              harden=False):
+              harden=False, review=None):
     """Fit a calibrator on labeled rows that have a current answer, and store it on the active version.
 
     Uses labels drawn at random or a whole column. Hand-picked labels ('manual', e.g. the disagreements exported by
@@ -142,10 +142,12 @@ def calibrate(dsn, name, precision_target=0.9, alpha=0.05, include_manual=False,
     `recall_target` (yes/no decisions): also a threshold below which rows are answered "no" without review (#21).
     `harden`: a row is `auto` only once the steering check has passed it (erase-and-check, #24, and keep-one for
     choice decisions, #43); the rows `auto` accepts now are queued for the worker to check (`cal["checks_queued"]`).
+    `review`: answers that always go to review, whatever their score (#46), such as "yes" on a yes/no decision whose
+    rows are written by people who gain from a "yes". A list or "a,b"; each must be an answer of the decision.
     """
     with connect(dsn) as conn:
         return _calibrate(conn, _decision(conn, name), precision_target, alpha, include_manual, per_answer, recall_target,
-                          harden)
+                          harden, review)
 
 
 def harden_enqueue(conn, d, cal):
@@ -168,7 +170,7 @@ def harden_enqueue(conn, d, cal):
 
 
 def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, per_answer=False, recall_target=None,
-               harden=False):
+               harden=False, review=None):
     sampling = ["random", "all", "manual"] if include_manual else ["random", "all"]
     rows = conn.execute(
         "SELECT l.label, j.answer FROM docket.label l "
@@ -176,16 +178,21 @@ def _calibrate(conn, d, precision_target=0.9, alpha=0.05, include_manual=False, 
         "JOIN docket.judgment j ON j.id = c.judgment_id WHERE l.decision_id = %s AND l.sampling = ANY(%s) "
         "ORDER BY l.row_key", (d["version"], d["id"], sampling)).fetchall()
     spec = d["spec"]
+    review = calibration.review_list(spec, review)          # before any work: an unknown answer is refused
     # choice labels naming another version's option stay in: they count as wrong for this one
     labels = [r[0] for r in rows] if spec["kind"] == "choice" else [r[0] == "yes" for r in rows]  # yes/no normalised
     cal = calibration.fit(spec, [r[1] for r in rows], labels, precision_target, alpha, per_answer,
                           recall_target) | {"sampling": sampling}
     if harden:
         cal["harden"] = True
+    if review:
+        cal["review"] = review
     conn.execute("UPDATE docket.version SET calibration = %s WHERE decision_id = %s AND version = %s",
                  (Jsonb(cal), d["id"], d["version"]))
     if harden:
         cal["checks_queued"] = harden_enqueue(conn, d, cal)
+    if review:                                              # for the summary only; not stored
+        cal["still_automatic"] = calibration.still_automatic(spec, cal)
     return cal
 
 
@@ -295,9 +302,11 @@ def promote(dsn, name, version, force=False):
         cal, why = None, "the previous version was not calibrated"
         if prev:
             try:
-                cal = _calibrate(conn, _decision(conn, name), prev["precision_target"], prev.get("alpha", 0.05),
+                new = _decision(conn, name)                 # answers kept under review carry over, if it still gives them
+                cal = _calibrate(conn, new, prev["precision_target"], prev.get("alpha", 0.05),
                                  "manual" in prev.get("sampling", []), prev.get("mode") == "per answer",
-                                 prev.get("recall_target"), prev.get("harden", False))
+                                 prev.get("recall_target"), prev.get("harden", False),
+                                 [x for x in prev.get("review", []) if x in calibration.answers(new["spec"])])
             except ValueError as e:
                 why = str(e)
     return {"previous": d["version"], "missing": missing, "comparison": comparison, "calibration": cal,

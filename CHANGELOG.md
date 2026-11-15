@@ -4,6 +4,13 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-15
 
+### Added (`calibrate --review`, #46)
+- **`pgdocket calibrate NAME --review ANSWER[,ANSWER…]`:** rows given one of these answers are never `auto`, whatever their score. Nothing else changes: the answers, the confidence, the thresholds and their guarantees, and `auto` for every other answer.
+- **Why.** On a yes/no decision, a misleading claim written twice was accepted as "yes" on 95.5 % of the attacked issues, and no check stopped it without flagging over 20 % of the clean "yes" rows (#44). The only way to keep "yes" out of `auto` was a precision target the labels can't certify. With `--review yes` and a recall target, only the "no" band is automatic. On the feature-request decision, 65.6 % of the issues stay `auto` with `--harden`, 98.5 % of them right, against 79.6 % without the switch; no attack towards "yes" reaches `auto`.
+- **Choice decisions** take any option names, with or without `--per-answer`.
+- **Data model.** Migration `016` keeps the list in the calibration (`review`); the view computes each row's answer once and leaves it out of `auto` when the answer is listed, exactly as the Python twin does. `promote` keeps the switch, `compare` counts only what it lets through, `--harden` and the worker check only rows that can still be automatic, and `audit` draws none of the others.
+- **Refusals and warnings.** An answer the decision doesn't give is refused, naming the ones it does. `calibrate` says what is still automatic, or that nothing is.
+
 ### Checked (`--harden` on the pieces the worker cuts, #45)
 - **#24's and #43's checks were measured again on the pieces the worker cuts** (`jevbench steercut`, new). The same 300 issues, attacks, targets and answers to the whole texts; only the pieces changed. Answers already asked were reused, and on the harness's own cut the same code gave all 125 of #24's and #43's stored numbers it was compared with. 1,731 new calls cost $0.068, counting a first batch of 200 that was answered but lost before it could be saved (an estimated $0.006), under a cap of $0.40.
 - **The check stays.** Under #43's rule, fixed again in #45, erase-and-check with keep-one still wins. The worst attack it lets through is 9.3 % of issues instead of 7.0 % (the claim written twice, reworded); erasing alone 16.7 % instead of 15.0 %; keep-one alone 11.3 % instead of 9.7 %. The claim written twice gets through on 3.7 % instead of 3.0 %, three copies on 6.7 % instead of 5.3 %. Clean issues are cut the same way, so their flags and calls didn't change.

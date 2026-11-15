@@ -129,6 +129,9 @@ def main(argv=None):
                     help="choice: one threshold and guarantee per answer (answers with too few labels get no auto)")
     ca.add_argument("--include-manual", action="store_true",
                     help="also fit on hand-picked labels (e.g. exported disagreements); may bias the guarantee")
+    ca.add_argument("--review", metavar="ANSWERS",
+                    help="answers that always go to review, whatever their score (comma-separated): e.g. yes on a "
+                         "yes/no decision whose rows are written by people who gain from a yes")
     ca.add_argument("--harden", action="store_true",
                     help="auto only for rows that pass a check: no answer changes with any one piece of their text "
                          "removed; for choice decisions, the pieces judged alone don't favour another answer; for a "
@@ -329,7 +332,8 @@ def _ledger_command(a):
     elif a.cmd == "calibrate":
         try:
             cal = ledger.calibrate(a.dsn, a.name, a.precision_target, include_manual=a.include_manual,
-                                   per_answer=a.per_answer, recall_target=a.recall_target, harden=a.harden)
+                                   per_answer=a.per_answer, recall_target=a.recall_target, harden=a.harden,
+                                   review=a.review)
         except ValueError as e:                       # too few labelled rows with an answer: say why, no traceback
             if "labeled rows" not in str(e):
                 sys.exit(f"{a.name}: {e}")
@@ -339,7 +343,7 @@ def _ledger_command(a):
             sys.exit(f"{a.name}: can't calibrate yet: {e}.{hint}")
         print(f"{a.name}: {cal['n_labels']} labels · calibration error {cal['ece_raw']:.3f} → {cal['ece_calibrated']:.3f} · "
               + _threshold_summary(cal))
-        for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name)]):
+        for line in filter(None, [_recall_summary(cal), *_per_answer_notes(cal, a.name), _review_summary(cal)]):
             print(line)
         if a.harden:
             print(f"  hardened: {cal['checks_queued']:,} accepted rows queued for the steering check; until the worker "
@@ -681,6 +685,20 @@ def _recall_summary(cal):
             f"keeping ≥ {tgt} of true yeses (95 % confidence; {cal['positives']} labelled yeses)")
 
 
+def _review_summary(cal):
+    """Answers kept under review (#46), and what is left automatic."""
+    if not cal.get("review"):
+        return None
+    kept = ", ".join(cal["review"])
+    left = cal.get("still_automatic", [])
+    if not left:
+        hint = ("; add --recall-target to answer 'no' without review"
+                if cal.get("method") == "platt" and cal.get("recall_target") is None and "yes" in cal["review"] else "")
+        return f"  under review: {kept}. No answer is left automatic: `auto` is false everywhere{hint}"
+    return (f"  under review: {kept}: rows given {'it' if len(cal['review']) == 1 else 'them'} are never `auto`; "
+            f"`auto` can still accept {', '.join(left)}")
+
+
 def _per_answer_notes(cal, name):
     """Answers whose auto-accepted rows are demonstrably below the target, and what --per-answer would allow."""
     tgt = f"{100 * cal['precision_target']:.0f} %"
@@ -708,7 +726,8 @@ def _compare(a, ledger):
         data = compare.fetch(conn, a.name, a.version)
         target = a.precision_target or (data["calibration"] or {}).get("precision_target", 0.9)
         result = compare.analyse(data["spec_old"], data["spec_new"], data["rows"], precision_target=target,
-                                 per_answer=(data["calibration"] or {}).get("mode") == "per answer")
+                                 per_answer=(data["calibration"] or {}).get("mode") == "per answer",
+                                 review=(data["calibration"] or {}).get("review", []))
         if data["pending"]:
             result.setdefault("reasons", []).insert(0, f"{data['pending']} queued judgments are not done yet; "
                                                        "this report covers only finished rows.")

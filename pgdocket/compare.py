@@ -40,7 +40,7 @@ def decision_value(spec, answer):
     return value if spec["kind"] == "choice" else ("yes" if score >= 0.5 else "no")
 
 
-def analyse(spec_old, spec_new, rows, n_boot=2000, seed=0, precision_target=0.9, per_answer=False):
+def analyse(spec_old, spec_new, rows, n_boot=2000, seed=0, precision_target=0.9, per_answer=False, review=()):
     """rows: dicts with old, probe, new (raw answers), label (or None) and sampling ('random', 'manual', 'all').
     Rows missing an answer are skipped."""
     rows = [r for r in rows if r["old"] is not None and r["probe"] is not None and r["new"] is not None]
@@ -95,8 +95,8 @@ def analyse(spec_old, spec_new, rows, n_boot=2000, seed=0, precision_target=0.9,
     out["calibration_labels"] = int(for_cal.sum())
     if out["calibration_labels"] >= MIN_LABELS:
         out["calibration"] = {
-            "current": _fit(spec_old, [r["old"] for r in rows], label, for_cal, precision_target, per_answer),
-            "new": _fit(spec_new, [r["new"] for r in rows], label, for_cal, precision_target, per_answer)}
+            "current": _fit(spec_old, [r["old"] for r in rows], label, for_cal, precision_target, per_answer, review),
+            "new": _fit(spec_new, [r["new"] for r in rows], label, for_cal, precision_target, per_answer, review)}
     if spec_new["kind"] == "choice" and has_label.any():
         unknown = sum(1 for l in label if l is not None and l not in option_names(spec_new))
         if unknown:
@@ -105,7 +105,7 @@ def analyse(spec_old, spec_new, rows, n_boot=2000, seed=0, precision_target=0.9,
     return out
 
 
-def _fit(spec, answers, labels, use, precision_target, per_answer=False):
+def _fit(spec, answers, labels, use, precision_target, per_answer=False, review=()):
     """Fit a version's calibrator on the labels `calibrate` would use, in the active version's mode; then how many
     compared rows its view would mark `auto`, and which answers are below the target. None when labels can't fit."""
     idx = [i for i in range(len(answers)) if use[i]]
@@ -114,6 +114,7 @@ def _fit(spec, answers, labels, use, precision_target, per_answer=False):
         cal = calibration.fit(spec, [answers[i] for i in idx], y, precision_target, per_answer=per_answer)
     except ValueError:
         return None
+    cal["review"] = [x for x in review if x in calibration.answers(spec)]       # the active version's switch (#46)
     certified = (any(t is not None for t in cal["thresholds"].values()) if cal.get("mode") == "per answer"
                  else cal["threshold"] is not None)
     auto = float(np.mean([calibration.auto(a, spec, cal) for a in answers])) if certified else None

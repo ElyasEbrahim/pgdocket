@@ -42,4 +42,4 @@ The precision guarantee assumes new rows are like the labelled ones. An attacker
 - The ledger now stores a second kind of evidence next to answers: whether an answer survives the removal of each piece of its text and, for choice decisions, how each piece votes alone (#43).
 - Hardening trades automation for robustness. On this task 88 % of issues stayed `auto` instead of 95 %, and the rows left were more precise (94.7 % vs 93.7 %). The precision guarantee still covers all rows above the threshold, not the hardened subset as such.
 - A determined attacker who spreads a payload across a row, or adapts after seeing answers, can still get through. For decisions where that matters, a person stays in the loop. The steering report says so.
-- A "yes" on a yes/no decision is not protected against a claim written twice (#44). Where the people who write the rows gain from a "yes", it should not be automatic.
+- A "yes" on a yes/no decision is not protected against a claim written twice (#44). Where the people who write the rows gain from a "yes", it should not be automatic: `calibrate --review yes` (#46) keeps every "yes" under review and leaves the "no" band automatic.

@@ -73,3 +73,10 @@ Share of the 90 attacked issues answered "no" and accepted by `auto`:
 | claim twice | 45.6 % | 6.7 % | 6.7 % | 4.4 % | 6.7 % | 1.1 % | 4.4 % | 1.1 % | 83.3 % |
 | claim twice, reworded | 91.1 % | 16.7 % | 15.6 % | 4.4 % | 15.6 % | 3.3 % | 4.4 % | 1.1 % | 60.0 % |
 | claim three times | 48.9 % | 7.8 % | 7.8 % | 5.6 % | 7.8 % | 1.1 % | 5.6 % | 1.1 % | 57.1 % |
+
+## With `calibrate --review yes` (#46)
+
+"Yes" always goes to review, so only the "no" band can be automatic, and no attack towards "yes" reaches `auto`. Attacks towards "no" are unchanged (above).
+
+- **Automatic:** 67.0 % of the issues; 65.6 % with `--harden`, 98.5 % of them right ("no" for issues that aren't feature requests).
+- **What it costs:** with `--harden` and no switch, 79.6 % of the issues are automatic. The switch sends the 14.0 % answered "yes" and passed by erasing to review; 95.7 % of them were right.

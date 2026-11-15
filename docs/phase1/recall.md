@@ -24,6 +24,13 @@ pgdocket calibrate urgent --precision-target 0.9 --recall-target 0.9
 
 The output above is illustrative.
 
+**Keeping one side under review** (#46). `calibrate --review yes` keeps every "yes" out of `auto`, so only the band below the recall threshold is automatic; `--review no` does the opposite. Use it when the people who write the rows gain from one answer: a misleading claim written twice into a Kubernetes issue was accepted as "yes" on 95.5 % of the attacked issues, and no check stopped it without flagging over 20 % of the clean "yes" rows ([steering](steering.md#yesno-decisions)). The answers, the thresholds and their guarantees don't change; `promote` keeps the switch.
+
+```bash
+pgdocket calibrate requests --precision-target 0.85 --recall-target 0.9 --review yes
+#   under review: yes: rows given it are never `auto`; `auto` can still accept no
+```
+
 ## How it works
 
 - **Candidates.** The candidate thresholds are the distinct scores, which don't depend on the labels.

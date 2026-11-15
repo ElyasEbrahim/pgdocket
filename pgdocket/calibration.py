@@ -6,6 +6,7 @@ The stored calibration also carries a threshold with a precision guarantee. It i
 (the top probability, or the yes-probability), which doesn't depend on the labels, so fixed-sequence testing holds
 exactly and the view applies the very threshold that was tested (`threshold_on: "raw score"`). Calibrations stored
 before 2026-10-22 chose it on cross-fitted calibrated scores and keep being applied that way.
+A calibration may also keep answers under review (`review`, #46): rows given one of them are never `auto`.
 """
 import math
 from datetime import datetime, timezone
@@ -39,10 +40,47 @@ def raw_score(answer, spec):
     return read_answer(spec, answer)[1]
 
 
+def answers(spec):
+    """The answers a decision can give: its option names, or yes and no."""
+    return option_names(spec) if spec["kind"] == "choice" else ["yes", "no"]
+
+
+def review_list(spec, review):
+    """The answers to keep under review, checked against the decision's own (#46). Accepts a list or 'a,b'."""
+    if isinstance(review, str):
+        review = [x.strip() for x in review.split(",")]
+    out = list(dict.fromkeys(x for x in (review or []) if x))
+    unknown = [x for x in out if x not in answers(spec)]
+    if unknown:
+        raise ValueError(f"--review: {', '.join(unknown)} is not an answer of this decision; it gives "
+                         + ", ".join(answers(spec)))
+    return out
+
+
+def still_automatic(spec, cal):
+    """The answers `auto` can still accept: certified by a threshold (or, for "no", a recall threshold) and not kept
+    under review."""
+    review = cal.get("review") or []
+    if spec["kind"] == "noul":
+        sides = (["yes"] if cal.get("threshold") is not None else []) + (["no"] if cal.get("recall_threshold") is not None else [])
+    elif cal.get("mode") == "per answer":
+        sides = [a for a, t in (cal.get("thresholds") or {}).items() if t is not None]
+    else:
+        sides = option_names(spec) if cal.get("threshold") is not None else []
+    return [a for a in sides if a not in review]
+
+
+def view_answer(answer, spec, cal):
+    """Python twin of the view's `answer` column."""
+    return noul_answer(answer, spec, cal) if spec["kind"] == "noul" else read_answer(spec, answer)[0]
+
+
 def auto(answer, spec, cal):
     """Python twin of the view's `auto` column."""
     if answer is None or not cal:
         return None
+    if cal.get("review") and view_answer(answer, spec, cal) in cal["review"]:      # kept under review (#46)
+        return False
     if spec["kind"] == "noul" and cal.get("recall_threshold") is not None:     # auto-yes, auto-no, review band (#21)
         s = raw_score(answer, spec)
         return (cal.get("threshold") is not None and s >= cal["threshold"]) or s < cal["recall_threshold"]

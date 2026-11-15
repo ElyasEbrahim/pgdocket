@@ -12,6 +12,7 @@ import uuid
 import pytest
 
 psycopg = pytest.importorskip("psycopg")
+from psycopg import sql  # noqa: E402
 from psycopg.conninfo import make_conninfo  # noqa: E402
 
 from pgdocket import calibration, ledger  # noqa: E402
@@ -63,7 +64,7 @@ def test_install_is_idempotent_and_needs_no_superuser(env):
     with psycopg.connect(env["owner"]) as c:
         assert c.execute("SELECT rolsuper FROM pg_roles WHERE rolname = current_user").fetchone()[0] is False
     assert ledger.install(env["owner"]) == ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011",
-                                            "012", "013", "014", "015"]
+                                            "012", "013", "014", "015", "016"]
     assert ledger.install(env["owner"]) == []
 
 
@@ -515,6 +516,77 @@ def test_recall_target_gives_the_view_three_bands(env):
     ver, _ = ledger.revise(env["owner"], "flags", question="Is it urgent? Answer for the on-call team.", backfill=True)
     Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
     assert ledger.promote(env["owner"], "flags", ver)["calibration"]["recall_target"] == 0.9
+
+
+def test_review_keeps_an_answer_out_of_auto(env, capsys):
+    """#46: `calibrate --review yes` on a yes/no decision leaves only the "no" band automatic, in SQL exactly as in
+    Python; nothing else changes. --harden checks only what can be automatic, promote keeps the switch, and audit
+    draws nothing it can't accept. A choice decision keeps a named answer out of `auto`, with --per-answer too."""
+    from pgdocket import audit, cli
+    rows = ([(i, "yes", "yes" if i <= 57 else "no") for i in range(1, 61)]
+            + [(i, "no", "yes" if i == 61 else "no") for i in range(61, 201)])
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.grants (id int PRIMARY KEY, want text, truth text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.grants VALUES (%s, %s, %s)", rows)
+    spec = {"kind": "noul", "question": "Should we grant it?", "backend": env["url"], "model": "fake", "batch_size": 1}
+    ledger.create(env["owner"], "grants", "shop.grants", "id", ["want"], spec)
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "grants", column="truth", positive="yes")
+
+    def view(name):
+        with psycopg.connect(env["owner"]) as c:
+            stored = c.execute("SELECT v.spec, v.calibration FROM docket.version v JOIN docket.decision d ON "
+                               "d.id = v.decision_id AND v.version = d.active_version WHERE d.name = %s", (name,)).fetchone()
+            got = c.execute(sql.SQL("SELECT v.key, v.answer, v.auto, j.answer FROM {} v JOIN docket.decision d ON d.name = %s "
+                                    "JOIN docket.current cu ON cu.decision_id = d.id AND cu.version = d.active_version "
+                                    "AND cu.row_key = v.key::text JOIN docket.judgment j ON j.id = cu.judgment_id")
+                            .format(sql.Identifier("docket", "v_" + name)), (name,)).fetchall()
+        for _, answer, auto, raw in got:                      # the view and its Python twin agree on every row
+            assert auto == calibration.auto(raw, *stored) and answer == calibration.view_answer(raw, *stored)
+        return {k: (a, auto) for k, a, auto, _ in got}
+
+    ledger.calibrate(env["owner"], "grants", precision_target=0.8, recall_target=0.9)
+    before = view("grants")
+    assert {v for v in before.values()} == {("yes", True), ("no", True)}
+    cal = ledger.calibrate(env["owner"], "grants", precision_target=0.8, recall_target=0.9, review="yes")
+    assert cal["review"] == ["yes"] and cal["still_automatic"] == ["no"]
+    after = view("grants")
+    assert {k: a for k, (a, _) in after.items()} == {k: a for k, (a, _) in before.items()}          # same answers
+    assert all(auto is (a == "no") for a, auto in after.values())                                   # only "no" auto
+    with psycopg.connect(env["owner"]) as c:
+        assert audit.draw(c, "grants", 10)[1:] == ([], 0)                     # nothing it could accept to audit
+        c.rollback()
+    hard = ledger.calibrate(env["owner"], "grants", precision_target=0.8, recall_target=0.9, review="yes", harden=True)
+    with psycopg.connect(env["owner"]) as c:
+        queued = {k for (k,) in c.execute("SELECT q.row_key FROM docket.queue q JOIN docket.decision d ON d.id = "
+                                          "q.decision_id WHERE d.name = 'grants' AND q.purpose = 'check'")}
+    assert hard["checks_queued"] == 140 and queued == {str(i) for i in range(61, 201)}          # the "no" rows only
+    ver, _ = ledger.revise(env["owner"], "grants", question="Should we grant it? Answer for the team.", backfill=True)
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    assert ledger.promote(env["owner"], "grants", ver)["calibration"]["review"] == ["yes"]          # carried over
+
+    capsys.readouterr()
+    cli.main(["calibrate", "--dsn", env["owner"], "grants", "--precision-target", "0.8", "--recall-target", "0.9",
+              "--review", "yes"])
+    assert "under review: yes: rows given it are never `auto`; `auto` can still accept no" in capsys.readouterr().out
+    cli.main(["calibrate", "--dsn", env["owner"], "grants", "--precision-target", "0.8", "--review", "yes"])
+    assert "No answer is left automatic: `auto` is false everywhere; add --recall-target" in capsys.readouterr().out
+    with pytest.raises(SystemExit, match="maybe is not an answer of this decision; it gives yes, no"):
+        cli.main(["calibrate", "--dsn", env["owner"], "grants", "--review", "maybe"])
+
+    mail = [(i, ("billing", "technical", "sales")[i % 3]) for i in range(1, 181)]
+    with psycopg.connect(env["owner"], autocommit=True) as c:
+        c.execute("CREATE TABLE shop.refunds (id int PRIMARY KEY, body text, team text)")
+        with c.cursor() as cur:
+            cur.executemany("INSERT INTO shop.refunds VALUES (%s, %s, %s)", [(i, t, t) for i, t in mail])
+    ledger.create(env["owner"], "refunds", "shop.refunds", "id", ["body"], _spec(env["url"]))
+    Worker(env["owner"], poll=0.1, log=lambda *a: None).run(once=True)
+    ledger.import_labels(env["owner"], "refunds", column="team")
+    for per_answer in (False, True):
+        ledger.calibrate(env["owner"], "refunds", precision_target=0.8, per_answer=per_answer, review="billing")
+        got = view("refunds")
+        assert {a for a, auto in got.values() if auto} == {"technical", "sales"} and len(got) == 180
 
 
 def _drift(env, *args):

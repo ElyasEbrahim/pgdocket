@@ -526,5 +526,13 @@
       "chosen": "E1+KA"
     }
   },
+  "review_yes": {
+    "auto": 0.67,
+    "auto_hardened": 0.656,
+    "right_hardened": 0.9847560975609756,
+    "auto_hardened_without_switch": 0.796,
+    "yes_left_to_review": 0.14,
+    "yes_left_right": 0.9571428571428572
+  },
   "spent_usd": 0.4876249980000001
 }
