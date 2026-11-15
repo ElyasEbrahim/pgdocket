@@ -4,6 +4,12 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-15
 
+### Examined, not built (a finer cut for `--harden`'s check, #47)
+- **The question.** The worker cuts a row into at most six pieces, joining any piece under 120 characters to the next. #45 found that this glues payloads to the issue's own text. Would a finer cut catch more?
+- **Compared** by `jevbench steerfine` (new), reusing every answer #24, #43, #44 and #45 had stored: 3,709 new real Jev calls, $0.134, under a cap of $0.35. Four cuts on #43's 300 issues and nine attacks under `--untrusted`, with erase-and-check and keep-one: the current one; up to 8 or 12 pieces with the same joins; and up to 10 pieces with only headings (under 40 characters) joined. The rule was fixed in #47 before any call.
+- **The cut stays.** The finer cuts let fewer attacks through: the worst case was 8.3 % of issues with 8 or 12 pieces, and 7.0 % with only headings joined, against 9.3 %. But keep-one, judging smaller pieces, voted against the issue's own answer more often. 10.0–12.6 % of the clean accepted issues went to review, over #43's 9.1 % limit, at 12.5–15.2 calls per accepted issue instead of 10.6.
+- **Code.** `pgdocket.steer.segments` now takes the join length as a parameter (`join_under`, default 120); its defaults are unchanged.
+
 ### Added (`calibrate --review`, #46)
 - **`pgdocket calibrate NAME --review ANSWER[,ANSWER…]`:** rows given one of these answers are never `auto`, whatever their score. Nothing else changes: the answers, the confidence, the thresholds and their guarantees, and `auto` for every other answer.
 - **Why.** On a yes/no decision, a misleading claim written twice was accepted as "yes" on 95.5 % of the attacked issues, and no check stopped it without flagging over 20 % of the clean "yes" rows (#44). The only way to keep "yes" out of `auto` was a precision target the labels can't certify. With `--review yes` and a recall target, only the "no" band is automatic. On the feature-request decision, 65.6 % of the issues stay `auto` with `--harden`, 98.5 % of them right, against 79.6 % without the switch; no attack towards "yes" reaches `auto`.

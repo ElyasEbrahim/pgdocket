@@ -1,6 +1,6 @@
 # Rows that steer the model
 
-*2026-10-27, updated 2026-11-15 · issues #24, #43, #44, #45, #46 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023), structured ablation (Levine & Feizi, 2020) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md); payloads written twice, [results/steer-twice](../../results/steer-twice/report.md); both on the pieces the worker cuts, [results/steer-cut](../../results/steer-cut/report.md); a yes/no decision, [results/steer-noul](../../results/steer-noul/report.md); on Laya, [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md)*
+*2026-10-27, updated 2026-11-15 · issues #24, #43, #44, #45, #46, #47 · design: [ADR 0005](../adr/0005-row-text-is-untrusted.md) · lineage: prompt injection against Jev (Datadog Security Labs, Check Point, HiddenLayer, 2026; Wu & Lim, arXiv 2609.28613), erase-and-check (Kumar et al., 2023), structured ablation (Levine & Feizi, 2020) · evidence: [results/steer-k8s](../../results/steer-k8s/report.md); payloads written twice, [results/steer-twice](../../results/steer-twice/report.md); both on the pieces the worker cuts, [results/steer-cut](../../results/steer-cut/report.md); finer cuts, [results/steer-fine](../../results/steer-fine/report.md); a yes/no decision, [results/steer-noul](../../results/steer-noul/report.md); on Laya, [results/steer-k8s-laya](../../results/steer-k8s-laya/report.md)*
 
 pgdocket marks answers `auto`, safe to act on without review, and the rows it judges are often written by outsiders: customers write tickets, anyone can open a GitHub issue, applicants write their own letters. Text in a row can try to steer the model. In September and October 2026, four groups showed that Jev can be steered this way:
 - **Datadog Security Labs.** A counterfeit policy planted in the judged text cut Jev's recall on prompt-injection benchmarks from 83 % to 3.9 %.
@@ -133,6 +133,11 @@ While preparing #44 we found that #24's and #43's harness judged every payload a
 - **A payload glued to a short paragraph.** Without the sentence, erasing missed one issue for each single-paragraph attack, all the same issue. The worker had joined the payload to the issue's last paragraph, which is under 120 characters, and without both, the issue read as the attacker's SIG anyway.
 - **Keep-one lost more votes.** A merged copy brings its piece's honest text with it. Three copies won every vote, and without the sentence the policy written twice got through keep-one on 21.7 % of issues, where #43's cut gave 13.3 %.
 
+**A finer cut** (#47, [results/steer-fine](../../results/steer-fine/report.md), `jevbench steerfine`, $0.134). Three finer cuts were compared with the current one on the same issues, attacks and answers, by a rule fixed beforehand: up to 8 or 12 pieces with the same joins, and up to 10 with only headings (pieces under 40 characters) joined to the next.
+- **They let fewer attacks through.** The worst case fell from 9.3 % of issues to 8.3 % with 8 or 12 pieces, and to 7.0 % with only headings joined.
+- **They flagged too many clean issues.** Keep-one judged smaller pieces, which more often voted against the issue's own answer. 10.0–12.6 % of the clean accepted issues went to review, over #43's 9.1 % limit, and each accepted issue took 12.5–15.2 calls instead of 10.6.
+- **So the cut stays as it was.** The rule fixed in the issue kept it, and #44's yes/no decision didn't need measuring again.
+
 ## Yes/no decisions
 
 *2026-11-15 · issue #44 · evidence: [results/steer-noul](../../results/steer-noul/report.md) (`jevbench steernoul`)*
@@ -216,6 +221,7 @@ The same 300 issues, attacks and targets, judged by Laya 0.4.16 (open weights, r
 - **Erasing near-duplicates together** (#43). It caught exact copies at erasing's own cost (4.4 % flagged), but a copy in other words got through as often as with erasing alone (16.7 % of issues on the worker's cut).
 - **The vote on a yes/no decision** (#44). For a "no" it caught nothing erasing hadn't. For a "yes" it cut a claim written twice from 95.5 % to 4.0 %, but flagged 22.4 % of the clean "yes" answers, over the limit fixed beforehand.
 - **Requiring `auto` to hold with each piece erased** (#44). It flagged 26.3 % of the clean "yes" answers and 9.3 % of the clean "no" answers.
+- **A finer cut** (#47). Up to 8, 10 or 12 pieces cut the worst attack left through from 9.3 % of issues to 7.0–8.3 %, but flagged 10.0–12.6 % of the clean accepted issues, over the limit.
 
 ## Limits
 

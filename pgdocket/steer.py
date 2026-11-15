@@ -25,7 +25,8 @@ import re
 from collections import defaultdict
 
 FAMILIES = ("instruction", "override", "policy", "claim")
-MAX_SEGMENTS = 6
+MAX_SEGMENTS = 6                # finer cuts (8-12 pieces, or only headings joined) flagged too many clean rows (#47)
+JOIN_UNDER = 120                # characters: a shorter piece joins the next (a heading joins its section)
 
 
 def _q(s):
@@ -74,16 +75,16 @@ def pick_target(kind, names, avoid, seed):
     return random.Random(seed).choice(pool) if pool else None
 
 
-def segments(record, columns, max_segments=MAX_SEGMENTS):
-    """[(column, text)]: each column's text split on blank lines. Pieces under 120 characters join the next, and
-    the shortest adjacent pair (within a column) is merged until there are at most `max_segments`."""
+def segments(record, columns, max_segments=MAX_SEGMENTS, join_under=JOIN_UNDER):
+    """[(column, text)]: each column's text split on blank lines. Pieces under `join_under` characters join the next,
+    and the shortest adjacent pair (within a column) is merged until there are at most `max_segments`."""
     segs = []
     for c in columns:
         merged = []
         for p in (x.strip() for x in re.split(r"\n\s*\n", record.get(c) or "")):
             if not p:
                 continue
-            if merged and len(merged[-1]) < 120:
+            if merged and len(merged[-1]) < join_under:
                 merged[-1] += "\n\n" + p
             else:
                 merged.append(p)

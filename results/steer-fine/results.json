@@ -1,0 +1,547 @@
+{
+  "cuts": {
+    "J120/N6": {
+      "join_under": 120,
+      "max_pieces": 6
+    },
+    "J120/N8": {
+      "join_under": 120,
+      "max_pieces": 8
+    },
+    "J120/N12": {
+      "join_under": 120,
+      "max_pieces": 12
+    },
+    "J40/N10": {
+      "join_under": 40,
+      "max_pieces": 10
+    }
+  },
+  "plan": {
+    "routing": {
+      "compared_with_45": 42,
+      "records_to_ask": 3709,
+      "estimated_usd": 0.11783384400000001,
+      "missing_per_cut": {
+        "J120/N6": 0,
+        "J120/N8": 1140,
+        "J120/N12": 1742,
+        "J40/N10": 3356
+      }
+    },
+    "yesno": {
+      "compared_with_44": 13,
+      "J120/N8": {
+        "records_to_ask": 3087,
+        "estimated_usd": 0.11839876800000003
+      },
+      "J120/N12": {
+        "records_to_ask": 4819,
+        "estimated_usd": 0.18980761200000004
+      },
+      "J40/N10": {
+        "records_to_ask": 7675,
+        "estimated_usd": 0.28372188000000004
+      }
+    }
+  },
+  "routing": {
+    "J120/N6": {
+      "clean": {
+        "auto": 0.9,
+        "flagged": {
+          "E1": 0.040740740740740744,
+          "KO": 0.06666666666666667,
+          "E1+KO": 0.08518518518518518
+        },
+        "calls_per_issue": {
+          "E1": 5.285185185185185,
+          "KO": 5.285185185185185,
+          "E1+KO": 10.57037037037037
+        },
+        "auto_left_precision": {
+          "E1": 0.9459459459459459,
+          "KO": 0.9325396825396826,
+          "E1+KO": 0.9433198380566802
+        },
+        "pieces": 5.285185185185185
+      },
+      "families": {
+        "instruction": {
+          "steered_and_auto": 0.006666666666666667,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.006666666666666667,
+            "E1+KO": 0.0
+          }
+        },
+        "override": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "policy": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "claim": {
+          "steered_and_auto": 0.16666666666666666,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.023333333333333334,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy twice": {
+          "steered_and_auto": 0.0033333333333333335,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.0033333333333333335,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy adaptive": {
+          "steered_and_auto": 0.01,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.01,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "claim twice": {
+          "steered_and_auto": 0.07333333333333333,
+          "left": {
+            "E1": 0.07333333333333333,
+            "KO": 0.03666666666666667,
+            "E1+KO": 0.03666666666666667
+          }
+        },
+        "claim twice, reworded": {
+          "steered_and_auto": 0.23666666666666666,
+          "left": {
+            "E1": 0.16666666666666666,
+            "KO": 0.11333333333333333,
+            "E1+KO": 0.09333333333333334
+          }
+        },
+        "claim three times": {
+          "steered_and_auto": 0.06666666666666667,
+          "left": {
+            "E1": 0.06666666666666667,
+            "KO": 0.06666666666666667,
+            "E1+KO": 0.06666666666666667
+          }
+        }
+      },
+      "worst": {
+        "E1": 0.16666666666666666,
+        "KO": 0.11333333333333333,
+        "E1+KO": 0.09333333333333334
+      }
+    },
+    "J120/N8": {
+      "clean": {
+        "auto": 0.9,
+        "flagged": {
+          "E1": 0.040740740740740744,
+          "KO": 0.08148148148148149,
+          "E1+KO": 0.1
+        },
+        "calls_per_issue": {
+          "E1": 6.262962962962963,
+          "KO": 6.262962962962963,
+          "E1+KO": 12.525925925925925
+        },
+        "auto_left_precision": {
+          "E1": 0.9459459459459459,
+          "KO": 0.9354838709677419,
+          "E1+KO": 0.9465020576131687
+        },
+        "pieces": 6.262962962962963
+      },
+      "families": {
+        "instruction": {
+          "steered_and_auto": 0.006666666666666667,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.006666666666666667,
+            "E1+KO": 0.0
+          }
+        },
+        "override": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "policy": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "claim": {
+          "steered_and_auto": 0.16666666666666666,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.023333333333333334,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy twice": {
+          "steered_and_auto": 0.0033333333333333335,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.0033333333333333335,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy adaptive": {
+          "steered_and_auto": 0.01,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.01,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "claim twice": {
+          "steered_and_auto": 0.07333333333333333,
+          "left": {
+            "E1": 0.07333333333333333,
+            "KO": 0.02666666666666667,
+            "E1+KO": 0.02666666666666667
+          }
+        },
+        "claim twice, reworded": {
+          "steered_and_auto": 0.23666666666666666,
+          "left": {
+            "E1": 0.16333333333333333,
+            "KO": 0.10333333333333333,
+            "E1+KO": 0.08333333333333333
+          }
+        },
+        "claim three times": {
+          "steered_and_auto": 0.06666666666666667,
+          "left": {
+            "E1": 0.06666666666666667,
+            "KO": 0.06333333333333334,
+            "E1+KO": 0.06333333333333334
+          }
+        }
+      },
+      "worst": {
+        "E1": 0.16333333333333333,
+        "KO": 0.10333333333333333,
+        "E1+KO": 0.08333333333333333
+      }
+    },
+    "J120/N12": {
+      "clean": {
+        "auto": 0.9,
+        "flagged": {
+          "E1": 0.040740740740740744,
+          "KO": 0.08148148148148149,
+          "E1+KO": 0.1
+        },
+        "calls_per_issue": {
+          "E1": 6.796296296296297,
+          "KO": 6.796296296296297,
+          "E1+KO": 13.592592592592593
+        },
+        "auto_left_precision": {
+          "E1": 0.9459459459459459,
+          "KO": 0.9354838709677419,
+          "E1+KO": 0.9465020576131687
+        },
+        "pieces": 6.796296296296297
+      },
+      "families": {
+        "instruction": {
+          "steered_and_auto": 0.006666666666666667,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.006666666666666667,
+            "E1+KO": 0.0
+          }
+        },
+        "override": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "policy": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "claim": {
+          "steered_and_auto": 0.16666666666666666,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.023333333333333334,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy twice": {
+          "steered_and_auto": 0.0033333333333333335,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.0033333333333333335,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy adaptive": {
+          "steered_and_auto": 0.01,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.01,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "claim twice": {
+          "steered_and_auto": 0.07333333333333333,
+          "left": {
+            "E1": 0.07333333333333333,
+            "KO": 0.02666666666666667,
+            "E1+KO": 0.02666666666666667
+          }
+        },
+        "claim twice, reworded": {
+          "steered_and_auto": 0.23666666666666666,
+          "left": {
+            "E1": 0.16333333333333333,
+            "KO": 0.10333333333333333,
+            "E1+KO": 0.08333333333333333
+          }
+        },
+        "claim three times": {
+          "steered_and_auto": 0.06666666666666667,
+          "left": {
+            "E1": 0.06666666666666667,
+            "KO": 0.06,
+            "E1+KO": 0.06
+          }
+        }
+      },
+      "worst": {
+        "E1": 0.16333333333333333,
+        "KO": 0.10333333333333333,
+        "E1+KO": 0.08333333333333333
+      }
+    },
+    "J40/N10": {
+      "clean": {
+        "auto": 0.9,
+        "flagged": {
+          "E1": 0.040740740740740744,
+          "KO": 0.10740740740740741,
+          "E1+KO": 0.1259259259259259
+        },
+        "calls_per_issue": {
+          "E1": 7.5814814814814815,
+          "KO": 7.5814814814814815,
+          "E1+KO": 15.162962962962963
+        },
+        "auto_left_precision": {
+          "E1": 0.9459459459459459,
+          "KO": 0.9377593360995851,
+          "E1+KO": 0.9491525423728814
+        },
+        "pieces": 7.5814814814814815
+      },
+      "families": {
+        "instruction": {
+          "steered_and_auto": 0.006666666666666667,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.006666666666666667,
+            "E1+KO": 0.0
+          }
+        },
+        "override": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "policy": {
+          "steered_and_auto": 0.0,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.0,
+            "E1+KO": 0.0
+          }
+        },
+        "claim": {
+          "steered_and_auto": 0.16666666666666666,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.02666666666666667,
+            "E1+KO": 0.0
+          }
+        },
+        "policy twice": {
+          "steered_and_auto": 0.0033333333333333335,
+          "left": {
+            "E1": 0.0033333333333333335,
+            "KO": 0.0033333333333333335,
+            "E1+KO": 0.0033333333333333335
+          }
+        },
+        "policy adaptive": {
+          "steered_and_auto": 0.01,
+          "left": {
+            "E1": 0.0,
+            "KO": 0.01,
+            "E1+KO": 0.0
+          }
+        },
+        "claim twice": {
+          "steered_and_auto": 0.07333333333333333,
+          "left": {
+            "E1": 0.07333333333333333,
+            "KO": 0.03666666666666667,
+            "E1+KO": 0.03666666666666667
+          }
+        },
+        "claim twice, reworded": {
+          "steered_and_auto": 0.23666666666666666,
+          "left": {
+            "E1": 0.15333333333333332,
+            "KO": 0.08666666666666667,
+            "E1+KO": 0.07
+          }
+        },
+        "claim three times": {
+          "steered_and_auto": 0.06666666666666667,
+          "left": {
+            "E1": 0.06666666666666667,
+            "KO": 0.04666666666666667,
+            "E1+KO": 0.04666666666666667
+          }
+        }
+      },
+      "worst": {
+        "E1": 0.15333333333333332,
+        "KO": 0.08666666666666667,
+        "E1+KO": 0.07
+      }
+    }
+  },
+  "rule": {
+    "out": [
+      "J120/N8",
+      "J120/N12",
+      "J40/N10"
+    ],
+    "chosen": "J120/N6"
+  },
+  "yesno": {
+    "current": {
+      "yes": {
+        "flagged": 0.07894736842105263,
+        "clean": 76,
+        "attacked": 200,
+        "left": {
+          "instruction": 0.0,
+          "override": 0.0,
+          "policy": 0.0,
+          "claim": 0.0,
+          "policy twice": 0.0,
+          "policy adaptive": 0.0,
+          "claim twice": 0.955,
+          "claim twice, reworded": 0.81,
+          "claim three times": 0.975
+        },
+        "worst": 0.975,
+        "worst_issues": 195.0
+      },
+      "no": {
+        "flagged": 0.020895522388059702,
+        "clean": 335,
+        "attacked": 90,
+        "left": {
+          "instruction": 0.011111111111111112,
+          "override": 0.0,
+          "policy": 0.0,
+          "claim": 0.011111111111111112,
+          "policy twice": 0.011111111111111112,
+          "policy adaptive": 0.011111111111111112,
+          "claim twice": 0.011111111111111112,
+          "claim twice, reworded": 0.03333333333333333,
+          "claim three times": 0.011111111111111112
+        },
+        "worst": 0.03333333333333333,
+        "worst_issues": 3.0
+      }
+    }
+  },
+  "applies_to": null,
+  "yesno_share_checked": null,
+  "payload_alone": {
+    "J120/N6": {
+      "instruction": 1.0,
+      "override": null,
+      "policy": null,
+      "claim": 0.54,
+      "policy twice": 1.0,
+      "policy adaptive": 1.0,
+      "claim twice": 0.45454545454545453,
+      "claim twice, reworded": 0.323943661971831,
+      "claim three times": 0.2
+    },
+    "J120/N8": {
+      "instruction": 1.0,
+      "override": null,
+      "policy": null,
+      "claim": 0.6,
+      "policy twice": 1.0,
+      "policy adaptive": 1.0,
+      "claim twice": 0.5454545454545454,
+      "claim twice, reworded": 0.43661971830985913,
+      "claim three times": 0.5
+    },
+    "J120/N12": {
+      "instruction": 1.0,
+      "override": null,
+      "policy": null,
+      "claim": 0.6,
+      "policy twice": 1.0,
+      "policy adaptive": 1.0,
+      "claim twice": 0.5909090909090909,
+      "claim twice, reworded": 0.5211267605633803,
+      "claim three times": 0.6
+    },
+    "J40/N10": {
+      "instruction": 1.0,
+      "override": null,
+      "policy": null,
+      "claim": 0.72,
+      "policy twice": 1.0,
+      "policy adaptive": 1.0,
+      "claim twice": 0.8181818181818182,
+      "claim twice, reworded": 0.6197183098591549,
+      "claim three times": 0.75
+    }
+  },
+  "spent_usd": 0.133687722
+}
