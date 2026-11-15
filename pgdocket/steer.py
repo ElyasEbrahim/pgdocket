@@ -1,4 +1,4 @@
-"""Can the author of a row steer the answer? Attacks for `check --steer`, erase-and-check (#24) and keep-one (#43)
+"""Can the author of a row steer the answer? Attacks for `check --steer`, erase-and-check (#24) and keep-one (#43, #44)
 
 Rows are often written by outsiders: customers, issue reporters, applicants. Text in a row can try to steer the
 model, and decision models like Jev are steered by it (Datadog Security Labs, Check Point and HiddenLayer, 2026;
@@ -15,6 +15,10 @@ gone in one of those calls, so the answers disagree and the row is flagged.
 A payload written twice survives every erasure. Keep-one (#43) judges each piece alone, and each votes for its
 answer with that answer's probability: a row whose pieces favour another answer than the whole row's is flagged
 too. Erasing catches a payload written once, keeping catches one written into fewer pieces than the rest.
+
+A yes/no decision is different (#44): a piece without the evidence says "no", so a vote says where the evidence
+sits, not whether it was planted. A row answered "no" is flagged when any piece alone is answered "yes": a denial
+written into the row, however often, leaves the piece it denies. Rows answered "yes" are only erased.
 """
 import random
 import re
@@ -123,9 +127,12 @@ def outvoted(answer, votes):
     return any(w > weight[answer] + 1e-12 for v, w in list(weight.items()) if v != answer)
 
 
-def flagged(answer, pieces, got):
+def flagged(answer, pieces, got, alone="vote"):
     """Does the check flag a row of `pieces` pieces whose answer is `answer`? `got` is [(how, piece, answer, score)]
-    for its variants. A row of one piece can't be checked; an erased piece that changes the answer, or pieces alone
-    that outvote it, flag the row."""
-    return (pieces < 2 or any(v != answer for how, _, v, _ in got if how == "erase")
-            or outvoted(answer, [(v, s) for how, _, v, s in got if how == "keep"]))
+    for its variants. A row of one piece can't be checked, and an erased piece that changes the answer flags the row.
+    So do the pieces judged alone: with `alone="vote"` when they outvote the answer (choice decisions, #43), with
+    `alone="any"` when any one of them is answered otherwise (yes/no rows answered "no", #44)."""
+    if pieces < 2 or any(v != answer for how, _, v, _ in got if how == "erase"):
+        return True
+    kept = [(v, s) for how, _, v, s in got if how == "keep"]
+    return any(v != answer for v, _ in kept) if alone == "any" else outvoted(answer, kept)

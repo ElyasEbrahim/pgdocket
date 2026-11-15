@@ -5,8 +5,8 @@ judge outside any transaction → append judgments, upsert `current` and dequeue
 claim token) in one transaction. Failures back off; after 5 attempts a row shows as `error`.
 
 A hardened calibration (#24) also queues a check ('check') for every row `auto` would accept: the row is judged again
-without each of its pieces (erase-and-check) and, for choice decisions, with each piece alone (keep-one, #43). The
-result goes to docket.robust, which the view requires.
+without each of its pieces (erase-and-check) and with each piece alone (keep-one: choice decisions, #43; yes/no rows
+answered "no", #44). The result goes to docket.robust, which the view requires.
 
 A re-ask queued with `twice` (`pgdocket drift --twice`, #38) is asked a second time, in requests of its own, once the
 first answers are in; the second answer's `pair_of` is the first one's id.
@@ -183,13 +183,14 @@ class Worker:
         self.totals["usd"] = sum(b.cost_usd() for b in self.backends.values() if b.paid)
 
     def _check(self, conn, did, ver, keys, token):
-        """Judge each row again without each of its pieces (erase-and-check, #24) and, for choice decisions, with each
-        piece alone (keep-one, #43). The row is flagged when an answer without a piece differs from the current one
-        by the view's rules (choice: the option; yes/no: the band); when the pieces alone, each voting for its option
-        with that option's probability, favour another option more than the current one; or when its text is one
-        piece, which can't be checked (no calls). A piece with no text isn't judged alone. Rows changed or deleted since
-        being queued are checked as they are now. docket.robust keeps every answer: {"how": "erase" | "keep",
-        "piece", "value", "score"}."""
+        """Judge each row again without each of its pieces (erase-and-check, #24) and with each piece alone (keep-one).
+        The row is flagged when an answer without a piece differs from the current one by the view's rules (choice:
+        the option; yes/no: the band), or when its text is one piece, which can't be checked (no calls). The pieces
+        alone flag a choice row when, each voting for its option with that option's probability, they favour another
+        option more than the current one (#43), and a yes/no row answered "no" when any of them is answered "yes"
+        (#44). A yes/no row answered "yes" is only erased: no other check kept its false flags within #44's limit.
+        A piece with no text isn't judged alone. Rows changed or deleted since being queued are checked as they are
+        now. docket.robust keeps every answer: {"how": "erase" | "keep", "piece", "value", "score"}."""
         d = self._decision(conn, did, ver)
         spec = d["spec"]
         cal = self._calibration(conn, did, ver) or {}
@@ -206,9 +207,11 @@ class Worker:
             return
         verdict = (lambda a: read_answer(spec, a)[0]) if spec["kind"] == "choice" else (
             lambda a: calibration.noul_answer(a, spec, cal))
-        keep = spec["kind"] == "choice"         # keep-one was measured on a choice task; yes/no rows are erased only
+        choice = spec["kind"] == "choice"
+        ref = {k: verdict(cur[k][1]) for k in todo}
         segs = {k: steer.segments(json.loads(rows[k]), d["text"]) for k in todo}
-        flat = [(k, how, i, rec) for k in todo for how, i, rec in steer.variants(segs[k], d["text"], keep)]
+        flat = [(k, how, i, rec) for k in todo
+                for how, i, rec in steer.variants(segs[k], d["text"], choice or ref[k] == "no")]
         backend = self._backend(spec)
         before = backend.stats["input_tokens"]
         try:
@@ -227,8 +230,8 @@ class Worker:
             got[k].append((how, i, verdict(a), read_answer(spec, a)[1]))
         out = []
         for k in todo:
-            jid, current = cur[k]
-            out.append((jid, k, len(segs[k]), steer.flagged(verdict(current), len(segs[k]), got[k]),
+            out.append((cur[k][0], k, len(segs[k]),
+                        steer.flagged(ref[k], len(segs[k]), got[k], "vote" if choice else "any"),
                         json.dumps([{"how": how, "piece": i, "value": v, "score": sc} for how, i, v, sc in got[k]])))
         with conn.transaction():
             conn.execute(

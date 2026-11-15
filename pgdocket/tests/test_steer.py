@@ -66,3 +66,15 @@ def test_keep_one_flags_a_row_whose_pieces_favour_another_answer():
     assert steer.outvoted("sales", [("billing", 0.5), ("billing", 0.3), ("sales", 0.7)]) is True
     assert steer.outvoted("sales", []) is False and steer.flagged("sales", 1, [])          # one piece: flagged
     assert steer.flagged("sales", 3, [("erase", 0, "sales", 0.9), ("erase", 1, "billing", 0.9)])
+
+
+def test_a_no_is_flagged_when_any_piece_alone_says_yes():
+    """#44, yes/no decisions: a denial written twice survives every erasure, and most pieces answer "no" with or
+    without it, so a vote sees nothing. The piece the denial is about still says "yes" alone."""
+    erase = [("erase", i, "no", 0.03) for i in range(4)]
+    keep = [("keep", 0, "yes", 0.9), ("keep", 1, "no", 0.98), ("keep", 2, "no", 0.9), ("keep", 3, "no", 0.98)]
+    assert not steer.flagged("no", 4, erase + keep)                              # the vote: three against one
+    assert steer.flagged("no", 4, erase + keep, alone="any")
+    assert not steer.flagged("no", 4, erase + [k[:2] + ("no", 0.7) for k in keep], alone="any")
+    assert not steer.flagged("no", 4, erase, alone="any")                        # nothing judged alone: erasing decides
+    assert steer.flagged("no", 4, erase[:3] + [("erase", 3, "yes", 0.9)], alone="any") and steer.flagged("no", 1, [], alone="any")

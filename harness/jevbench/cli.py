@@ -29,6 +29,7 @@
   stratvalidate would labels stratified by answer certify more answers? (no API calls)
   steer       can an issue's author steer the answer past `auto`? attacks and defences (real Jev calls, capped)
   steertwice  payloads written twice: which check catches them? (real Jev calls, capped at $0.50 more)
+  steernoul   keep-one on a yes/no decision: does it help? (real Jev calls, capped at $0.70)
   backends    Jev and Laya on the same labelled rows, from the stored check reports (no API calls)
 """
 import argparse
@@ -150,6 +151,7 @@ def main(argv=None):
     mg.add_argument("--trials", type=int, default=300)
     mg.add_argument("--runs", type=int, default=100)
     sub.add_parser("steertwice")
+    sub.add_parser("steernoul")
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
@@ -296,6 +298,9 @@ def main(argv=None):
     elif args.cmd == "steertwice":
         from . import steertwice
         print("report:", steertwice.run() + "/report.md")
+    elif args.cmd == "steernoul":
+        from . import steernoul
+        print("report:", steernoul.run() + "/report.md")
     elif args.cmd == "steer":
         from . import steer
         print("report:", steer.run(args.max_usd, backend=args.backend, model=args.model, out=args.out) + "/report.md")

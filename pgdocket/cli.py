@@ -131,8 +131,9 @@ def main(argv=None):
                     help="also fit on hand-picked labels (e.g. exported disagreements); may bias the guarantee")
     ca.add_argument("--harden", action="store_true",
                     help="auto only for rows that pass a check: no answer changes with any one piece of their text "
-                         "removed and, for choice decisions, the pieces judged alone don't favour another answer "
-                         "(about 10 extra calls per accepted row; 5 for yes/no decisions)")
+                         "removed; for choice decisions, the pieces judged alone don't favour another answer; for a "
+                         "yes/no row answered no, no piece alone is answered yes (about 10 extra calls per accepted "
+                         "row; 5 for a yes/no row answered yes)")
     es = sub.add_parser("estimate", help="counts with confidence intervals (prediction-powered inference)")
     dsn_arg(es)
     es.add_argument("name")

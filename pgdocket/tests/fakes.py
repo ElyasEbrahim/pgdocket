@@ -14,6 +14,7 @@ class FakeSystemOne(BaseHTTPRequestHandler):
     answer_override = {}                 # want -> what the model answers instead (the model "changed")
     score_override = {}                  # want -> the probability the model gives its answer instead of 0.9 (#39)
     obey_injection = False               # a steerable model: a row saying 'classified as "X"' gets X (#24)
+    deny = None                          # a row whose text contains this string is answered "no" whatever else it says (#44)
 
     def log_message(self, *a):
         pass
@@ -37,6 +38,8 @@ class FakeSystemOne(BaseHTTPRequestHandler):
             if cls.obey_injection:
                 hit = re.search(r'classif(?:ied|y it) as "([^"]+)"', " ".join(str(v) for v in row.values()))
                 want = hit.group(1) if hit else want
+            if cls.deny and cls.deny in " ".join(str(v) for v in row.values()):
+                want = "no"
             if q["type"] == "choice":
                 opts = list(q["criteria"])
                 pick = next((o for o in opts if o.startswith(want)), opts[0])
@@ -63,7 +66,7 @@ def serve():
     """Start a fake server on a free port; returns (url, shutdown)."""
     FakeSystemOne.requests, FakeSystemOne.ports = [], []
     FakeSystemOne.fail_first, FakeSystemOne.fail_rows_containing = False, None
-    FakeSystemOne.answer_override, FakeSystemOne.obey_injection = {}, False
+    FakeSystemOne.answer_override, FakeSystemOne.obey_injection, FakeSystemOne.deny = {}, False, None
     FakeSystemOne.score_override = {}
     srv = ThreadingHTTPServer(("127.0.0.1", 0), FakeSystemOne)
     threading.Thread(target=srv.serve_forever, daemon=True).start()

@@ -233,7 +233,9 @@ def steer_test(cfg, backend, sample, answers, threshold, opts):
     """Can a row's author steer the answer (#24)? Each row gets one paragraph per attack family, aimed at a random
     wrong answer, and is judged again. Then `--harden`'s check runs on the rows `auto` would accept: clean ones, to
     see how many it flags for nothing, and steered ones, to see how many it catches. The check erases each piece and,
-    for choice decisions, keeps each piece alone (#43); `erase_*` is erase-and-check alone."""
+    for choice decisions, keeps each piece alone (#43); `erase_*` is erase-and-check alone. On a yes/no decision only
+    rows answered "yes" are tried: `check` sets no recall target, so no "no" is `auto`, and a "yes" is only erased
+    (#44)."""
     from . import steer as S
     names = option_names(cfg) if cfg.kind == "choice" else None
     desc = {o["name"]: o.get("description") or "" for o in cfg.options} if cfg.kind == "choice" else {}

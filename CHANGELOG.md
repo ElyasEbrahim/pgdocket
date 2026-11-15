@@ -2,6 +2,19 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-15
+
+### Changed (`--harden` on yes/no decisions, #44)
+- **For a yes/no row answered "no", `calibrate --harden` also judges each piece alone,** and sends the row to review if any piece is answered "yes". A denial written into a row leaves the piece it denies, however often it is repeated. Rows answered "yes" are still only erased.
+- **Chosen by `jevbench steernoul`** (new; 16,579 real Jev calls, $0.488 under a cap of $0.70), by a rule fixed in #44 before any call, for each side separately. The decision was "the issue asks for a new feature or enhancement", on 500 labelled Kubernetes issues, with `--untrusted`, a 90 % recall target and an 85 % precision target (no threshold certified 90 %). Six checks were compared on the worker's own pieces: erasing; requiring `auto` to hold with each piece erased; and each of the two with the vote of #43 or with the any-piece rule.
+- **The "no" side.** The worst attack left through fell from 15.6 % of the 90 attacked feature requests to 3.3 % (a claim written twice, the second copy reworded). The check flags 2.1 % of the clean rows answered "no", where erasing flagged none, and takes about 10.7 calls per accepted row instead of 5.3. The vote changed nothing there.
+- **The "yes" side: nothing changed, and a claim written twice gets through.** One copy was accepted as "yes" on 89.5 % of 200 attacked issues, and erasing caught every one. Two copies were accepted on 95.5 %, and erasing caught none. The vote would cut that to 4.0 % (51.0 % for three copies), but it flagged 22.4 % of the clean "yes" rows, against a limit of 12.9 %. Don't automate a "yes" that the row's author gains from.
+- **Upgrading.** Yes/no rows are checked again at every `calibrate --harden`, so the next one applies the new check. `docket.robust.answers` then holds `keep` entries for rows answered "no".
+
+### Found (how #24 and #43 cut their pieces)
+- **Their harness judged every payload as a piece of its own; the worker merges pieces beyond six.** 200 of the 300 routing issues have six pieces before any attack. Cut as the worker would, the single claim is a piece of its own in 92 of the 300 issues, both copies of the claim written twice in 55, and all three copies in 24.
+- **What that means.** #24's and #43's numbers hold for a payload in a piece of its own. What the worker's merged pieces catch on the routing decision is not measured yet. #44 used the worker's own code for the pieces, the answers and the flags.
+
 ## 2026-11-13
 
 ### Changed (`--harden`'s check: keep-one, #43)

@@ -148,7 +148,10 @@ class Runner:
             spent = self.spent_before + self.backend.cost_usd()
             if spent + per * len(chunk) * self.backend.usd_per_token > self.max_usd:
                 raise SystemExit(f"stopped: ${spent:.3f} spent; the next {len(chunk)} calls would pass the ${self.max_usd} cap")
-            answers = self.backend.judge([p for _, _, p in chunk], "choice", q, option_display(self.spec), batch_size=1)
+            kind = self.spec["kind"]                      # yes/no decisions and `--untrusted` specs too (#44)
+            answers = self.backend.judge([p for _, _, p in chunk], kind, q,
+                                         option_display(self.spec) if kind == "choice" else None, batch_size=1,
+                                         untrusted=self.spec.get("untrusted", False))
             with open(self.path, "a") as f:
                 for (k, v, _), a in zip(chunk, answers):
                     self.cache[(k, v)] = a
