@@ -4,6 +4,13 @@ Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repo
 
 ## 2026-11-16
 
+### Measured (an author who tries again, #49)
+- **The question.** Every attack measured so far was a fixed template, tried once. Check Point's attackers adapted, and Nasr, Carlini et al. (2025) bypassed twelve published defences with adaptive attacks. How far does an issue's author get against both defences if they can try again?
+- **Measured** by `jevbench steeradapt` (new): 5,274 real Jev calls, $0.229, under a cap of $0.40. It used #24's 300 Kubernetes issues and targets, `--untrusted`, and `--harden`'s check on the pieces the worker cuts. The pool held #43's nine attacks, whose stored answers were reused and gave all of #45's numbers, and ten new ones written against the check: reworded, moved, or written inside the issue's own paragraphs. Two authors were fixed in #49 before any call. O1 sees only the outcome and tries a fixed order. O2 also sees the model's answer, and picks a stealthier or a stronger attack next.
+- **They get through.** Within 10 tries, O2 got 19.7 % of the issues through both defences and O1 13.3 %; with all 19 attacks, 23.0 % (35.3 % with `--untrusted` alone). One new attack alone, the claim in three wordings with two inside the issue's own paragraphs, got 20.0 % through on a single try, where #43's worst got 9.3 %.
+- **Docs.** The rule fixed in #49 was triggered: over 10 % of issues got through within 10 tries. So the READMEs, the steering write-up and ADR 0005 now say the defences don't hold against an author who can retry. For decisions whose authors gain from the answer, they point to `calibrate --review` and to people. The "fixed attacks" limit is replaced by these numbers, and REFERENCES cites Nasr et al. (2025).
+- **Nothing in pgdocket changes.** The first run saved the checks' answers under the wrong names and stopped before computing anything; the answers were renamed, not asked again.
+
 ### Examined, not built (keep-one's votes weighted by length, #48)
 - **The question.** Keep-one counts every piece alike, however short, and #47 found short pieces voting against the issue's own answer. Would weighting each vote by the piece's characters as well let a finer cut, or the "yes" side of a yes/no decision, pass the limits?
 - **Compared** by `jevbench steervote` (new), with no API calls: every answer was stored by #44, #45 and #47, and the same code reproduces all 66 of their numbers it is compared with. The rules of #47 (routing) and #44 (the "yes" side) were fixed again in #48 before any new number was computed.

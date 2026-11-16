@@ -137,7 +137,7 @@ A fourth sweep, on the risk none of the earlier ones covered: text in a row aime
 - **Adopted** (#24, [steering.md](../phase1/steering.md), ADR 0005):
   - **`--untrusted`**, a distrust sentence: the policy fell to 1.3 %, and one aimed at the sentence to 2.0 %; claims still steered 33.7 %. That runs against Check Point's result, but our attacks were fixed templates and theirs adapted.
   - **`calibrate --harden`**, erase-and-check (Kumar et al., [arXiv:2309.02705](https://arxiv.org/abs/2309.02705)): it caught every steered row `auto` would have accepted, claims included (all but one issue in 300 on the pieces the worker cuts, #45), and sent 7.4 % of clean accepted rows to review. A payload written twice beats it, and the sentence stops that.
-  - **Both together:** at most 0.3 % of issues got through `auto` for every attack except a misleading claim written twice (7.3 %).
+  - **Both together:** at most 0.3 % of issues got through `auto` for every attack except a misleading claim written twice (7.3 %). *#49* let an author try again, among 19 attacks including ones written against the check: within 10 tries, 13.3–19.7 % of issues got through both, and 23.0 % with every attack. The defences don't hold against an author who can retry ([steering.md](../phase1/steering.md#an-author-who-tries-again)).
   - **`check --steer`**, so teams can measure their own decision.
 - **Not adopted.**
   - **Pattern filters:** circular evidence, and they miss claims.
