@@ -2,6 +2,15 @@
 
 Notable changes, newest first. Dates are UTC; `#n` refers to issues in this repository.
 
+## 2026-11-16
+
+### Examined, not built (keep-one's votes weighted by length, #48)
+- **The question.** Keep-one counts every piece alike, however short, and #47 found short pieces voting against the issue's own answer. Would weighting each vote by the piece's characters as well let a finer cut, or the "yes" side of a yes/no decision, pass the limits?
+- **Compared** by `jevbench steervote` (new), with no API calls: every answer was stored by #44, #45 and #47, and the same code reproduces all 66 of their numbers it is compared with. The rules of #47 (routing) and #44 (the "yes" side) were fixed again in #48 before any new number was computed.
+- **Routing.** The weighted vote alone flagged fewer clean issues (6.3–8.1 % against 6.7–10.7 %), and with erasing let fewer attacks through (worst 6.3–8.3 % against 7.0–9.3 %). But its flags overlapped less with erasing's, and together they flagged 9.6–11.5 % of the clean accepted issues on every cut, over the 9.1 % limit.
+- **The "yes" side.** Long paragraphs without a request in them outvoted the request: 31.6 % of the clean "yes" answers were flagged (22.4 % with the plain vote), and three copies still got 51.0 % through. Erasing alone stays.
+- **Nothing changes**; `pgdocket.steer.outvoted`'s docstring records the result.
+
 ## 2026-11-15
 
 ### Examined, not built (a finer cut for `--harden`'s check, #47)

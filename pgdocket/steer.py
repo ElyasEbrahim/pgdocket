@@ -121,7 +121,8 @@ def variants(segs, columns, keep=True):
 
 def outvoted(answer, votes):
     """Keep-one (#43): `votes` are (answer, score) for each piece alone, each piece voting for its answer with that
-    answer's probability. True when another answer strictly outweighs `answer`; a tie leaves it."""
+    answer's probability. True when another answer strictly outweighs `answer`; a tie leaves it. Weighting the votes
+    by each piece's length as well flagged more clean rows (#48)."""
     weight = defaultdict(float)
     for v, s in votes:
         weight[v] += s

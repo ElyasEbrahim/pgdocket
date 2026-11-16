@@ -32,6 +32,7 @@
   steernoul   keep-one on a yes/no decision: does it help? (real Jev calls, capped at $0.70)
   steercut    #24's and #43's checks again, on the pieces the worker cuts (real Jev calls, capped at $0.40)
   steerfine   a finer cut for --harden's check? (real Jev calls, capped at $0.35)
+  steervote   keep-one's votes weighted by length, from stored answers (no API calls)
   backends    Jev and Laya on the same labelled rows, from the stored check reports (no API calls)
 """
 import argparse
@@ -158,6 +159,8 @@ def main(argv=None):
     sc.add_argument("--dry-run", action="store_true", help="check the reproduction and count the calls; ask nothing")
     sf = sub.add_parser("steerfine")
     sf.add_argument("--dry-run", action="store_true", help="check the reproduction and count the calls; ask nothing")
+    sv = sub.add_parser("steervote")
+    sv.add_argument("--dry-run", action="store_true", help="check the reproduction only; compute no new vote")
     st = sub.add_parser("steer")
     st.add_argument("--max-usd", type=float, default=0.6, help="stop before spending more than this, in all runs together")
     st.add_argument("--backend", default="jev", help="a /v1/systemone URL (default: TypeSafe's Jev)")
@@ -314,6 +317,10 @@ def main(argv=None):
     elif args.cmd == "steerfine":
         from . import steerfine
         out = steerfine.run(dry=args.dry_run)
+        print(json.dumps(out, indent=2) if args.dry_run else "report: " + out + "/report.md")
+    elif args.cmd == "steervote":
+        from . import steervote
+        out = steervote.run(dry=args.dry_run)
         print(json.dumps(out, indent=2) if args.dry_run else "report: " + out + "/report.md")
     elif args.cmd == "steer":
         from . import steer
