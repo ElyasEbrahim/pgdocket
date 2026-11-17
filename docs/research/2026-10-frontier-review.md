@@ -141,6 +141,7 @@ A fourth sweep, on the risk none of the earlier ones covered: text in a row aime
   - **`check --steer`**, so teams can measure their own decision.
 - **Not adopted.**
   - **Pattern filters:** circular evidence, and they miss claims.
+  - **A sentence against claims** (*#50*): bias-aware prompting (Yin et al., [arXiv:2610.24320](https://arxiv.org/abs/2610.24320)) as one more sentence, telling the model that the authors' own conclusions may be wrong or made up. It cut an author who tries again from 19.7 % of issues to 4.7 % within 10 tries, but cost 1.3 points of accuracy, over the limit fixed beforehand ([steering.md](../phase1/steering.md#a-sentence-against-claims)).
   - **Keep-one voting:** it caught 85.7 % of the repeated payload but adds false flags. It is a candidate for later. *Built in #43*, beside erase-and-check, for choice decisions: it cut a claim written twice from 7.3 % to 3.7 % of issues on the pieces the worker cuts (#45; 3.0 % on #43's own cut) ([steering.md](../phase1/steering.md#payloads-written-twice)). *#44* measured yes/no decisions: a "no" is now judged piece by piece, and a "yes" stays erase-only, open to a claim written twice ([steering.md](../phase1/steering.md#yesno-decisions)).
 
 ## Update, 30 October 2026
